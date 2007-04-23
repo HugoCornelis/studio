@@ -1,0 +1,12 @@
+#!/usr/bin/perl -w
+#!/usr/bin/perl -d:ptkdb
+#
+
+my $dir = `pwd`;
+
+chomp $dir;
+
+print "appending $dir\n";
+
+system "perl -e 'unshift \@INC, \"$dir\"; require Neurospaces_embed;'";
+

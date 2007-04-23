@@ -1,0 +1,154 @@
+#!/usr/bin/perl -w
+#!/usr/bin/perl -d:ptkdb -w
+#
+
+use strict;
+
+
+BEGIN
+{
+    #! make check
+
+    push @INC, '../perl';
+
+    #! normal run
+
+    push @INC, './perl';
+
+    #! after install
+
+    push @INC, '/usr/local/glue/swig/perl';
+}
+
+
+use Getopt::Long;
+
+use Neurospaces;
+use Neurospaces::Traversal;
+
+# use Neurospaces_embed;
+
+
+$SIG{__DIE__}
+    = sub {
+	use Carp;
+
+	confess @_;
+    };
+
+
+my $option_gui;
+my $option_interactive;
+my $option_models = '/local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/library';
+my $option_querymachine;
+my $option_verbose;
+
+
+sub main
+{
+    read_cmd_line();
+
+    my $neurospaces = Neurospaces->new();
+
+    # my $args = [ "$0", "-P", "-q", "cells/golgi.ndf" ];
+
+    my $args = [ "$0", "-P", ];
+
+    if ($option_models)
+    {
+	$ENV{NEUROSPACES_MODELS} = $option_models;
+    }
+
+    if ($option_querymachine)
+    {
+	push @$args, '-q';
+    }
+
+#     push @$args, @ARGV;
+
+    my $success = $neurospaces->load( { filename => $ARGV[0], }, $args);
+
+    if ($option_interactive)
+    {
+	#t not sure yet, should be perhaps based on the perl shell ?
+    }
+
+    if ($option_gui)
+    {
+	require Neurospaces::GUI;
+	Neurospaces::GUI::gui("bin/neurospaces");
+    }
+
+#     {
+# 	my $traversal
+# 	    = Neurospaces::Traversal->new
+# 		(
+# 		 {
+# 		  context => '/Golgi',
+# 		  processor =>
+# 		  sub
+# 		  {
+# 		      my $self = shift;
+
+# 		      my $descendant = shift;
+
+# 		      use Data::Dumper;
+
+# 		      print "processing " . Dumper($descendant);
+
+# # 		      print "processing $descendant\n";
+# 		  },
+# 		  neurospaces => $neurospaces,
+# 		 },
+# 		);
+
+# 	my $success = $traversal->go();
+#     }
+
+}
+
+
+sub read_cmd_line
+{
+    my $option_help;
+
+    my $result
+	= GetOptions
+	    (
+	     "gui!" => \$option_gui,
+	     "help!" => \$option_help,
+	     "interactive!" => \$option_interactive,
+	     "models=s" => \$option_models,
+	     "query!" => \$option_querymachine,
+	     "v|verbose+" => \$option_verbose,
+	    );
+
+    if ($option_help || @ARGV eq 0)
+    {
+	print
+	    "
+$0 <model-filename>
+
+$0: parse a model description, interact with the model.
+
+options :
+    gui                enter the gui.
+    help               print usage information.
+    interactive        enter interactive mode.
+    models             directory where to find the neurospaces library.
+    query              enter the query machine after parsing.
+    verbose            set verbosity level.
+";
+
+	exit 1;
+    }
+}
+
+
+main();
+
+
+
+
+
+
