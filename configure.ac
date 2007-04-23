@@ -34,6 +34,8 @@ AM_INIT_AUTOMAKE(neurospaces-studio, purkinje-1)
 
 # Checks for library functions.
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile
+		 perl/Makefile
+		])
 AC_OUTPUT
 

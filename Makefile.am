@@ -17,7 +17,7 @@
 ##'
 ##############################################################################
 
-SUBDIRS = 
+SUBDIRS = perl
 
 dist_bin_SCRIPTS = bin/neurospaces
 
@@ -38,4 +38,7 @@ test: check
 #	scp -pr html/htdocs/* hcornelis@shell.sourceforge.net:/home/groups/n/ne/neurospaces/htdocs/
 
 perldir = $(prefix)/glue/swig/perl
+
+nobase_perl_DATA = \
+	studio_test.pm 
 
