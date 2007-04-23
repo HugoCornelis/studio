@@ -105,13 +105,13 @@ sub define_symboltypes
 
     # first find all symboltype definitions
 
-    my $symboltype_lines = [ grep { /^#define TYPE_HSLE_/ } split '\n', $c_code, ];
+    my $symboltype_lines = [ grep { /^#define HIERARCHY_TYPE_/ } split '\n', $c_code, ];
 
     # make them available at perl level
 
     map
     {
-	/(TYPE_HSLE_\S*)\s+(\S*)/;
+	/(HIERARCHY_TYPE_\S*)\s+(\S*)/;
 
 	$symboltype2internal->{$1} = $2;
 
@@ -149,7 +149,7 @@ sub main
 
     # read biolevel definitions in the Neurospaces core
 
-    my $biolevel_code = `cat $Neurospaces::neurospaces_core_directory/neurospaces/biolevel.h`;
+    my $biolevel_code = `cat /usr/local/include/neurospaces/biolevel.h`;
 
 #     print Dumper($biolevel_code);
 
@@ -163,7 +163,7 @@ sub main
 
     # read symboltype definitions in the Neurospaces core
 
-    my $symboltype_code = `cat $Neurospaces::neurospaces_core_directory/neurospaces/symboltable.h`;
+    my $symboltype_code = `cat /usr/local/include/neurospaces/symboltable.h`;
 
 #     print Dumper($symboltype_code);
 

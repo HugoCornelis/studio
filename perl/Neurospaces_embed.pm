@@ -93,9 +93,9 @@ BEGIN
 
 BEGIN
 {
+    #t replace this with a /usr/local/ filename or so.
 
-
-    $c_code = `cat $neurospaces_perl_modules/Neurospaces.c`;
+    $c_code = `cat /local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/perl/Neurospaces.c`;
 }
 
 
