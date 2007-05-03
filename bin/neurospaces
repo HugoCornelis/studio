@@ -37,10 +37,13 @@ $SIG{__DIE__}
     };
 
 
+my $option_condition;
 my $option_gui;
 my $option_interactive;
 my $option_models = '/local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/library';
 my $option_querymachine;
+my $option_reporting_field;
+my $option_traversal_symbol;
 my $option_verbose;
 
 
@@ -79,31 +82,94 @@ sub main
 	Neurospaces::GUI::gui("bin/neurospaces");
     }
 
-#     {
-# 	my $traversal
-# 	    = Neurospaces::Traversal->new
-# 		(
-# 		 {
-# 		  context => '/Golgi',
-# 		  processor =>
-# 		  sub
-# 		  {
-# 		      my $self = shift;
+    if ($option_traversal_symbol)
+    {
+	my $symbol;
+	my $parameter;
 
-# 		      my $descendant = shift;
+	#! never use this functionality, avoid shell quoting issues,
+	#! use the field options instead.
 
-# 		      use Data::Dumper;
+	if (0 && $option_traversal_symbol =~ /^([^-]+)->(.+)$/)
+	{
+	    $symbol = $1;
+	    $parameter = $2;
+	}
+	else
+	{
+	    $symbol = $option_traversal_symbol;
+	}
 
-# 		      print "processing " . Dumper($descendant);
+	if ($option_reporting_field)
+	{
+	    $parameter = $option_reporting_field;
+	}
 
-# # 		      print "processing $descendant\n";
-# 		  },
-# 		  neurospaces => $neurospaces,
-# 		 },
-# 		);
+	my $traversal
+	    = Neurospaces::Traversal->new
+		(
+		 {
+		  context => $symbol,
+		  processor =>
+		  sub
+		  {
+		      my $self = shift;
 
-# 	my $success = $traversal->go();
-#     }
+		      my $descendant = shift;
+
+		      if ($option_condition)
+		      {
+			  my $condition = eval $option_condition;
+
+			  if ($@)
+			  {
+			      die $@;
+			  }
+
+			  if (!$condition)
+			  {
+			      return 1;
+			  }
+		      }
+
+		      if ($parameter)
+		      {
+			  my $value
+			      = SwiggableNeurospaces::symbol_parameter_resolve_value
+				  (
+				   $descendant->{_symbol},
+				   $parameter,
+				   $descendant->{_context}
+				  );
+
+			  if ($value != $SwiggableNeurospaces::dFLT_MAX)
+			  {
+			      print $descendant->{context} . "->" . $parameter . " = " . $value . "\n";
+			  }
+		      }
+		      else
+		      {
+			  print "$descendant->{context}\n";
+		      }
+
+		      return 1;
+		  },
+		  neurospaces => $neurospaces,
+		 },
+		);
+
+	my $success = $traversal->go();
+
+	if (!$success)
+	{
+	    print "Traversal failed\n";
+	}
+	else
+	{
+	    print "Traversal ok\n";
+	}
+    }
+
 
 }
 
@@ -115,11 +181,14 @@ sub read_cmd_line
     my $result
 	= GetOptions
 	    (
+	     "condition=s" => \$option_condition,
 	     "gui!" => \$option_gui,
 	     "help!" => \$option_help,
 	     "interactive!" => \$option_interactive,
 	     "models=s" => \$option_models,
 	     "query!" => \$option_querymachine,
+	     "reporting-field=s" => \$option_reporting_field,
+	     "traversal-symbol=s" => \$option_traversal_symbol,
 	     "v|verbose+" => \$option_verbose,
 	    );
 
@@ -132,11 +201,14 @@ $0 <model-filename>
 $0: parse a model description, interact with the model.
 
 options :
+    condition          a (perl) condition to apply, where applicable.
     gui                enter the gui.
     help               print usage information.
     interactive        enter interactive mode.
     models             directory where to find the neurospaces library.
     query              enter the query machine after parsing.
+    reporting-field    report this field during traversing.
+    traversal-symbol   symbol to traverse.
     verbose            set verbosity level.
 ";
 

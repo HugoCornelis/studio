@@ -7,7 +7,16 @@ $files = {
 ',
                                       'fname' => 'bin/neurospaces',
                                       'type' => 'user',
-                                      'line' => '77'
+                                      'line' => 77
+                                    },
+                                    {
+                                      'expr' => undef,
+                                      'value' => '1',
+                                      'text' => '    if ($option_models)
+',
+                                      'fname' => 'bin/neurospaces',
+                                      'type' => 'user',
+                                      'line' => '58'
                                     }
                                   ]
          };
