@@ -44,6 +44,7 @@ my $option_models = '/local_home/local_home/hugo/neurospaces_project/neurospaces
 my $option_querymachine;
 my $option_reporting_field;
 my $option_traversal_symbol;
+my $option_type;
 my $option_verbose;
 
 
@@ -117,6 +118,16 @@ sub main
 
 		      my $descendant = shift;
 
+		      my $d = $descendant;
+
+		      if ($option_type)
+		      {
+			  if ($descendant->{type} !~ /$option_type/)
+			  {
+			      return 1;
+			  }
+		      }
+
 		      if ($option_condition)
 		      {
 			  my $condition = eval $option_condition;
@@ -189,6 +200,7 @@ sub read_cmd_line
 	     "query!" => \$option_querymachine,
 	     "reporting-field=s" => \$option_reporting_field,
 	     "traversal-symbol=s" => \$option_traversal_symbol,
+	     "type=s" => \$option_type,
 	     "v|verbose+" => \$option_verbose,
 	    );
 
@@ -209,6 +221,7 @@ options :
     query              enter the query machine after parsing.
     reporting-field    report this field during traversing.
     traversal-symbol   symbol to traverse.
+    type               type to traverse
     verbose            set verbosity level.
 ";
 
