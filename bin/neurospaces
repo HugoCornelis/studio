@@ -42,7 +42,9 @@ my $option_gui;
 my $option_interactive;
 my $option_models = '/local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/library';
 my $option_querymachine;
-my $option_reporting_field;
+my $option_reporting_fields = [];
+my $option_shrinkage = 1;
+my $option_spine_prototypes = [];
 my $option_traversal_symbol;
 my $option_type;
 my $option_verbose;
@@ -70,7 +72,16 @@ sub main
 
 #     push @$args, @ARGV;
 
-    my $success = $neurospaces->load( { filename => $ARGV[0], }, $args);
+    my $success
+	= $neurospaces->load
+	    (
+	     {
+	      'filename' => $ARGV[0],
+	      'shrinkage' => $option_shrinkage,
+	      'spine-prototypes' => $option_spine_prototypes,
+	     },
+	     $args,
+	    );
 
     if ($option_interactive)
     {
@@ -86,7 +97,7 @@ sub main
     if ($option_traversal_symbol)
     {
 	my $symbol;
-	my $parameter;
+	my $parameters = [];
 
 	#! never use this functionality, avoid shell quoting issues,
 	#! use the field options instead.
@@ -94,16 +105,16 @@ sub main
 	if (0 && $option_traversal_symbol =~ /^([^-]+)->(.+)$/)
 	{
 	    $symbol = $1;
-	    $parameter = $2;
+	    $parameters = [ $2, ];
 	}
 	else
 	{
 	    $symbol = $option_traversal_symbol;
 	}
 
-	if ($option_reporting_field)
+	if (@$option_reporting_fields)
 	{
-	    $parameter = $option_reporting_field;
+	    $parameters = $option_reporting_fields;
 	}
 
 	my $traversal
@@ -143,19 +154,22 @@ sub main
 			  }
 		      }
 
-		      if ($parameter)
+		      if (@$parameters)
 		      {
-			  my $value
-			      = SwiggableNeurospaces::symbol_parameter_resolve_value
-				  (
-				   $descendant->{_symbol},
-				   $parameter,
-				   $descendant->{_context}
-				  );
-
-			  if ($value != $SwiggableNeurospaces::dFLT_MAX)
+			  foreach my $parameter (@$parameters)
 			  {
-			      print $descendant->{context} . "->" . $parameter . " = " . $value . "\n";
+			      my $value
+				  = SwiggableNeurospaces::symbol_parameter_resolve_value
+				      (
+				       $descendant->{_symbol},
+				       $parameter,
+				       $descendant->{_context}
+				      );
+
+			      if ($value != $SwiggableNeurospaces::dFLT_MAX)
+			      {
+				  print $descendant->{context} . "->" . $parameter . " = " . $value . "\n";
+			      }
 			  }
 		      }
 		      else
@@ -198,7 +212,9 @@ sub read_cmd_line
 	     "interactive!" => \$option_interactive,
 	     "models=s" => \$option_models,
 	     "query!" => \$option_querymachine,
-	     "reporting-field=s" => \$option_reporting_field,
+	     "reporting-fields=s" => $option_reporting_fields,
+	     "shrinkage=s" => \$option_shrinkage,
+	     "spine-prototypes=s" => $option_spine_prototypes,
 	     "traversal-symbol=s" => \$option_traversal_symbol,
 	     "type=s" => \$option_type,
 	     "v|verbose+" => \$option_verbose,
@@ -219,7 +235,11 @@ options :
     interactive        enter interactive mode.
     models             directory where to find the neurospaces library.
     query              enter the query machine after parsing.
-    reporting-field    report this field during traversing.
+    reporting-fields   report these fields during traversing (use multiple options to report multiple fields).
+    shrinkage          shrinkage correction
+                       NOTE: this is only applied when loading files that need conversion,
+                       it is not applied when reading ndf files.
+    spine-prototypes   add spines with this prototype
     traversal-symbol   symbol to traverse.
     type               type to traverse
     verbose            set verbosity level.
