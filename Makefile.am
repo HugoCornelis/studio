@@ -1,23 +1,16 @@
 ##
-## Neurospaces: a library which implements a global typed symbol table to
-## be used in neurobiological model maintenance and simulation.
-##
-## $Id: Makefile.am 1.152 Sun, 22 Apr 2007 20:42:55 -0500 hugo $
+## Neurospaces studio: a tool set for use with Neurospaces.
 ##
 
 ##############################################################################
 ##'
-##' Neurospaces : testbed C implementation that integrates with genesis
+##' Neurospaces studio: a tool set for use with Neurospaces.
 ##'
-##' Copyright (C) 1999-2007 Hugo Cornelis
-##'
-##' functional ideas ..	Hugo Cornelis, hugo.cornelis@gmail.com
-##'
-##' coding ............	Hugo Cornelis, hugo.cornelis@gmail.com
+##' Copyright (C) 1999-2007 Hugo Cornelis, hugo.cornelis@gmail.com
 ##'
 ##############################################################################
 
-SUBDIRS = perl
+SUBDIRS = perl tests
 
 dist_bin_SCRIPTS = bin/neurospaces
 

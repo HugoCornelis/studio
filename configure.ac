@@ -36,6 +36,7 @@ AM_INIT_AUTOMAKE(neurospaces-studio, purkinje-1)
 
 AC_CONFIG_FILES([Makefile
 		 perl/Makefile
+		 tests/Makefile
 		])
 AC_OUTPUT
 

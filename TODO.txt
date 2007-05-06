@@ -1,5 +1,8 @@
 -*- outline -*-
 
+* Add an option to selectively report one algorithm instance
+perhaps also the class, not sure.
+
 * Replace inline code with /usr/local/ filename
 See Neurospaces_embed.pm.
 
