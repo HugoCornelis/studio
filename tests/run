@@ -279,13 +279,13 @@ sub main
 
 		    $running_command_definition = $new_command_definition;
 
-		    print "*** Executing $command " . (join ' ', @$arguments) . "\n";
+		    print "*** Executing $command " . (join ' ', map { "'$_'" } @$arguments) . "\n";
 
 		    $test_startup = 1;
 		}
 		else
 		{
-		    print "*** Recycling $command " . (join ' ', @$arguments) . "\n";
+		    print "*** Recycling $command " . (join ' ', map { "'$_'" } @$arguments) . "\n";
 
 		    $test_startup = 0;
 		}
