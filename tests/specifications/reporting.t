@@ -9,7 +9,7 @@ my $test
        command_definitions => [
 			       {
 				arguments => [
-					      '~/neurospaces_project/purkinje-comparison/morphologies/genesis/gp_pc1.p',
+					      '~/var_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc1.p',
 					      '--traversal-symbol',
 					      '/',
 					      '--spine',
@@ -37,7 +37,7 @@ my $test
 			       },
 			       {
 				arguments => [
-					      '~/neurospaces_project/purkinje-comparison/morphologies/genesis/gp_pc1.p',
+					      '~/var_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc1.p',
 					      '--traversal-symbol',
 					      '/',
 					      '--shrinkage',
@@ -65,7 +65,35 @@ my $test
 						   timeout => 100,
 						   write => undef,
 						  },
-
+						 ],
+				description => "delayed rectifier reporting for a passive morphology that was populated with active channels",
+			       },
+			       {
+				arguments => [
+					      '~/var_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc2.p',
+					      '--shrinkage',
+					      '1.1111111',
+					      '--spine',
+					      'Purk_spine',
+					      '--algorithm',
+					      'Spines',
+					     ],
+				command => 'bin/neurospaces',
+				command_tests => [
+						  {
+						   comment => 'This test can suffer from arithmetic rounding'.
+						   description => "Are delayed rectifier channels present ?",
+						   read => 'SpinesInstance          Spines__0__Purk_spine :
+-----------------------------------------------
+	Number of added/virtual spines : 1444/111513.676986
+	Number of tries (adding spines) : 1444
+	Number of failures (adding spines) : 0
+	SpinesInstance prototype : Purk_spine
+	SpinesInstance surface : 1.33079e-12
+',
+						   timeout => 100,
+						   write => undef,
+						  },
 						 ],
 				description => "delayed rectifier reporting for a passive morphology that was populated with active channels",
 			       },
