@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 #!/usr/bin/perl -d:ptkdb
 #
-# $Id: run 1.48 Sun, 08 Apr 2007 23:19:01 -0500 hugo $
+#
 #
 
 use strict;
@@ -113,24 +113,9 @@ my $option_help;
 my $option_regex_selector = ".*";
 my $option_verbose;
 
-# copy the model library
-
-`mkdir /tmp/neurospaces`;
-
-`rm -fr /tmp/neurospaces/test && mkdir /tmp/neurospaces/test && mkdir /tmp/neurospaces/test/models && cp -R ${core_directory}library/* /tmp/neurospaces/test/models`;
-
-# automake distcheck makes the model library readonly (as so its copy), make it writable again
-
-`chmod -R +w /tmp/neurospaces/test/models`;
-
-# tell neurospaces where to find the model library of test models
-
-$ENV{NEUROSPACES_MODELS} = "/tmp/neurospaces/test/models";
-
 
 print "Executable is $0,\n";
 print "core_directory is $core_directory\n";
-print "Your models will be searched for in the directory $ENV{NEUROSPACES_MODELS}\n\n";
 
 
 my $error_report = {};
@@ -157,10 +142,6 @@ sub main
 
     # the initial error report is empty
 
-    # compute the library checksum
-
-    my $library_sha_before = model_library_sha();
-
     # loop over all test modules
 
     my $exp;
@@ -173,6 +154,9 @@ sub main
     {
 	if ($module_definition->{disabled})
 	{
+	    report_message(1, 2, "Module $module_definition->{description} is disabled ($module_definition->{disabled}).
+Total of $test_count tests (encountered $error_count error(s) so far)");
+
 	    next;
 	}
 
@@ -186,12 +170,15 @@ sub main
 
 	foreach my $command_definition (@$command_definitions)
 	{
+	    my $description = $command_definition->{description};
+
 	    if ($command_definition->{disabled})
 	    {
+		report_message(1, 2, "Tests of $description are disable ($command_definition->{disabled})
+Total of $test_count tests (encountered $error_count error(s) so far)");
+
 		next;
 	    }
-
-	    my $description = $command_definition->{description};
 
 	    # give some diagnostics
 
@@ -297,8 +284,15 @@ sub main
 
 	    foreach my $command_test (@$command_tests)
 	    {
+		# give feedback about this specific test
+
+		my $description = $command_test->{description};
+
 		if ($command_test->{disabled})
 		{
+		    report_message(1, 2, "Tests of $description are disable ($command_test->{disabled})
+Total of $test_count tests (encountered $error_count error(s) so far)");
+
 		    next;
 		}
 
@@ -325,10 +319,6 @@ sub main
 		}
 		else
 		{
-		    # give feedback about this specific test
-
-		    my $description = $command_test->{description};
-
 		    print "*** Test : $description\n";
 
 		    if ($description =~ /startup successful \?$/)
@@ -467,30 +457,6 @@ sub main
 		report_message(1, 2, "End for tests of $description
 Total of $test_count tests (encountered $error_count error(s) so far)");
 	    }
-	}
-
-	# if library checksum mismatch
-
-	my $library_sha_after = model_library_sha();
-
-	if ($library_sha_after ne $library_sha_before)
-	{
-	    my $error = 'model library checksum mismatch (model library has changed)';
-
-	    my $description = $module_definition->{description};
-
-# 	    $error_count++;
-
-# 	    print STDERR "*** Error: $error ($description)\n";
-
-# 	    # fill in the error report
-
-# 	    $error_report->{global}->{error_count} = $error_count;
-
-# 	    $error_report->{modules}->{$module_name}->{$error_count}->{description} = $module_definition->{description};
-# 	    $error_report->{modules}->{$module_name}->{$error_count}->{error} = $error;
-
-	    report_error_add($module_name, $description, undef, $error);
 	}
 
 	report_message(1, 2, "End of tests of module $module_definition->{description}
