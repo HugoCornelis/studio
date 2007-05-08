@@ -37,6 +37,7 @@ $SIG{__DIE__}
     };
 
 
+my $option_algorithm;
 my $option_condition;
 my $option_gui;
 my $option_interactive;
@@ -92,6 +93,13 @@ sub main
     {
 	require Neurospaces::GUI;
 	Neurospaces::GUI::gui("bin/neurospaces");
+    }
+
+    # from here on, go through the options alphabetically
+
+    if ($option_algorithm)
+    {
+	$neurospaces->algorithm_instance_report($option_algorithm);
     }
 
     if ($option_traversal_symbol)
@@ -206,6 +214,7 @@ sub read_cmd_line
     my $result
 	= GetOptions
 	    (
+	     "algorithm=s" => \$option_algorithm,
 	     "condition=s" => \$option_condition,
 	     "gui!" => \$option_gui,
 	     "help!" => \$option_help,
@@ -229,6 +238,7 @@ $0 <model-filename>
 $0: parse a model description, interact with the model.
 
 options :
+    algorithm          report on an algorithm instance.
     condition          a (perl) condition to apply, where applicable.
     gui                enter the gui.
     help               print usage information.
