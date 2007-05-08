@@ -39,11 +39,13 @@ $SIG{__DIE__}
 
 my $option_algorithm;
 my $option_condition;
+my $option_cumulate;
 my $option_gui;
 my $option_interactive;
 my $option_models = '/local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/library';
 my $option_querymachine;
 my $option_reporting_fields = [];
+my $option_scaling;
 my $option_shrinkage = 1;
 my $option_spine_prototypes = [];
 my $option_traversal_symbol;
@@ -125,6 +127,8 @@ sub main
 	    $parameters = $option_reporting_fields;
 	}
 
+	my $final_value = 0.0;
+
 	my $traversal
 	    = Neurospaces::Traversal->new
 		(
@@ -166,17 +170,46 @@ sub main
 		      {
 			  foreach my $parameter (@$parameters)
 			  {
-			      my $value
-				  = SwiggableNeurospaces::symbol_parameter_resolve_value
-				      (
-				       $descendant->{_symbol},
-				       $parameter,
-				       $descendant->{_context}
-				      );
+			      my $value;
 
-			      if ($value != $SwiggableNeurospaces::dFLT_MAX)
+			      if ($option_scaling)
 			      {
-				  print $descendant->{context} . "->" . $parameter . " = " . $value . "\n";
+				  $value
+				      = SwiggableNeurospaces::symbol_parameter_resolve_scaled_value
+					  (
+					   $descendant->{_symbol},
+					   $parameter,
+					   $descendant->{_context}
+					  );
+			      }
+			      else
+			      {
+				  $value
+				      = SwiggableNeurospaces::symbol_parameter_resolve_value
+					  (
+					   $descendant->{_symbol},
+					   $parameter,
+					   $descendant->{_context}
+					  );
+			      }
+
+			      if ($option_cumulate)
+			      {
+				  if ($value != $SwiggableNeurospaces::dFLT_MAX)
+				  {
+				      $final_value += $value;
+				  }
+				  else
+				  {
+				      die "$parameter value cannot be determined for $descendant->{context}";
+				  }
+			      }
+			      else
+			      {
+				  if ($value != $SwiggableNeurospaces::dFLT_MAX)
+				  {
+				      print $descendant->{context} . "->" . $parameter . " = " . $value . "\n";
+				  }
 			      }
 			  }
 		      }
@@ -199,6 +232,11 @@ sub main
 	}
 	else
 	{
+	    if ($option_cumulate)
+	    {
+		print "final_value = $final_value\n";
+	    }
+
 	    print "Traversal ok\n";
 	}
     }
@@ -216,12 +254,14 @@ sub read_cmd_line
 	    (
 	     "algorithm=s" => \$option_algorithm,
 	     "condition=s" => \$option_condition,
+	     "cumulate!" => \$option_cumulate,
 	     "gui!" => \$option_gui,
 	     "help!" => \$option_help,
 	     "interactive!" => \$option_interactive,
 	     "models=s" => \$option_models,
 	     "query!" => \$option_querymachine,
 	     "reporting-fields=s" => $option_reporting_fields,
+	     "scaling!" => \$option_scaling,
 	     "shrinkage=s" => \$option_shrinkage,
 	     "spine-prototypes=s" => $option_spine_prototypes,
 	     "traversal-symbol=s" => \$option_traversal_symbol,
@@ -240,12 +280,15 @@ $0: parse a model description, interact with the model.
 options :
     algorithm          report on an algorithm instance.
     condition          a (perl) condition to apply, where applicable.
+    cumulate           accumulate field values, then final report.
     gui                enter the gui.
     help               print usage information.
     interactive        enter interactive mode.
     models             directory where to find the neurospaces library.
     query              enter the query machine after parsing.
     reporting-fields   report these fields during traversing (use multiple options to report multiple fields).
+    scaling            apply scaling to the reported parameter values,
+                       can be used in combination with cumulate.
     shrinkage          shrinkage correction
                        NOTE: this is only applied when loading files that need conversion,
                        it is not applied when reading ndf files.
