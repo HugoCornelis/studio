@@ -81,8 +81,8 @@ my $test
 				command => 'bin/neurospaces',
 				command_tests => [
 						  {
-						   comment => 'This test can suffer from arithmetic rounding'.
-						   description => "Are delayed rectifier channels present ?",
+						   comment => 'This test can suffer from arithmetic rounding',
+						   description => "Has the spines algorithm worked correctly ?",
 						   read => 'SpinesInstance          Spines__0__Purk_spine :
 -----------------------------------------------
 	Number of added/virtual spines : 1444/111513.676986
@@ -95,7 +95,7 @@ my $test
 						   write => undef,
 						  },
 						 ],
-				description => "delayed rectifier reporting for a passive morphology that was populated with active channels",
+				description => "spines algorithm reporting for a passive morphology that was populated with active channels",
 			       },
 			      ],
        description => "information reporting on loaded models",
