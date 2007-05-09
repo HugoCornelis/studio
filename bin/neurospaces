@@ -46,7 +46,7 @@ my $option_models = '/local_home/local_home/hugo/neurospaces_project/neurospaces
 my $option_querymachine;
 my $option_reporting_fields = [];
 my $option_scaling;
-my $option_shrinkage = 1;
+my $option_shrinkage_correction = 1;
 my $option_spine_prototypes = [];
 my $option_traversal_symbol;
 my $option_type;
@@ -80,7 +80,7 @@ sub main
 	    (
 	     {
 	      'filename' => $ARGV[0],
-	      'shrinkage' => $option_shrinkage,
+	      'shrinkage' => $option_shrinkage_correction,
 	      'spine-prototypes' => $option_spine_prototypes,
 	     },
 	     $args,
@@ -262,7 +262,7 @@ sub read_cmd_line
 	     "query!" => \$option_querymachine,
 	     "reporting-fields=s" => $option_reporting_fields,
 	     "scaling!" => \$option_scaling,
-	     "shrinkage=s" => \$option_shrinkage,
+	     "shrinkage-correction=s" => \$option_shrinkage_correction,
 	     "spine-prototypes=s" => $option_spine_prototypes,
 	     "traversal-symbol=s" => \$option_traversal_symbol,
 	     "type=s" => \$option_type,
@@ -278,24 +278,24 @@ $0 <model-filename>
 $0: parse a model description, interact with the model.
 
 options :
-    algorithm          report on an algorithm instance.
-    condition          a (perl) condition to apply, where applicable.
-    cumulate           accumulate field values, then final report.
-    gui                enter the gui.
-    help               print usage information.
-    interactive        enter interactive mode.
-    models             directory where to find the neurospaces library.
-    query              enter the query machine after parsing.
-    reporting-fields   report these fields during traversing (use multiple options to report multiple fields).
-    scaling            apply scaling to the reported parameter values,
-                       can be used in combination with cumulate.
-    shrinkage          shrinkage correction
-                       NOTE: this is only applied when loading files that need conversion,
-                       it is not applied when reading ndf files.
-    spine-prototypes   add spines with this prototype
-    traversal-symbol   symbol to traverse.
-    type               type to traverse
-    verbose            set verbosity level.
+    algorithm              report on an algorithm instance.
+    condition              a (perl) condition to apply, where applicable.
+    cumulate               accumulate field values, then final report.
+    gui                    enter the gui.
+    help                   print usage information.
+    interactive            enter interactive mode.
+    models                 directory where to find the neurospaces library.
+    query                  enter the query machine after parsing.
+    reporting-fieldss      report these fields during traversing (use multiple options to report multiple fields).
+    scaling                apply scaling to the reported parameter values,
+                           can be used in combination with cumulate.
+    shrinkage-correction   shrinkage correction
+                           NOTE: this is only applied when loading files that need conversion,
+                           it is not applied when reading ndf files.
+    spine-prototypes       add spines with this prototype
+    traversal-symbol       symbol to traverse.
+    type                   type to traverse
+    verbose                set verbosity level.
 ";
 
 	exit 1;

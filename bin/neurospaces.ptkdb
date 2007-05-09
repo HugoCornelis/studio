@@ -3,11 +3,11 @@ $files = {
                                     {
                                       'expr' => undef,
                                       'value' => '1',
-                                      'text' => '    if ($option_gui)
+                                      'text' => '		      if ($option_condition)
 ',
                                       'fname' => 'bin/neurospaces',
                                       'type' => 'user',
-                                      'line' => 77
+                                      'line' => '155'
                                     },
                                     {
                                       'expr' => undef,
@@ -16,7 +16,16 @@ $files = {
 ',
                                       'fname' => 'bin/neurospaces',
                                       'type' => 'user',
-                                      'line' => '58'
+                                      'line' => 67
+                                    },
+                                    {
+                                      'expr' => undef,
+                                      'value' => '1',
+                                      'text' => '    if ($option_gui)
+',
+                                      'fname' => 'bin/neurospaces',
+                                      'type' => 'user',
+                                      'line' => 95
                                     }
                                   ]
          };
