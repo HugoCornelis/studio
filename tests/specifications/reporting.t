@@ -4,12 +4,27 @@
 use strict;
 
 
+use YAML 'LoadFile';
+
+my $neurospaces_config = LoadFile('/etc/neurospaces/project_browser/project_browser.yml');
+
+my $project_name = 'purkinje-comparison';
+
+my $subproject_name = 'morphologies';
+
+my $morphology_name1 = 'genesis/gp_pc1.p';
+
+my $morphology_name2 = 'genesis/gp_pc1.p';
+
+my $morphologies = $neurospaces_config->{project_browser}->{root_directory} . "$project_name/$subproject_name";
+
+
 my $test
     = {
        command_definitions => [
 			       {
 				arguments => [
-					      '~/etc_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc1.p',
+					      '$morphologies/$morphology_name1',
 					      '--traversal-symbol',
 					      '/',
 					      '--spine',
@@ -37,7 +52,7 @@ my $test
 			       },
 			       {
 				arguments => [
-					      '~/etc_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc1.p',
+					      '$morphologies/$morphology_name1',
 					      '--traversal-symbol',
 					      '/',
 					      '--shrinkage',
@@ -70,7 +85,7 @@ my $test
 			       },
 			       {
 				arguments => [
-					      '~/etc_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc2.p',
+					      '$morphologies/$morphology_name2',
 					      '--shrinkage',
 					      '1.1111111',
 					      '--spine',
