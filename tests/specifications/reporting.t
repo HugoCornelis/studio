@@ -98,14 +98,19 @@ my $test
 						  {
 						   comment => 'This test can suffer from arithmetic rounding',
 						   description => "Has the spines algorithm worked correctly ?",
-						   read => 'SpinesInstance          Spines__0__Purk_spine :
------------------------------------------------
-	Number of added/virtual spines : 1444/111513.676986
-	Number of tries (adding spines) : 1444
-	Number of failures (adding spines) : 0
-	SpinesInstance prototype : Purk_spine
-	SpinesInstance surface : 1.33079e-12
+						   read => [
+							    '-re',
+							    '---
+name: SpinesInstance Spines__0__Purk_spine
+report:
+    number_of_added_spines: 1444
+    number_of_virtual_spines: 111513.676986
+    number_of_tries_adding_spines: 1444
+    number_of_failures_adding_spines: 0
+    SpinesInstance_prototype: Purk_spine
+    SpinesInstance_surface: 1.33079e-12
 ',
+							   ],
 						   timeout => 100,
 						   write => undef,
 						  },
