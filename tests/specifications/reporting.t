@@ -9,7 +9,7 @@ my $test
        command_definitions => [
 			       {
 				arguments => [
-					      '~/var_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc1.p',
+					      '~/etc_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc1.p',
 					      '--traversal-symbol',
 					      '/',
 					      '--spine',
@@ -37,7 +37,7 @@ my $test
 			       },
 			       {
 				arguments => [
-					      '~/var_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc1.p',
+					      '~/etc_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc1.p',
 					      '--traversal-symbol',
 					      '/',
 					      '--shrinkage',
@@ -70,7 +70,7 @@ my $test
 			       },
 			       {
 				arguments => [
-					      '~/var_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc2.p',
+					      '~/etc_neurospaces/simulation_projects/purkinje-comparison/morphologies/genesis/gp_pc2.p',
 					      '--shrinkage',
 					      '1.1111111',
 					      '--spine',
