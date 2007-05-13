@@ -40,13 +40,14 @@ $SIG{__DIE__}
 my $option_algorithm;
 my $option_condition;
 my $option_cumulate;
+my $option_force_library;
 my $option_gui;
 my $option_interactive;
 my $option_models = '/local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/library';
 my $option_querymachine;
 my $option_reporting_fields = [];
 my $option_scaling;
-my $option_shrinkage_correction = 1;
+my $option_shrinkage_correction;
 my $option_spine_prototypes = [];
 my $option_traversal_symbol;
 my $option_type;
@@ -79,8 +80,9 @@ sub main
 	= $neurospaces->load
 	    (
 	     {
+	      'force-library' => $option_force_library,
 	      'filename' => $ARGV[0],
-	      'shrinkage' => $option_shrinkage_correction,
+	      (defined $option_shrinkage_correction) ? ('shrinkage' => $option_shrinkage_correction) : (),
 	      'spine-prototypes' => $option_spine_prototypes,
 	     },
 	     $args,
@@ -255,6 +257,7 @@ sub read_cmd_line
 	     "algorithm=s" => \$option_algorithm,
 	     "condition=s" => \$option_condition,
 	     "cumulate!" => \$option_cumulate,
+	     "force-library!" => \$option_force_library,
 	     "gui!" => \$option_gui,
 	     "help!" => \$option_help,
 	     "interactive!" => \$option_interactive,
@@ -281,6 +284,7 @@ options :
     algorithm              report on an algorithm instance.
     condition              a (perl) condition to apply, where applicable.
     cumulate               accumulate field values, then final report.
+    force-library          force the use of library values for readcell2ndf.
     gui                    enter the gui.
     help                   print usage information.
     interactive            enter interactive mode.

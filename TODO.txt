@@ -1,7 +1,7 @@
 -*- outline -*-
 
-* Add an option to selectively report one algorithm instance
-perhaps also the class, not sure.
+* Allow to override the spine-prototype options from the library
+Requires changes throughout the different packages.
 
 * Replace inline code with /usr/local/ filename
 See Neurospaces_embed.pm.

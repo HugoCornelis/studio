@@ -135,7 +135,7 @@ report:
 						  {
 						   comment => 'This test can suffer from arithmetic rounding',
 						   description => "Has the spines algorithm worked correctly ?",
-						   read => 'final_value = 0.012075620569123',
+						   read => 'final_value = 0.0147147894091226',
 						   timeout => 100,
 						   write => undef,
 						  },
