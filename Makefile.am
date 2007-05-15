@@ -18,6 +18,10 @@ dist_bin_SCRIPTS = bin/neurospaces
 
 #TESTS = $(srcdir)/tests/run
 
+perl_HEADERS = studio_test.pm
+
+#TESTS = studio_test.pm
+
 test: check
 
 #html-upload-prepare:
