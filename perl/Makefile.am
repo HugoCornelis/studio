@@ -16,7 +16,7 @@ test: check
 
 perldir = $(prefix)/glue/swig/perl
 
-nobase_perl_DATA = \
+perl_HEADERS = \
 	Data/Comparator.pm \
 	Data/Differences.pm \
 	Data/Transformator.pm \
