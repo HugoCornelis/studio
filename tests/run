@@ -53,9 +53,7 @@ BEGIN
     {
 	$core_directory = "$ENV{srcdir}/$config->{core_directory}";
 
-	#t breaks for distcheck: runs './../tests/run' in _build
-
-# 	$core_directory = $config->{core_directory};
+	$core_directory = $config->{core_directory};
 
     }
 
@@ -118,9 +116,18 @@ print "Executable is $0,\n";
 print "core_directory is $core_directory\n";
 
 
-my $error_report = {};
-
 my $error_count = 0;
+
+my $test_report
+    = {
+       description => {
+		       command => $0,
+		       name => "Test report",
+		      },
+       global => {
+		  error_count => $error_count,
+		 },
+      };
 
 
 $SIG{'INT'}
@@ -138,9 +145,13 @@ sub main
 
     $test_modules = test_library_expand($test_modules);
 
+    # total test count so far is zero
+
     my $test_count = 0;
 
-    # the initial error report is empty
+    # the previous command had no side effects on the loaded model (since there is no model yet)
+
+    my $previous_side_effects = 0;
 
     # loop over all test modules
 
@@ -152,15 +163,17 @@ sub main
 
     foreach my $module_definition (@$test_modules)
     {
+	my $module_name = $module_definition->{name};
+
 	if ($module_definition->{disabled})
 	{
 	    report_message(1, 2, "Module $module_definition->{description} is disabled ($module_definition->{disabled}).
 Total of $test_count tests (encountered $error_count error(s) so far)");
 
+	    push @{$test_report->{disabled}->{modules}}, $module_name;
+
 	    next;
 	}
-
-	my $module_name = $module_definition->{name};
 
 	report_message(2, 1, "Running tests of module $module_definition->{description}");
 
@@ -176,6 +189,8 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 	    {
 		report_message(1, 2, "Tests of $description are disable ($command_definition->{disabled})
 Total of $test_count tests (encountered $error_count error(s) so far)");
+
+		push @{$test_report->{disabled}->{command_definitions}}, $description;
 
 		next;
 	    }
@@ -202,8 +217,11 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 	    my $command = $command_definition->{command};
 
+	    my $spawn_new;
+
 	    if (ref $command eq 'CODE')
 	    {
+		$spawn_new = 0;
 	    }
 	    else
 	    {
@@ -215,8 +233,8 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 			? $built_exe_directory . $command
 			    : $core_directory . $command;
 
-		# if there are differences between how to run this
-		# command and the one already running
+		# find differences between how to run this command and
+		# the one already running
 
 		my $new_command_definition
 		    = {
@@ -228,7 +246,25 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 		    = data_comparator
 			($new_command_definition, $running_command_definition);
 
-		my $spawn_new = !$exp || !$differences->is_empty();
+		# remember to spawn a new command
+
+		$spawn_new
+		    =
+			# if we did not have any command yet
+
+			!$exp
+
+			    # or if there were differences with the previous command
+
+			    || !$differences->is_empty()
+
+				# or if the previous command had side effects
+
+				|| $previous_side_effects
+
+				    # or if we had to prepare this command
+
+				    || $preparation;
 
 		# prefix the command with the core directory
 
@@ -268,7 +304,13 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 		    print "*** Executing $command " . (join ' ', map { "'$_'" } @$arguments) . "\n";
 
+		    # remember to do startup testing
+
 		    $test_startup = 1;
+
+		    # there were no side effects yet
+
+		    $previous_side_effects = 0;
 		}
 		else
 		{
@@ -292,6 +334,8 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 		{
 		    report_message(1, 2, "Tests of $description are disable ($command_test->{disabled})
 Total of $test_count tests (encountered $error_count error(s) so far)");
+
+		    push @{$test_report->{disabled}->{command_tests}}, $description;
 
 		    next;
 		}
@@ -337,14 +381,21 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 		    my $write = $command_test->{write};
 
-		    # set timeout, defaults to one second
+		    # set timeout, defaults to two seconds, but for newly created processes add two additional seconds.
 
-		    my $timeout = defined $command_test->{timeout} ? $command_test->{timeout} : 2;
+		    my $timeout
+			= defined $command_test->{timeout}
+			    ? $command_test->{timeout}
+				: $spawn_new
+				    ? 4
+					: 2;
 
 		    # write
 
 		    if (defined $write)
 		    {
+			print "*** Write : $write\n";
+
 			$exp->send("$write\n");
 		    }
 
@@ -394,14 +445,14 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 # 		    # fill in the error report
 
-# 		    $error_report->{global}->{error_count} = $error_count;
+# 		    $test_report->{global}->{error_count} = $error_count;
 
-# 		    $error_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{description} = $command_test->{description};
-# 		    $error_report->{modules}->{$module_name}->{$error_count}->{error} = $error;
+# 		    $test_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{description} = $command_test->{description};
+# 		    $test_report->{modules}->{$module_name}->{$error_count}->{error} = $error;
 
 # 		    if ($option_verbose)
 # 		    {
-# 			$error_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{report}
+# 			$test_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{report}
 # 			    = $before_match;
 # 		    }
 
@@ -416,40 +467,46 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 		}
 
-		my $reparation = $command_definition->{reparation};
+		# register if this command had side effects
 
-		if ($reparation)
-		{
-		    print "*** Reparing ($reparation->{description})\n";
+		$previous_side_effects ||= $command_test->{side_effects} || 0;
 
-		    my $reparer = $reparation->{reparer};
-
-		    my $reparation_error = &$reparer($preparation_result);
-
-		    # process errors
-
-		    if ($reparation_error)
-		    {
-			my $description = $reparation_error;
-
-			my $command_definition_description = $command_definition->{description};
-
-# 			$error_count++;
-
-# 			print STDERR "*** Error: $reparation_error ($description)\n";
-
-# 			# fill in the error report
-
-# 			$error_report->{global}->{error_count} = $error_count;
-
-# 			$error_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{description} = $command_test->{description};
-# 			$error_report->{modules}->{$module_name}->{$error_count}->{error} = $reparation_error;
-
-			report_error_add($module_name, $description, $command_definition_description, $reparation_error);
-		    }
-		}
+		# increment total test count
 
 		$test_count++;
+	    }
+
+	    my $reparation = $command_definition->{reparation};
+
+	    if ($reparation)
+	    {
+		print "*** Reparing ($reparation->{description})\n";
+
+		my $reparer = $reparation->{reparer};
+
+		my $reparation_error = &$reparer($preparation_result);
+
+		# process errors
+
+		if ($reparation_error)
+		{
+		    my $description = $reparation_error;
+
+		    my $command_definition_description = $command_definition->{description};
+
+# 		    $error_count++;
+
+# 		    print STDERR "*** Error: $reparation_error ($description)\n";
+
+# 		    # fill in the error report
+
+# 		    $test_report->{global}->{error_count} = $error_count;
+
+# 		    $test_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{description} = $command_test->{description};
+# 		    $test_report->{modules}->{$module_name}->{$error_count}->{error} = $reparation_error;
+
+		    report_error_add($module_name, $description, $command_definition_description, $reparation_error);
+		}
 	    }
 
 	    if (@$command_definitions > 1)
@@ -457,7 +514,19 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 		report_message(1, 2, "End for tests of $description
 Total of $test_count tests (encountered $error_count error(s) so far)");
 	    }
+
+	    # register if this command had side effects
+
+	    #! e.g. using a preparer/reparer combination
+
+	    $previous_side_effects ||= $command_definition->{side_effects} || 0;
 	}
+
+	# register if this command had side effects
+
+	#! don't think that make sense, but anyway ...
+
+	$previous_side_effects ||= $module_definition->{side_effects} || 0;
 
 	report_message(1, 2, "End of tests of module $module_definition->{description}
 Total of $test_count tests (encountered $error_count error(s) so far)");
@@ -526,22 +595,27 @@ sub report_error_add
 
     # fill in the error report
 
-    $error_report->{global}->{error_count} = $error_count;
+    $test_report->{global}->{error_count} = $error_count;
 
     if ($subdescription)
     {
-	$error_report->{modules}->{$module}->{$error_count}->{$subdescription}->{description} = $description;
+	$test_report->{modules}->{$module}->{$error_count}->{$subdescription}->{description} = $description;
     }
     else
     {
-	$error_report->{modules}->{$module}->{$error_count}->{description} = $description;
+	$test_report->{modules}->{$module}->{$error_count}->{description} = $description;
     }
 
-    $error_report->{modules}->{$module}->{$error_count}->{error} = $error;
+    $test_report->{modules}->{$module}->{$error_count}->{error} = $error;
 
     if (defined $message)
     {
-	$error_report->{modules}->{$module}->{$error_count}->{$subdescription}->{report} = $message;
+	#! subdescription can be undefined here, in which case
+	#! $message is undefined too.  Both can be defined when
+	#! running in verbose mode seems, allows to track regex
+	#! problems ... I think.
+
+	$test_report->{modules}->{$module}->{$error_count}->{$subdescription}->{report} = $message;
     }
 }
 
@@ -550,14 +624,14 @@ sub report_exit
 {
     my $exit_code = shift;
 
+    # yaml out the test report
+
+    print Dump($test_report);
+
     # if there were errors
 
     if ($error_count)
     {
-	# yaml out the error report
-
-	print Dump($error_report);
-
 	# exit with failure
 
 	$exit_code ||= 1;
@@ -650,6 +724,7 @@ sub test_library_construct
 	   {
 	       chomp; $_;
 	   }
+	   sort
 	   `find $config->{tests_directory} -name "*.t"`,
 	  ];
 
