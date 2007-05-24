@@ -25,23 +25,24 @@ my $test
 			       {
 				arguments => [
 					      "$morphologies/$morphology_name1",
+					      '--no-use-library',
 					      '--traversal-symbol',
 					      '/',
 					      '--spine',
 					      'Purk_spine',
 					      '--condition',
-					      '$d->{context} =~ m(segments/.{20}/.*par/exp)i',
+					      '$d->{context} =~ m(segments/.{22}/head/par/exp)i',
 					     ],
 				command => 'bin/neurospaces',
 				command_tests => [
 						  {
 						   comment => 'the condition forces to report only a few of the spines present.',
 						   description => "Are spines present ?",
-						   read => '/gp_pc1/segments/p0b1b1[0]/Purk_spine/head/par/exp2
-/gp_pc1/segments/p0b1b1[1]/Purk_spine/head/par/exp2
-/gp_pc1/segments/p0b1b1[2]/Purk_spine/head/par/exp2
-/gp_pc1/segments/p0b1b1[3]/Purk_spine/head/par/exp2
-/gp_pc1/segments/p0b1b1[4]/Purk_spine/head/par/exp2
+						   read => '/gp_pc1/segments/p0b1b1[0]/Purk_spine_0/head/par/exp2
+/gp_pc1/segments/p0b1b1[1]/Purk_spine_0/head/par/exp2
+/gp_pc1/segments/p0b1b1[2]/Purk_spine_0/head/par/exp2
+/gp_pc1/segments/p0b1b1[3]/Purk_spine_0/head/par/exp2
+/gp_pc1/segments/p0b1b1[4]/Purk_spine_0/head/par/exp2
 ',
 						   timeout => 100,
 						   write => undef,
@@ -53,6 +54,7 @@ my $test
 			       {
 				arguments => [
 					      "$morphologies/$morphology_name1",
+					      '--no-use-library',
 					      '--traversal-symbol',
 					      '/',
 					      '--shrinkage',
@@ -86,6 +88,7 @@ my $test
 			       {
 				arguments => [
 					      "$morphologies/$morphology_name2",
+					      '--no-use-library',
 					      '--shrinkage',
 					      '1.1111111',
 					      '--spine',
@@ -105,7 +108,7 @@ name: SpinesInstance Spines__0__Purk_spine
 report:
     number_of_added_spines: 1444
     number_of_virtual_spines: 111513.676986
-    number_of_tries_adding_spines: 1444
+    number_of_spiny_segments: 1444
     number_of_failures_adding_spines: 0
     SpinesInstance_prototype: Purk_spine
     SpinesInstance_surface: 1.33079e-12
@@ -120,6 +123,7 @@ report:
 			       {
 				arguments => [
 					      "$morphologies/$morphology_name1",
+					      '--no-use-library',
 					      '--shrinkage',
 					      '1.114',
 					      '--traversal-symbol',
