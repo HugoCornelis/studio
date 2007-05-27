@@ -4,7 +4,7 @@
 ## Neurospaces: a library which implements a global typed symbol table to
 ## be used in neurobiological model maintenance and simulation.
 ##
-## $Id: Biolevels.pm 1.7 Sat, 21 Apr 2007 21:21:25 -0500 hugo $
+## $Id: Biolevels.pm 1.8 Mon, 23 Apr 2007 11:23:34 -0500 hugo $
 ##
 
 ##############################################################################
@@ -161,9 +161,11 @@ sub main
 
     define_biolevels($biolevel_code);
 
+#     print Dumper($internal2biogroup, $internal2biolevel);
+
     # read symboltype definitions in the Neurospaces core
 
-    my $symboltype_code = `cat /usr/local/include/neurospaces/symboltable.h`;
+    my $symboltype_code = `cat /tmp/hierarchy/symbols/type_defines.h`;
 
 #     print Dumper($symboltype_code);
 

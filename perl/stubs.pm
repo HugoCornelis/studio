@@ -4,7 +4,7 @@
 ## Neurospaces: a library which implements a global typed symbol table to
 ## be used in neurobiological model maintenance and simulation.
 ##
-## $Id: stubs.pm 1.4 Sun, 18 Feb 2007 15:53:33 -0600 hugo $
+## $Id: stubs.pm 1.5 Mon, 23 Apr 2007 11:23:34 -0500 hugo $
 ##
 
 ##############################################################################
@@ -153,7 +153,7 @@ sub objectify
 	 context => '/',
 	 parent => '/',
 	 this => $serial,
-	 type => 'TYPE_HSLE_ROOT',
+	 type => 'HIERARCHY_TYPE_root',
 	};
     }
 
@@ -164,7 +164,7 @@ sub objectify
 	 context => '/',
 	 parent => '/',
 	 this => $serial,
-	 type => 'TYPE_HSLE_NETWORK',
+	 type => 'HIERARCHY_TYPE_network',
 	};
     }
 
@@ -175,7 +175,7 @@ sub objectify
 	 context => '/',
 	 parent => '/',
 	 this => $serial,
-	 type => 'TYPE_HSLE_CELL',
+	 type => 'HIERARCHY_TYPE_cell',
 	};
     }
 }

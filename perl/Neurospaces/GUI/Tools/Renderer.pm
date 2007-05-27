@@ -4,7 +4,7 @@
 ## Neurospaces: a library which implements a global typed symbol table to
 ## be used in neurobiological model maintenance and simulation.
 ##
-## $Id: Renderer.pm 1.40 Sat, 21 Apr 2007 21:21:25 -0500 hugo $
+## $Id: Renderer.pm 1.41 Thu, 10 May 2007 20:53:37 -0500 hugo $
 ##
 
 ##############################################################################
@@ -204,21 +204,33 @@ sub draw_axes
 
     # lines from origin along positive axes, for orientation
 
+#     glEnable(GL_LINE_SMOOTH);
+
+#     glEnable(GL_BLEND);
+#     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#     # 	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+#     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+    glPointSize(100);
+
     glBegin(GL_LINES);
 
     # X axis = red
     glColor(1, 0, 0);
     glVertex(0, 0, 0);
+    glLineWidth(100); # $coordinate * 1e6)
     glVertex(1, 0, 0);
 
     # Y axis = green
     glColor(0, 1, 0);
     glVertex(0, 0, 0);
+    glLineWidth(100); # $coordinate * 1e6)
     glVertex(0, 1, 0);
 
     # Z axis = blue
     glColor(0, 0, 1);
     glVertex(0, 0, 0);
+    glLineWidth(100); # $coordinate * 1e6)
     glVertex(0, 0, 1);
     glEnd();
 
@@ -274,6 +286,8 @@ sub drawing_cube
 	      ];
 	  }
 	      @cube;
+
+    glEnable(GL_LINE_SMOOTH);
 
     glBegin(GL_QUADS);
 
@@ -341,6 +355,8 @@ sub drawing_quad_face
                  $a->[1] + $strip * $s_ab->[1],
                  $a->[2] + $strip * $s_ab->[2],
 		);
+
+	glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_QUAD_STRIP);
 
@@ -414,23 +430,62 @@ sub drawing_render
     if (defined $drawing->{type}
 	&& $drawing->{type} eq 'GL_LINES')
     {
-	glBegin(GL_LINES);
+# 	glEnable(GL_LINE_SMOOTH);
+
+# 	glEnable(GL_BLEND);
+# # 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+# # 	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+# 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+# 	glPointSize(100);
 
 	my $coordinates = $drawing->{coordinates};
 
+	my $begun = 0;
+
 	foreach my $coordinate (@$coordinates)
 	{
-# 	    if ($coordinate and @$coordinate)
-# 	    {
+	    if (!ref $coordinate)
+	    {
+		if ($begun)
+		{
+		    glEnd();
+
+		    $begun = 0;
+		}
+
+	        # set thickness according to diameter
+
+		my $thickness = $coordinate * 1e6;
+
+		glLineWidth($thickness);
+
+	    }
+	    else
+	    {
+		# x, y, z
+
 # 		use Data::Dumper;
 
-# 		print Dumper($coordinate);
+# 		print "non dia $coordinate\n" . Dumper($coordinate);
+
+		if (!$begun)
+		{
+		    glBegin(GL_LINES);
+
+		    $begun = 1;
+		}
 
 		glVertex(@$coordinate);
-# 	    }
+	    }
 	}
 
-	glEnd();
+	if ($begun)
+	{
+	    glEnd();
+
+	    $begun = 0;
+	}
     }
     elsif (defined $drawing->{type}
 	   && $drawing->{type} eq 'cubes')

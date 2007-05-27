@@ -690,15 +690,17 @@ SV * objectify(int iContext)
 
     //- construct string with context
 
-    char pcContext[1000];
+    char pcContext[10000];
 
-    PidinStackString(ppistContext, pcContext, 1000);
+    PidinStackString(ppistContext, pcContext, 10000);
 
     SV * psvContext = newSVpv(pcContext, 0);
 
     //- construct string with type
 
     SV * psvType = newSVpv(ppc_symbols_long_descriptions[phsleContext->iType], 0);
+
+/*     fprintf(stdout, "Type is %s\n", ppc_symbols_long_descriptions[phsleContext->iType]); */
 
     //- create result
 

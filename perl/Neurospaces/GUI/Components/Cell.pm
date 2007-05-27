@@ -4,7 +4,7 @@
 ## Neurospaces: a library which implements a global typed symbol table to
 ## be used in neurobiological model maintenance and simulation.
 ##
-## $Id: Cell.pm 1.22 Sat, 21 Apr 2007 21:21:25 -0500 hugo $
+## $Id: Cell.pm 1.23 Thu, 10 May 2007 20:53:37 -0500 hugo $
 ##
 
 ##############################################################################
@@ -53,6 +53,12 @@ sub draw
 			   map
 			   {
 			       (
+				# dia
+
+				$_->[4],
+
+				# two coordinates
+
 				[
 				 $_->[3]->{this}->{'x'},
 				 $_->[3]->{this}->{'y'},

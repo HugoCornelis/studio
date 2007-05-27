@@ -4,7 +4,7 @@
 ## Neurospaces: a library which implements a global typed symbol table to
 ## be used in neurobiological model maintenance and simulation.
 ##
-## $Id: Extractor.pm 1.15 Sat, 21 Apr 2007 21:21:25 -0500 hugo $
+## $Id: Extractor.pm 1.16 Mon, 23 Apr 2007 11:23:34 -0500 hugo $
 ##
 
 ##############################################################################
@@ -65,22 +65,34 @@ sub extract
 
     my $symbol_name = $symbol->get_long_label();
 
+    my $symbol_type = $symbol->{type};
+
+    $symbol_type =~ s/^T_sym_//;
+
+    $symbol_type = "HIERARCHY_TYPE_$symbol_type";
+
     $graph->add_node
 	(
 	 $symbol->{this},
 	 label => $symbol_name,
-	 shape => $shapes->{$symbol->{type}} || $shapes->{default},
+	 shape => $shapes->{$symbol_type} || $shapes->{default},
 	);
 
     # get unqualified symbol name for parent
 
     my $parent_name = $parent->get_long_label();
 
+    my $parent_type = $parent->{type};
+
+    $parent_type =~ s/^T_sym_//;
+
+    $parent_type = "HIERARCHY_TYPE_$parent_type";
+
     $graph->add_node
 	(
 	 $parent->{this},
 	 label => $parent_name,
-	 shape => $shapes->{$parent->{type}} || $shapes->{default},
+	 shape => $shapes->{$parent_type} || $shapes->{default},
 	);
 
     $graph->add_edge( $parent->{this} => $symbol->{this}, );
@@ -101,12 +113,13 @@ sub new
     my $shapes
 	= {
 	   default => 'egg',
-	   TYPE_HSLE_NETWORK => 'octagon',
-	   TYPE_HSLE_PROJECTION => 'ellipse',
-	   TYPE_HSLE_POPULATION => 'hexagon',
-	   TYPE_HSLE_CELL => 'house',
-	   TYPE_HSLE_SEGMENT => 'box',
-	   TYPE_HSLE_MECHANISM => 'triangle',
+	   HIERARCHY_TYPE_network => 'octagon',
+	   HIERARCHY_TYPE_projection => 'ellipse',
+	   HIERARCHY_TYPE_population => 'hexagon',
+	   HIERARCHY_TYPE_cell => 'house',
+	   HIERARCHY_TYPE_segment => 'box',
+	   HIERARCHY_TYPE_channel => 'triangle',
+	   HIERARCHY_TYPE_pool => 'triangle',
 	  };
 
     use GraphViz;
@@ -150,7 +163,7 @@ sub extract
 
     my $symbol = shift;
 
-    if ($symbol->{type} eq 'TYPE_HSLE_CHANNEL')
+    if ($symbol->{type} eq 'HIERARCHY_TYPE_channel')
     {
 	my $name = $symbol->{context};
 
@@ -215,6 +228,8 @@ sub extractor_create_window
 	   arguments => { serial => $self->{serial}, },
 	   method => 'Neurospaces::GUI::Extractor::new_with_window',
 	  };
+
+    print Dumper($constructor);
 
     my $window = Neurospaces::GUI::window_factory('extractor', $constructor);
 
@@ -475,7 +490,7 @@ sub extract
     {
 	my $node = shift @$nodes;
 
-# 	print "$node ";
+	print "node $node ";
 
 	# if cycled graph
 
@@ -496,9 +511,19 @@ sub extract
 
 	# collect biolevel info about the symbol
 
-	my $symboltype = $Neurospaces::Biolevels::symboltype2internal->{$symbol->{type}};
+	my $symbol_type = $symbol->{type};
 
-	my $biolevel = $Neurospaces::Biolevels::symboltype2biolevel->{$symbol->{type}};
+	$symbol_type =~ s/^T_sym_//;
+
+	$symbol_type = "HIERARCHY_TYPE_$symbol_type";
+
+	my $symboltype = $Neurospaces::Biolevels::symboltype2internal->{$symbol_type};
+
+	my $biolevel = $Neurospaces::Biolevels::symboltype2biolevel->{$symbol_type};
+
+# 	print "in extract(), type is : ($symbol->{type}, $symbol_type, $symboltype)\n";
+
+# 	print Dumper($Neurospaces::Biolevels::internal2biolevel, $Neurospaces::Biolevels::symboltype2biolevel);
 
 	my $biolevel_name = $Neurospaces::Biolevels::internal2biolevel->{$biolevel};
 
@@ -511,7 +536,7 @@ sub extract
 	if (!defined $biolevel_name)
 	{
 	    #! this can happen for types on an axis that is orthogonal to the application axis
-	    #! includes general purpose types, e.g. TYPE_HSLE_GROUP
+	    #! includes general purpose types, e.g. HIERARCHY_TYPE_group
 
 	    #t check if the symbol has a BIOGROUP parameter, and try that.
 
@@ -526,7 +551,13 @@ sub extract
 
 	    my $parent = Neurospaces::GUI::Components::Node::factory( { serial => $symbol->{parent}, }, );
 
-	    my $biolevel = $Neurospaces::Biolevels::symboltype2biolevel->{$parent->{type}};
+	    my $parent_type = $parent->{type};
+
+	    $parent_type =~ s/^T_sym_//;
+
+	    $parent_type = "HIERARCHY_TYPE_$parent_type";
+
+	    my $biolevel = $Neurospaces::Biolevels::symboltype2biolevel->{$parent_type};
 
 # 	    print Data::Dumper::Dumper($Neurospaces::Biolevels::symboltype2biolevel);
 
