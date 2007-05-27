@@ -25,6 +25,51 @@ use Getopt::Long;
 
 use Neurospaces;
 use Neurospaces::Traversal;
+use Neurospaces::Studio;
+
+
+# use Data::Dumper;
+
+
+# {
+#     no strict "refs";
+
+#     print Dumper(\%{"main::"});
+
+#     print "Found these methods for Neurospaces::\n";
+
+#     print Dumper(\%{"Neurospaces::"});
+
+#     print "Found these methods for Neurospaces::Traversal::\n";
+
+#     print Dumper(\%{"Neurospaces::Traversal::"});
+
+#     print "Found these methods for SwiggableNeurospaces::\n";
+
+#     print Dumper(\%{"SwiggableNeurospaces::"});
+
+#     print "Found these methods for SwiggableNeurospaces::PidinStack::\n";
+
+#     print Dumper(\%{"SwiggableNeurospaces::PidinStack::"});
+
+#     print "Found these methods for SwiggableNeurospaces::descr_Segment::\n";
+
+#     print Dumper(\%{"SwiggableNeurospaces::descr_Segment::"});
+
+#     print "Found these methods for SwiggableNeurospaces::symtab_Segment::\n";
+
+#     print Dumper(\%{"SwiggableNeurospaces::symtab_Segment::"});
+
+#     print "Found these methods for SwiggableNeurospaces::symtab_BioComponent::\n";
+
+#     print Dumper(\%{"SwiggableNeurospaces::symtab_BioComponent::"});
+
+#     print "Found these methods for SwiggableNeurospaces::Symbols::\n";
+
+#     print Dumper(\%{"SwiggableNeurospaces::Symbols::"});
+
+# }
+
 
 # use Neurospaces_embed;
 

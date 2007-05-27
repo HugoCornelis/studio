@@ -224,7 +224,7 @@ sub get_children
 {
     my $self = shift;
 
-    my $result = Neurospaces::get_children($self->{this});
+    my $result = SwiggableNeurospaces::swig_get_children($self->{this});
 
     return $result;
 }
@@ -248,7 +248,7 @@ sub get_parameters
 
     my $current = shift;
 
-    my $result = [ Neurospaces::get_parameters($current), ];
+    my $result = [ SwiggableNeurospaces::swig_get_parameters($current), ];
 
     return $result;
 }
@@ -267,6 +267,8 @@ sub factory
     my $options = shift;
 
     my $self = $options->{studio}->objectify($options->{serial});
+
+    $self->{studio} = $options->{studio};
 
     use Data::Dumper;
 
@@ -347,7 +349,7 @@ sub signal_refiner
 
     print "Exploring symbol $current\n";
 
-    my $child = Neurospaces::GUI::Components::Node::factory({ serial => $current, }, );
+    my $child = Neurospaces::GUI::Components::Node::factory({ serial => $current, studio => $self->{studio}, }, );
 
     $child->explore();
 }

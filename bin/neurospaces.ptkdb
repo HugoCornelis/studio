@@ -1,14 +1,16 @@
 $files = {
-           '_<bin/neurospaces' => [
-                                    {
-                                      'expr' => undef,
-                                      'value' => '1',
-                                      'text' => '		      if ($option_condition)
+           '_<perl/Neurospaces/Studio.pm' => [
+                                               {
+                                                 'expr' => undef,
+                                                 'value' => '1',
+                                                 'text' => '    my $serial = shift;
 ',
-                                      'fname' => 'bin/neurospaces',
-                                      'type' => 'user',
-                                      'line' => '155'
-                                    },
+                                                 'fname' => 'perl/Neurospaces/Studio.pm',
+                                                 'type' => 'user',
+                                                 'line' => '33'
+                                               }
+                                             ],
+           '_<bin/neurospaces' => [
                                     {
                                       'expr' => undef,
                                       'value' => '1',
@@ -16,7 +18,7 @@ $files = {
 ',
                                       'fname' => 'bin/neurospaces',
                                       'type' => 'user',
-                                      'line' => 67
+                                      'line' => 113
                                     },
                                     {
                                       'expr' => undef,
@@ -25,7 +27,7 @@ $files = {
 ',
                                       'fname' => 'bin/neurospaces',
                                       'type' => 'user',
-                                      'line' => 95
+                                      'line' => 143
                                     }
                                   ]
          };
