@@ -41,6 +41,7 @@ use Neurospaces::GUI::Extractor;
 use Neurospaces::GUI::Matrix;
 use Neurospaces::GUI::Namespaces;
 use Neurospaces::GUI::Workload;
+use Neurospaces::Studio;
 
 
 our $option_verbose = '';
@@ -104,6 +105,8 @@ sub commands_replay
 
 sub create_menu
 {
+    my $studio = shift;
+
     my $serializers = shift;
 
     # create main window
@@ -144,11 +147,11 @@ sub create_menu
 	      'Explore the current model',
 	      sub
 	      {
-		  my $widget = shift;
+# 		  my $widget = shift;
 
-		  my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => 0, }, );
+# 		  my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => 0, }, );
 
-		  $symbol->explore();
+		  $studio->explore(0);
 	      },
 	     ],
 	     [
@@ -317,6 +320,8 @@ sub gui
 {
     my $line = shift;
 
+    my $studio = Neurospaces::Studio->new();
+
     #! if option_restore is a global, you used to get infinite loops,
     #! not sure how it behaves now.
 
@@ -349,13 +354,13 @@ sub gui
     {
 	# restore the previous session
 
-	window_session_restore();
+	window_session_restore($studio);
 
 	# perhaps need to replay commands
 
 	if ($option_commands)
 	{
-	    commands_replay();
+	    commands_replay($studio);
 	}
     }
 
@@ -365,12 +370,12 @@ sub gui
     {
 	# create the menu window
 
-	my $window = create_menu($option_serializers, );
+	my $window = create_menu($studio, $option_serializers, );
     }
 
     # start main loop
 
-    window_main();
+    window_main($studio);
 }
 
 

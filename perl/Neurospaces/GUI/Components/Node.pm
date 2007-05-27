@@ -266,7 +266,11 @@ sub factory
 {
     my $options = shift;
 
-    my $self = Neurospaces::objectify($options->{serial});
+    my $self = $options->{studio}->objectify($options->{serial});
+
+    use Data::Dumper;
+
+    print Dumper($self);
 
     my $perl_types
 	= {

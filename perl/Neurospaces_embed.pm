@@ -28,75 +28,75 @@ package Neurospaces;
 use strict;
 
 
-my $c_code;
+# my $c_code;
 
-our $working_directory;
+# our $working_directory;
 
-our $neurospaces_core_directory;
+# our $neurospaces_core_directory;
 
-our $neurospaces_perl_modules;
+# our $neurospaces_perl_modules;
 
-my $package;
-
-
-BEGIN
-{
-    use Cwd ();
-
-    $working_directory = Cwd::getcwd();
-
-    # get abs path where this module is located
-
-    $neurospaces_perl_modules = $working_directory . '/' . $0;
-
-    print "\$0 is $0\n";
-
-    $package = __PACKAGE__;
-
-    $package =~ s(::)(/)g;
-
-    # get dir where this package was found
-
-    #! called from Neurospaces core
-
-    $neurospaces_perl_modules =~ s((.*)/${package}_embed\.pm$)($1);
-
-    #! called from perl test script
-
-    $neurospaces_perl_modules =~ s((.*)/-e$)($1);
-
-    # add to include paths
-
-    unshift @INC, $neurospaces_perl_modules;
-
-    # tell perl this module is already loaded
-
-    $INC{"${package}_embed.pm"} = "evaled";
-
-    # find the Neurospaces c core directory
-
-    $neurospaces_core_directory = $working_directory;
-
-    $neurospaces_core_directory =~ s((.*)/perl)($1);
-
-    #! automake uses a separate _build directory, not sure what to do with it, just remove it.
-
-    $neurospaces_core_directory =~ s((.*)/_build)($1);
-
-    # have inline to do its compilations in the neurospaces core directory
-
-    print "Changing to neurospaces core directory : $neurospaces_core_directory\n";
-
-    chdir $neurospaces_core_directory;
-}
+# my $package;
 
 
-BEGIN
-{
-    #t replace this with a /usr/local/ filename or so.
+# BEGIN
+# {
+#     use Cwd ();
 
-    $c_code = `cat /local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/perl/Neurospaces.c`;
-}
+#     $working_directory = Cwd::getcwd();
+
+#     # get abs path where this module is located
+
+#     $neurospaces_perl_modules = $working_directory . '/' . $0;
+
+#     print "\$0 is $0\n";
+
+#     $package = __PACKAGE__;
+
+#     $package =~ s(::)(/)g;
+
+#     # get dir where this package was found
+
+#     #! called from Neurospaces core
+
+#     $neurospaces_perl_modules =~ s((.*)/${package}_embed\.pm$)($1);
+
+#     #! called from perl test script
+
+#     $neurospaces_perl_modules =~ s((.*)/-e$)($1);
+
+#     # add to include paths
+
+#     unshift @INC, $neurospaces_perl_modules;
+
+#     # tell perl this module is already loaded
+
+#     $INC{"${package}_embed.pm"} = "evaled";
+
+#     # find the Neurospaces c core directory
+
+#     $neurospaces_core_directory = $working_directory;
+
+#     $neurospaces_core_directory =~ s((.*)/perl)($1);
+
+#     #! automake uses a separate _build directory, not sure what to do with it, just remove it.
+
+#     $neurospaces_core_directory =~ s((.*)/_build)($1);
+
+#     # have inline to do its compilations in the neurospaces core directory
+
+#     print "Changing to neurospaces core directory : $neurospaces_core_directory\n";
+
+#     chdir $neurospaces_core_directory;
+# }
+
+
+# BEGIN
+# {
+#     #t replace this with a /usr/local/ filename or so.
+
+#     $c_code = `cat /local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/perl/Neurospaces.c`;
+# }
 
 
 use Data::Dumper;
@@ -108,28 +108,28 @@ use Gtk2::Helper;
 
 use IO::File;
 
-BEGIN
-{
-    if (defined $ARGV[0]
-	&& $ARGV[0] eq 'debug')
-    {
-	do "stubs.pm";
-    }
-    else
-    {
-	#t note that building in /tmp could be a security risk
-# 		DIRECTORY => '/tmp/neurospaces/inline',
+# BEGIN
+# {
+#     if (defined $ARGV[0]
+# 	&& $ARGV[0] eq 'debug')
+#     {
+# 	do "stubs.pm";
+#     }
+#     else
+#     {
+# 	#t note that building in /tmp could be a security risk
+# # 		DIRECTORY => '/tmp/neurospaces/inline',
 
-	eval "
-    use Inline (
-		C => \$c_code,
-		INC => \"-I$neurospaces_core_directory/algorithms/event -I$neurospaces_core_directory/algorithms/symbol -I$neurospaces_core_directory/ -g -Wmissing-prototypes -Wmissing-declarations -include config.h -DPRE_PROTO_TRAVERSAL\",
-		LIBS => \"-L$neurospaces_core_directory -lneurospacesread -L$neurospaces_core_directory/algorithms/event -levent_algorithms -L$neurospaces_core_directory/algorithms/symbol -lsymbol_algorithms -lm -lreadline -lhistory\",
-		CLEAN_AFTER_BUILD => 0,
-	       );
-";
-    }
-}
+# 	eval "
+#     use Inline (
+# 		C => \$c_code,
+# 		INC => \"-I$neurospaces_core_directory/algorithms/event -I$neurospaces_core_directory/algorithms/symbol -I$neurospaces_core_directory/ -g -Wmissing-prototypes -Wmissing-declarations -include config.h -DPRE_PROTO_TRAVERSAL\",
+# 		LIBS => \"-L$neurospaces_core_directory -lneurospacesread -L$neurospaces_core_directory/algorithms/event -levent_algorithms -L$neurospaces_core_directory/algorithms/symbol -lsymbol_algorithms -lm -lreadline -lhistory\",
+# 		CLEAN_AFTER_BUILD => 0,
+# 	       );
+# ";
+#     }
+# }
 
 use Neurospaces::Biolevels;
 use Neurospaces::GUI;
@@ -140,14 +140,14 @@ my $loaded_neurospaces_gui_tools_renderer = eval "require Neurospaces::GUI::Tool
 use YAML ();
 
 
-BEGIN
-{
-    # go back to the original execution directory
+# BEGIN
+# {
+#     # go back to the original execution directory
 
-    print "Changing to $working_directory\n";
+#     print "Changing to $working_directory\n";
 
-    chdir $working_directory;
-}
+#     chdir $working_directory;
+# }
 
 
 our $renderer = $loaded_neurospaces_gui_tools_renderer ? Neurospaces::GUI::Tools::Renderer->new() : 0;
@@ -162,7 +162,7 @@ sub initialize
 
     print "Initializing perl modules (in $0), input is coming from fd $fd\n";
 
-    print "Neurospaces core assumed to be in $neurospaces_core_directory\n";
+#     print "Neurospaces core assumed to be in $neurospaces_core_directory\n";
 
 #
 # flags are :

@@ -52,5 +52,10 @@ test: check
 perldir = $(prefix)/glue/swig/perl
 
 nobase_perl_DATA = \
-	studio_test.pm 
+	studio_test.pm \
+	@PERL_EMBED_DATA@
+
+#perldir = $(prefix)/glue/swig/perl
+
+#nobase_perl_DATA = @PERL_EMBED_DATA@
 

@@ -24,6 +24,9 @@ AC_CONFIG_SRCDIR([studio_test.pm])
 # $Format: "AM_INIT_AUTOMAKE(${package}, ${label})"$
 AM_INIT_AUTOMAKE(neurospaces-studio, purkinje-1)
 
+PERL_EMBED_DATA=`find perl -name "*.pm" -printf "%p "`
+AC_SUBST(PERL_EMBED_DATA)
+
 # Checks for programs.
 
 # Checks for libraries.

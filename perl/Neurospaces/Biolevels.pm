@@ -115,7 +115,9 @@ sub define_symboltypes
 
 	$symboltype2internal->{$1} = $2;
 
-	$symboltype2biolevel->{$1} = Neurospaces::symboltype2biolevel($2);
+# 	$symboltype2biolevel->{$1} = Neurospaces::symboltype2biolevel($2);
+
+	$symboltype2biolevel->{$1} = SwiggableNeurospacesc::SymbolType2Biolevel($2);
     }
 	@$symboltype_lines;
 
@@ -134,7 +136,9 @@ sub define_transitions
 	= {
 	   map
 	   {
-	       my $group = Neurospaces::biolevel2biogroup($_);
+# 	       my $group = Neurospaces::biolevel2biogroup($_);
+
+	       my $group = SwiggableNeurospaces::Biolevel2Biolevelgroup($_);
 
 	       $_ => $group;
 	   }
