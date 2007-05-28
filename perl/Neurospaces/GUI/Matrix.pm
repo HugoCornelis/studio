@@ -262,15 +262,15 @@ sub initialize_state
 
     $self->{state}->{pq} = $pq;
 
-    my $projections = SwiggableNeurospaces::get_projections("void");
+    my $projections = SwiggableNeurospaces::swig_get_projections("void");
 
     $self->{state}->{projections} = $projections;
 
-    my $receivers = SwiggableNeurospaces::get_receivers("void");
+    my $receivers = SwiggableNeurospaces::swig_get_receivers("void");
 
     $self->{state}->{receivers} = $receivers;
 
-    my $generators = SwiggableNeurospaces::get_generators("void");
+    my $generators = SwiggableNeurospaces::swig_get_generators("void");
 
     $self->{state}->{generators} = $generators;
 }
@@ -369,7 +369,7 @@ sub projections_create_window
 	     {
 		 $line = "pqset c $line";
 
-		 Neurospaces::pq_set($line);
+		 SwiggableNeurospaces::swig_pq_set($line);
 	     }
 	 },
 	);
@@ -402,7 +402,11 @@ sub signal_cursor_changed_typed
 
     my $attachment = $list->{data}->[$index]->[0];
 
-    my $connections = [ Neurospaces::attachment_to_connections($attachment), ];
+    my $connections = SwiggableNeurospaces::swig_attachment_to_connections($attachment);
+
+#     use Data::Dumper;
+
+#     print Dumper($connections, @_);
 
     $self->{result_data} = $connections;
 

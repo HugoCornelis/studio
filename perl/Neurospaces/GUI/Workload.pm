@@ -190,7 +190,7 @@ sub partition
     my $self = shift;
 
     $self->{state}->{workload_report}
-	= Neurospaces::get_workload
+	= SwiggableNeurospaces::swig_get_workload
 	    (
 	     0,
 	     $self->{state}->{partitions},
