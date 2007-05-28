@@ -151,7 +151,7 @@ sub get_buttons
 
 					print "Exploring parent of $self->{this}\n";
 
-					my $parent = Neurospaces::GUI::Components::Node::factory( { serial => $self->{parent}, }, );
+					my $parent = Neurospaces::GUI::Components::Node::factory( { serial => $self->{parent}, studio => $self->{studio}, }, );
 
 					$parent->explore();
 				    },
@@ -173,7 +173,7 @@ sub get_buttons
 
 					#t get reference to prototype
 
-					my $prototype = Neurospaces::GUI::Components::Node::factory( { serial => $self->{parent}, }, );
+					my $prototype = Neurospaces::GUI::Components::Node::factory( { serial => $self->{parent}, studio => $self->{studio}, }, );
 
 					$prototype->explore();
 				    },
@@ -270,9 +270,9 @@ sub factory
 
     $self->{studio} = $options->{studio};
 
-    use Data::Dumper;
+#     use Data::Dumper;
 
-    print Dumper($self);
+#     print Dumper($self);
 
     my $perl_types
 	= {

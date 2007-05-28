@@ -258,19 +258,19 @@ sub initialize_state
 {
     my $self = shift;
 
-    my $pq = Neurospaces::pq_get();
+    my $pq = SwiggableNeurospaces::swig_pq_get();
 
     $self->{state}->{pq} = $pq;
 
-    my $projections = Neurospaces::get_projections("void");
+    my $projections = SwiggableNeurospaces::get_projections("void");
 
     $self->{state}->{projections} = $projections;
 
-    my $receivers = Neurospaces::get_receivers("void");
+    my $receivers = SwiggableNeurospaces::get_receivers("void");
 
     $self->{state}->{receivers} = $receivers;
 
-    my $generators = Neurospaces::get_generators("void");
+    my $generators = SwiggableNeurospaces::get_generators("void");
 
     $self->{state}->{generators} = $generators;
 }
