@@ -30,7 +30,6 @@ use Glib qw/TRUE FALSE/;
 
 use Gtk2::SimpleList;
 
-use Neurospaces_embed;
 use Neurospaces::GUI;
 
 

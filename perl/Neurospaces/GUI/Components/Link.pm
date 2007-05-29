@@ -30,7 +30,6 @@ use base qw(Neurospaces::GUI::Components::Node);
 
 use Glib qw/TRUE FALSE/;
 
-use Neurospaces_embed;
 use Neurospaces::GUI;
 
 
@@ -96,7 +95,7 @@ sub get_long_label
 	   map { s(.*/)(); $_ }
 	   map { $_->{Value} }
 	   grep { $_->{Name} =~ /SOURCE|PRE/ }
-	   Neurospaces::get_parameters($self->{this}),
+	   SwiggableNeurospaces::swig_get_parameters($self->{this}),
 	  ];
 
     $source = join ', ', @$source;
@@ -106,7 +105,7 @@ sub get_long_label
 	   map { s(.*/)(); $_ }
 	   map { $_->{Value} }
 	   grep { $_->{Name} =~ /TARGET|POST/ }
-	   Neurospaces::get_parameters($self->{this}),
+	   SwiggableNeurospaces::swig_get_parameters($self->{this}),
 	  ];
 
     $target = join ', ', @$target;

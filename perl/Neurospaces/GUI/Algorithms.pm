@@ -28,7 +28,6 @@ use strict;
 
 use Glib qw/TRUE FALSE/;
 
-use Neurospaces_embed;
 use Neurospaces::GUI;
 
 
@@ -110,7 +109,7 @@ sub initialize_state
 {
     my $self = shift;
 
-    $self->{state}->{algorithm_report} = Neurospaces::get_algorithms("");
+    $self->{state}->{algorithm_report} = SwiggableNeurospaces::swig_get_algorithms("");
 }
 
 

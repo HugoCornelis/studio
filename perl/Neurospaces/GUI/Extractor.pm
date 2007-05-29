@@ -169,7 +169,7 @@ sub extract
 
 	$name =~ s/.*\///;
 
-	my $parameters = [ Neurospaces::get_parameters($symbol->{this}), ];
+	my $parameters = [ SwiggableNeurospaces::swig_get_parameters($symbol->{this}), ];
 
 	my $reversal = [ grep { $_->{Name} eq 'Ek' } @$parameters, ];
 
@@ -215,7 +215,6 @@ package Neurospaces::GUI::Extractor;
 use strict;
 
 
-use Neurospaces_embed;
 use Neurospaces::GUI;
 
 

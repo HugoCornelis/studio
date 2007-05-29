@@ -25,8 +25,6 @@ package Neurospaces::Biolevels;
 
 use strict;
 
-use Neurospaces_embed;
-
 
 our $biogroup2internal = {};
 

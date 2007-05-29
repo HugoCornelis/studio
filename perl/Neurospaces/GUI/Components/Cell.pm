@@ -30,7 +30,6 @@ use base qw(Neurospaces::GUI::Components::Node);
 
 use Glib qw/TRUE FALSE/;
 
-use Neurospaces_embed;
 use Neurospaces::GUI;
 use Neurospaces::Biolevels;
 
@@ -103,7 +102,7 @@ sub get_buttons
 				    {
 					my $widget = shift;
 
-					my $renderer = $Neurospaces::renderer;
+					my $renderer = $Neurospaces::Studio::renderer;
 
 					if (!$renderer)
 					{
@@ -197,7 +196,7 @@ sub get_visible_coordinates
 
 #     print "Cell.pm: Drawing level is $level\n";
 
-    return Neurospaces::get_visible_coordinates($serial, $level);
+    return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level);
 }
 
 

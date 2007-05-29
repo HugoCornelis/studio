@@ -28,7 +28,6 @@ use strict;
 
 use Glib qw/TRUE FALSE/;
 
-use Neurospaces_embed;
 use Neurospaces::Biolevels;
 use Neurospaces::GUI;
 

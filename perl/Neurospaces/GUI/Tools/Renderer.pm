@@ -31,8 +31,8 @@ use constant PI => 4 * atan2(1, 1);
 
 use Glib qw/TRUE FALSE/;
 
-use Neurospaces_embed;
 use Neurospaces::GUI::Command;
+
 
 # the current convention is that this package will not load if
 # SDL_Perl is not installed.
@@ -636,7 +636,7 @@ sub fonts_init
 
     my %fonts
 	= (
-	   numbers => $Neurospaces::neurospaces_perl_modules . '/Neurospaces/GUI/Tools/numbers-7x11.txt',
+	   numbers => ($Neurospaces::neurospaces_perl_modules || "perl") . '/Neurospaces/GUI/Tools/numbers-7x11.txt',
 	  );
 
     glPixelStore(GL_UNPACK_ALIGNMENT, 1);

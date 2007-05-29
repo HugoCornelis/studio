@@ -26,7 +26,6 @@ package Neurospaces::GUI::Namespaces;
 use strict;
 
 
-use Neurospaces_embed;
 use Neurospaces::GUI;
 
 
@@ -128,7 +127,7 @@ sub initialize_state
 {
     my $self = shift;
 
-    $self->{state}->{namespaces} = Neurospaces::get_namespaces($self->{state}->{this}, );
+    $self->{state}->{namespaces} = SwiggableNeurospaces::swig_get_namespaces($self->{state}->{this}, );
 }
 
 

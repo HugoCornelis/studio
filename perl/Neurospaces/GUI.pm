@@ -28,7 +28,9 @@ use strict;
 
 use Glib qw/TRUE FALSE/;
 
-use Neurospaces_embed;
+use Gtk2 '-init';
+use Gtk2::Helper;
+
 use Neurospaces::Biolevels;
 use Neurospaces::GUI::Command;
 use Neurospaces::GUI::Components::Cell;
@@ -78,7 +80,7 @@ sub commands_replay
 
     my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => $serial, }, );
 
-    my $renderer = $Neurospaces::renderer;
+    my $renderer = $Neurospaces::Studio::renderer;
 
     if (!$renderer)
     {
@@ -303,7 +305,7 @@ sub factory_command
 
 	my $context = $1;
 
-	$serial = Neurospaces::context2serial($context);
+	$serial = SwiggableNeurospaces::swig_context2serial($context);
     }
 
     my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => $serial, }, );
@@ -504,7 +506,7 @@ sub window_open
 	    {
 		my $symbol = 1;
 
-		my $renderer = $Neurospaces::renderer;
+		my $renderer = $Neurospaces::Studio::renderer;
 
 		$renderer->init();
 	    }

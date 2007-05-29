@@ -26,7 +26,6 @@ package Neurospaces::GUI::Matrix;
 use strict;
 
 
-use Neurospaces_embed;
 use Neurospaces::GUI;
 
 

@@ -28,8 +28,6 @@ use strict;
 
 use Glib qw/TRUE FALSE/;
 
-use Neurospaces_embed;
-
 
 # global array for executed commands
 

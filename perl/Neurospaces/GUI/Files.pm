@@ -28,7 +28,6 @@ use strict;
 
 use Glib qw/TRUE FALSE/;
 
-use Neurospaces_embed;
 use Neurospaces::GUI;
 
 
@@ -128,7 +127,7 @@ sub initialize_state
 {
     my $self = shift;
 
-    $self->{state}->{files} = Neurospaces::get_files();
+    $self->{state}->{files} = SwiggableNeurospaces::swig_get_files();
 
     $self->{state}->{files} = [ sort @{$self->{state}->{files}}, ];
 }
