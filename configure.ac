@@ -38,7 +38,6 @@ AC_SUBST(PERL_EMBED_DATA)
 # Checks for library functions.
 
 AC_CONFIG_FILES([Makefile
-		 perl/Makefile
 		 tests/Makefile
 		])
 AC_OUTPUT

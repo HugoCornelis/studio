@@ -10,7 +10,7 @@
 ##'
 ##############################################################################
 
-SUBDIRS = perl tests
+SUBDIRS = tests
 
 dist_bin_SCRIPTS = bin/neurospaces
 
