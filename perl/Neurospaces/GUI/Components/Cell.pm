@@ -34,6 +34,54 @@ use Neurospaces::GUI;
 use Neurospaces::Biolevels;
 
 
+our $molecular_view
+    = {
+       'd_roll' => 0,
+       'd_heading' => 0,
+       'dv_forward' => 0,
+       'dv_up' => 0,
+       'dv_roll' => 0,
+       'dv_heading' => 0,
+       'v_right' => 0,
+       'v_forward' => 0,
+       'v_up' => 0,
+       'position' => [
+		      -5,
+		      20,
+		      -10,
+		     ],
+       'pilotview' => {
+		       roll => [
+				0, 0.0, 0.0, 1.0,
+			       ],
+		       pitch => [
+				 0.0, 0.0, 1.0, 0.0,
+				],
+		       heading => [
+				   0.0, 1.0, 0.0, 0.0,
+				  ],
+		       move => {
+				v_pilot => 0,
+				d_pilot => 0,
+				dv_pilot => 0,
+			       },
+		      },
+       'dv_right' => 0,
+       'normalizer' => [
+			-90,
+			1,
+			0,
+			0
+		       ],
+       'v_roll' => 0,
+       'v_heading' => 0,
+       'scale' => [
+		   1e5,
+		   1e5,
+		   1e5,
+		  ],
+      };
+
 sub draw
 {
     my $self = shift;
@@ -41,6 +89,20 @@ sub draw
     my $renderer = shift;
 
     my $options = shift;
+
+    my $gui_command1
+	= Neurospaces::GUI::Command->new
+	    (
+	     {
+	      arguments => { view => $molecular_view, },
+	      name => 'set_view_molecular',
+	      processor => 'view_set',
+	      self => $renderer,
+	      target => $renderer,
+	     },
+	    );
+
+    $gui_command1->execute();
 
     # obtain coordinates
 

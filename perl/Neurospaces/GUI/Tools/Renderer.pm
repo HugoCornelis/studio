@@ -1279,7 +1279,9 @@ sub set_view_3d
 
     # we are dealing with very small thing, zoom to get something out.
 
-    glScale(1e5, 1e5, 1e5);
+    my $scale = $self->{view}->{scale} || [ 1e5, 1e5, 1e5, ];
+
+    glScale(@$scale);
 }
 
 

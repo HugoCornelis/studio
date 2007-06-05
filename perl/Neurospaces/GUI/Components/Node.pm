@@ -31,9 +31,9 @@ use Glib qw/TRUE FALSE/;
 use Gtk2::SimpleList;
 
 use Neurospaces::GUI;
+use Neurospaces::GUI::Components::Atomic;
 use Neurospaces::GUI::Components::Cell;
 use Neurospaces::GUI::Components::Link;
-use Neurospaces::GUI::Components::Molecular;
 use Neurospaces::GUI::Components::Network;
 
 

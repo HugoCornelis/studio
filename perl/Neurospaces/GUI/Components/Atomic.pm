@@ -32,7 +32,7 @@ use Neurospaces::GUI;
 use Neurospaces::Biolevels;
 
 
-our $molecular_view
+our $atomic_view
     = {
        'd_roll' => 0,
        'd_heading' => 0,
@@ -44,9 +44,9 @@ our $molecular_view
        'v_forward' => 0,
        'v_up' => 0,
        'position' => [
-		      -18,
-		      30,
-		      -12,
+		      -0.5,
+		      1.5,
+		      -0.5,
 		     ],
        'pilotview' => {
 		       roll => [
@@ -73,13 +73,18 @@ our $molecular_view
 		       ],
        'v_roll' => 0,
        'v_heading' => 0,
+       'scale' => [
+		   1e7,
+		   1e7,
+		   1e7,
+		  ],
       };
 
 our $movements
     = {
        speed => {
 		 heading => 5,
-		 move => 5,
+		 move => 0.1,
 		 pilot => 5,
 		 roll => 5,
 		},
@@ -98,8 +103,8 @@ sub draw
 	= Neurospaces::GUI::Command->new
 	    (
 	     {
-	      arguments => { view => $molecular_view, },
-	      name => 'set_view_molecular',
+	      arguments => { view => $atomic_view, },
+	      name => 'set_view_atomic',
 	      processor => 'view_set',
 	      self => $renderer,
 	      target => $renderer,
@@ -113,7 +118,7 @@ sub draw
 	    (
 	     {
 	      arguments => { movements => $movements, },
-	      name => 'set_movements_molecular',
+	      name => 'set_movements_atomic',
 	      processor => 'movements_set',
 	      self => $renderer,
 	      target => $renderer,
@@ -178,15 +183,15 @@ sub draw
 				    # two coordinates
 
 				    [
-				     $children->[$index1]->[3]->{this}->{'x'} * 1e2,
-				     $children->[$index1]->[3]->{this}->{'y'} * 1e2,
-				     $children->[$index1]->[3]->{this}->{'z'} * 1e2,
+				     $children->[$index1]->[3]->{this}->{'x'},
+				     $children->[$index1]->[3]->{this}->{'y'},
+				     $children->[$index1]->[3]->{this}->{'z'},
 				    ],
 
 				    [
-				     $children->[$index2]->[3]->{this}->{'x'} * 1e2,
-				     $children->[$index2]->[3]->{this}->{'y'} * 1e2,
-				     $children->[$index2]->[3]->{this}->{'z'} * 1e2,
+				     $children->[$index2]->[3]->{this}->{'x'},
+				     $children->[$index2]->[3]->{this}->{'y'},
+				     $children->[$index2]->[3]->{this}->{'z'},
 				    ],
 				   ),
 			       }
@@ -326,7 +331,7 @@ sub initialize_state
 
     $self->SUPER::initialize_state(@_);
 
-    $self->{state}->{molecule_active_level} = 'MOLECULAR';
+    $self->{state}->{molecule_active_level} = 'ATOMIC';
 }
 
 
