@@ -31,6 +31,10 @@ use Glib qw/TRUE FALSE/;
 use Gtk2::SimpleList;
 
 use Neurospaces::GUI;
+use Neurospaces::GUI::Components::Cell;
+use Neurospaces::GUI::Components::Link;
+use Neurospaces::GUI::Components::Molecular;
+use Neurospaces::GUI::Components::Network;
 
 
 sub explore
@@ -277,10 +281,12 @@ sub factory
 	= {
 	   T_sym_cell => 'Neurospaces::GUI::Components::Cell',
 	   T_sym_connection => 'Neurospaces::GUI::Components::Link',
+	   T_sym_e_m_contour => 'Neurospaces::GUI::Components::Molecule',
 	   T_sym_network => 'Neurospaces::GUI::Components::Network',
 	   T_sym_population => 'Neurospaces::GUI::Components::Network',
 	   T_sym_projection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_v_connection => 'Neurospaces::GUI::Components::Link',
+	   T_sym_v_contour => 'Neurospaces::GUI::Components::Molecule',
 	  };
 
     my $perl_type = $perl_types->{$self->{type}} || 'Neurospaces::GUI::Components::Node';
@@ -393,6 +399,10 @@ sub window_add_buttons
 	    foreach my $method (keys %$constructor)
 	    {
 		my $args = $constructor->{$method};
+
+# 		use Data::Dumper;
+
+# 		print Dumper($method, $args);
 
 		$but->$method(@$args);
 	    }

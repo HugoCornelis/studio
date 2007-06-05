@@ -18,7 +18,7 @@
 ##############################################################################
 
 
-package Neurospaces::GUI::Components::Network;
+package Neurospaces::GUI::Components::Molecule;
 
 
 use strict;
@@ -40,7 +40,7 @@ sub draw
 
     my $options = shift;
 
-    my $active_level = $self->{state}->{network_active_level};
+    my $active_level = $self->{state}->{molecule_active_level};
 
     # obtain coordinates
 
@@ -57,7 +57,7 @@ sub draw
 #     print Dumper($children->[0]->[3]);
 #     print Dumper($children->[0]->[3]->{this});
 
-    if ($active_level eq 'CELL')
+    if ($active_level eq 'MOLECULAR')
     {
 	$result
 	    = {
@@ -70,42 +70,49 @@ sub draw
 			      ],
 	       color => [ 1, 1, 1, ],
 	       light => 1,
-	       name => 'population',
+	       name => 'sections',
 	       type => 'cubes',
 	      };
     }
-    elsif ($active_level eq 'SEGMENT')
+    elsif ($active_level eq 'ATOMIC')
     {
 	$result
 	    = {
 	       coordinates => [
 			       map
 			       {
+				   my $index1 = $_;
+
+				   my $index2
+				       = $_ + 1 > $#$children
+					   ? 0
+					       : $_ + 1;
+
 				   (
 				    # dia
 
-				    $_->[4],
+				    3e-6,
 
 				    # two coordinates
 
 				    [
-				     $_->[3]->{this}->{'x'},
-				     $_->[3]->{this}->{'y'},
-				     $_->[3]->{this}->{'z'},
+				     $children->[$index1]->[3]->{this}->{'x'},
+				     $children->[$index1]->[3]->{this}->{'y'},
+				     $children->[$index1]->[3]->{this}->{'z'},
 				    ],
 
 				    [
-				     $_->[3]->{parent}->{'x'},
-				     $_->[3]->{parent}->{'y'},
-				     $_->[3]->{parent}->{'z'},
+				     $children->[$index2]->[3]->{this}->{'x'},
+				     $children->[$index2]->[3]->{this}->{'y'},
+				     $children->[$index2]->[3]->{this}->{'z'},
 				    ],
 				   ),
 			       }
-			       @$children
+			       0 .. $#$children
 			      ],
 	       color => [ 1, 1, 1, ],
  	       light => 0,
-	       name => 'population',
+	       name => 'contours',
 	       type => 'GL_LINES',
 	      };
     }
@@ -122,10 +129,14 @@ sub draw
 			      ],
 	       color => [ 1, 1, 1, ],
  	       light => 1,
-	       name => 'population',
+	       name => 'sections',
 	       type => 'cubes',
 	      };
     }
+
+#     use Data::Dumper;
+
+#     print Dumper($result);
 
     return $result;
 }
@@ -137,7 +148,14 @@ sub get_buttons
 
     my $window = $self->{gui}->{window};
 
-    my $active_level = $self->{state}->{network_active_level};
+    my $active_level = $self->{state}->{molecule_active_level};
+
+    my $all_levels
+	= [
+	   sort
+	   grep { /atom|molec/i }
+	   keys %$Neurospaces::Biolevels::biolevel2internal,
+	  ];
 
     my $result
 	= [
@@ -179,7 +197,7 @@ sub get_buttons
 				      append_text => [ $_ ]
 				  }
 			      }
-			      sort grep { /cell|segment|popul/i } keys %$Neurospaces::Biolevels::biolevel2internal,
+			      @$all_levels,
 			     ),
 
 			     # select active level
@@ -188,9 +206,9 @@ sub get_buttons
 			      set_active => [
 					     grep
 					     {
-						 (sort grep { /cell|segment|popul/i } keys %$Neurospaces::Biolevels::biolevel2internal)[$_] =~ /$active_level/
+						 $all_levels->[$_] =~ /$active_level/
 					     }
-					     0 .. (scalar grep { /cell|segment|popul/i } keys %$Neurospaces::Biolevels::biolevel2internal) - 1,
+					     0 .. $#$all_levels,
 					    ],
 			     },
 			    ],
@@ -203,9 +221,9 @@ sub get_buttons
 
 					my $active_index = $combo->get_active();
 
-					my $active_level = (sort grep { /cell|segment|popul/i } keys %$Neurospaces::Biolevels::biolevel2internal)[$active_index];
+					my $active_level = $all_levels->[$active_index];
 
-					$self->{state}->{network_active_level} = $active_level;
+					$self->{state}->{molecule_active_level} = $active_level;
 				    },
 				   },
 		       },
@@ -226,7 +244,7 @@ sub initialize_state
 
     $self->SUPER::initialize_state(@_);
 
-    $self->{state}->{network_active_level} = 'CELL';
+    $self->{state}->{molecule_active_level} = 'MOLECULAR';
 }
 
 
@@ -236,7 +254,7 @@ sub get_visible_coordinates
 
     my $options = shift;
 
-    my $active_level = $self->{state}->{network_active_level};
+    my $active_level = $self->{state}->{molecule_active_level};
 
     my $serial = $self->{this};
 
