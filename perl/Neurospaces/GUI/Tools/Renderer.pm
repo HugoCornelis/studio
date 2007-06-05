@@ -573,8 +573,9 @@ sub events_init
     $self->{event_processor}
 	= {
 	   &SDL_KEYDOWN => \&process_key,
-	   &SDL_KEYUP   => \&process_key,
-	   &SDL_QUIT    => \&process_quit,
+	   &SDL_KEYUP => \&process_key,
+	   &SDL_QUIT => \&process_quit,
+	   &SDL_VIDEORESIZE => \&process_resize,
 	  };
 }
 
@@ -1039,9 +1040,11 @@ sub new
 				   tab    => '+look_behind',
 				  },
 			fovy   => 80,
-			height => 480,
+			height => 1000,
+# 			height => 480,
 			title  => 'Neurospaces Renderer',
-			width  => 640,
+# 			width  => 640,
+			width  => 1000,
 		       },
 	       sdl_app => undef,
 	      };
@@ -1145,6 +1148,33 @@ sub process_quit
     $self->{done} = 1;
 
     return [ 'quit', ];
+}
+
+
+sub process_resize
+{
+    my $self = shift;
+
+    my $event = shift;
+
+#     no strict "refs";
+
+#     use Data::Dumper;
+
+#     print Dumper(\%{"SDL::Surface::"});
+
+    my $width = $event->resize_w();
+
+    my $height = $event->resize_h();
+
+#     print "$width, $height\n";
+
+    $self->{conf}->{width} = $width;
+    $self->{conf}->{height} = $height;
+
+    $self->{sdl_app}->resize($width, $height);
+
+    return '';
 }
 
 
@@ -1570,10 +1600,11 @@ sub window_init
     $self->{sdl_app}
 	= SDL::App->new
 	    (
-	     -title  => $title,
-	     -width  => $w,
+	     -gl => 1,
 	     -height => $h,
-	     -gl     => 1,
+# 	     -resizeable => 1,
+	     -title => $title,
+	     -width => $w,
 	    );
 
     SDL::ShowCursor(1);
