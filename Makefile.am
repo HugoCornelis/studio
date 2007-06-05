@@ -10,7 +10,7 @@
 ##'
 ##############################################################################
 
-SUBDIRS = tests
+SUBDIRS = perl tests
 
 dist_bin_SCRIPTS = bin/neurospaces
 
@@ -19,6 +19,7 @@ dist-hook:
 	$(RM) -fr `find $(distdir) -name _Inline`
 	cp $(srcdir)/license.txt $(distdir)
 #	cp -R $(srcdir)/docs $(distdir)
+	cp -R $(srcdir)/perl $(distdir)
 	test -d $(distdir)/tests || mkdir $(distdir)/tests
 	test -d $(distdir)/tests/specifications || mkdir $(distdir)/tests/specifications
 	cp -R $(srcdir)/tests/run $(distdir)/tests/run
@@ -33,7 +34,7 @@ dist-hook:
 
 #TESTS = $(srcdir)/tests/run
 
-perl_HEADERS = studio_test.pm
+#perl_HEADERS = studio_test.pm
 
 #TESTS = studio_test.pm
 
@@ -49,11 +50,11 @@ test: check
 #html-upload: html-upload-prepare
 #	scp -pr html/htdocs/* hcornelis@shell.sourceforge.net:/home/groups/n/ne/neurospaces/htdocs/
 
-perldir = $(prefix)/glue/swig/perl
+#perldir = $(prefix)/glue/swig/perl
 
-nobase_perl_DATA = \
-	studio_test.pm \
-	@PERL_EMBED_DATA@
+#nobase_perl_DATA = \
+#	studio_test.pm \
+#	@PERL_EMBED_DATA@
 
 #perldir = $(prefix)/glue/swig/perl
 

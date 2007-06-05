@@ -3,9 +3,3 @@
 * Allow to override the spine-prototype options from the library
 Requires changes throughout the different packages.
 
-* Replace inline code with /usr/local/ filename
-See Neurospaces_embed.pm.
-
-* The functionality of br2p must be moved to the swig interface
-Perhaps Neurospaces.c too, not sure.
-
