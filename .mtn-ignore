@@ -12,5 +12,6 @@ Makefile.in$
 ^missing$
 ^tests/Makefile$
 ^tests/Makefile.in$
+^tests/bin
 ^tests/html
 gz$
