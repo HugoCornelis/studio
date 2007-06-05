@@ -37,6 +37,13 @@ push @INC, './perl';
 my $loaded_neurospaces_gui_tools_renderer = eval "require Neurospaces::GUI::Tools::Renderer;";
 
 
+if ($@)
+{
+    print "$0: cannot load rendering module because of: $@\n";
+    print "$0: continuing.\n";
+}
+
+
 our $renderer
     = ($loaded_neurospaces_gui_tools_renderer
        ? (print "$0: initialized rendering engine\n" || 1) && Neurospaces::GUI::Tools::Renderer->new()

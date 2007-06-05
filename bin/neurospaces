@@ -143,7 +143,7 @@ sub main
     if ($option_gui)
     {
 	require Neurospaces::GUI;
-	Neurospaces::GUI::gui("bin/neurospaces");
+	Neurospaces::GUI::gui($0);
     }
 
     # from here on, go through the options alphabetically

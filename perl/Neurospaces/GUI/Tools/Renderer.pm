@@ -66,12 +66,14 @@ sub action_move
 
     my $view = $self->{view};
 
-    my $speed_roll = 5;
-    my $speed_heading = 5;
+    my $movements = $self->{movements};
 
-    my $speed_move = 15;
+    my $speed_roll = $movements->{speed}->{roll};
+    my $speed_heading = $movements->{speed}->{heading};
 
-    my $speed_pilot = 5;
+    my $speed_move = $movements->{speed}->{move};
+
+    my $speed_pilot = $movements->{speed}->{pilot};
 
     my $move_update
 	= {
@@ -875,6 +877,7 @@ sub init
 
     $| = 1;
 
+    $self->movements_init();
     $self->commands_init();
     $self->events_init();
     $self->view_init();
@@ -962,6 +965,48 @@ sub models_init
     }
 
     $self->{models}->{lists} = \%display_lists;
+}
+
+
+sub movements_init
+{
+    my $self = shift;
+
+    my $movements
+	= {
+	   speed => {
+		     heading => 5,
+		     move => 15,
+		     pilot => 5,
+		     roll => 5,
+		    },
+	  };
+
+    my $gui_command
+	= Neurospaces::GUI::Command->new
+	    (
+	     {
+	      arguments => { movements => $movements, },
+	      name => 'set_initial_movements',
+	      processor => 'movements_set',
+	      self => $self,
+	      target => $self,
+	     },
+	    );
+
+    $gui_command->execute();
+}
+
+
+sub movements_set
+{
+    my $self = shift;
+
+    my $command = shift;
+
+    my $movements = $command->{arguments}->{movements};
+
+    $self->{movements} = $movements;
 }
 
 

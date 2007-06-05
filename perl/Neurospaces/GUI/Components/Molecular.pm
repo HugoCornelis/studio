@@ -32,6 +32,60 @@ use Neurospaces::GUI;
 use Neurospaces::Biolevels;
 
 
+our $molecular_view
+    = {
+       'd_roll' => 0,
+       'd_heading' => 0,
+       'dv_forward' => 0,
+       'dv_up' => 0,
+       'dv_roll' => 0,
+       'dv_heading' => 0,
+       'v_right' => 0,
+       'v_forward' => 0,
+       'v_up' => 0,
+       'position' => [
+		      -18,
+		      30,
+		      -12,
+		     ],
+       'pilotview' => {
+		       roll => [
+				0, 0.0, 0.0, 1.0,
+			       ],
+		       pitch => [
+				 0.0, 0.0, 1.0, 0.0,
+				],
+		       heading => [
+				   0.0, 1.0, 0.0, 0.0,
+				  ],
+		       move => {
+				v_pilot => 0,
+				d_pilot => 0,
+				dv_pilot => 0,
+			       },
+		      },
+       'dv_right' => 0,
+       'normalizer' => [
+			-90,
+			1,
+			0,
+			0
+		       ],
+       'v_roll' => 0,
+       'v_heading' => 0,
+      };
+
+our $movements
+    = {
+       speed => {
+		 heading => 5,
+		 move => 5,
+		 pilot => 5,
+		 roll => 5,
+		},
+      };
+
+
 sub draw
 {
     my $self = shift;
@@ -39,6 +93,34 @@ sub draw
     my $renderer = shift;
 
     my $options = shift;
+
+    my $gui_command1
+	= Neurospaces::GUI::Command->new
+	    (
+	     {
+	      arguments => { view => $molecular_view, },
+	      name => 'set_view_molecular',
+	      processor => 'view_set',
+	      self => $renderer,
+	      target => $renderer,
+	     },
+	    );
+
+    $gui_command1->execute();
+
+    my $gui_command2
+	= Neurospaces::GUI::Command->new
+	    (
+	     {
+	      arguments => { movements => $movements, },
+	      name => 'set_movements_molecular',
+	      processor => 'movements_set',
+	      self => $renderer,
+	      target => $renderer,
+	     },
+	    );
+
+    $gui_command2->execute();
 
     my $active_level = $self->{state}->{molecule_active_level};
 
@@ -91,20 +173,20 @@ sub draw
 				   (
 				    # dia
 
-				    3e-6,
+				    1e-6,
 
 				    # two coordinates
 
 				    [
-				     $children->[$index1]->[3]->{this}->{'x'},
-				     $children->[$index1]->[3]->{this}->{'y'},
-				     $children->[$index1]->[3]->{this}->{'z'},
+				     $children->[$index1]->[3]->{this}->{'x'} * 1e2,
+				     $children->[$index1]->[3]->{this}->{'y'} * 1e2,
+				     $children->[$index1]->[3]->{this}->{'z'} * 1e2,
 				    ],
 
 				    [
-				     $children->[$index2]->[3]->{this}->{'x'},
-				     $children->[$index2]->[3]->{this}->{'y'},
-				     $children->[$index2]->[3]->{this}->{'z'},
+				     $children->[$index2]->[3]->{this}->{'x'} * 1e2,
+				     $children->[$index2]->[3]->{this}->{'y'} * 1e2,
+				     $children->[$index2]->[3]->{this}->{'z'} * 1e2,
 				    ],
 				   ),
 			       }
