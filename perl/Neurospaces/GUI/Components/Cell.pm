@@ -258,7 +258,7 @@ sub get_visible_coordinates
 
 #     print "Cell.pm: Drawing level is $level\n";
 
-    return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level);
+    return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level, $SwiggableNeurospaces::SELECTOR_BIOLEVEL_EXCLUSIVE);
 }
 
 

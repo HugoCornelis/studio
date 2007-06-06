@@ -242,7 +242,7 @@ sub get_visible_coordinates
 
     my $level = $options->{biolevel} || $Neurospaces::Biolevels::biolevel2internal->{$active_level};
 
-    return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level);
+    return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level, $SwiggableNeurospaces::SELECTOR_BIOLEVEL_EXCLUSIVE);
 }
 
 

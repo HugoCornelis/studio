@@ -215,6 +215,8 @@ sub draw_axes
 
     glPointSize(100);
 
+    glLineWidth(1);
+
     glBegin(GL_LINES);
 
     # X axis = red
@@ -447,7 +449,18 @@ sub drawing_render
 
 	foreach my $coordinate (@$coordinates)
 	{
-	    if (!ref $coordinate)
+	    if (!defined $coordinate)
+	    {
+		# termination indicator, so terminate
+
+		if ($begun)
+		{
+		    glEnd();
+
+		    $begun = 0;
+		}
+	    }
+	    elsif (!ref $coordinate)
 	    {
 		if ($begun)
 		{

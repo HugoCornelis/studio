@@ -3,6 +3,3 @@
 * Allow to override the spine-prototype options from the library
 Requires changes throughout the different packages.
 
-* renderer
-The line thickness of the axes is inherited from the line thickness
-from contours when rendering contours.

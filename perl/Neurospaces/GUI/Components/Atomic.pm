@@ -84,7 +84,7 @@ our $movements
     = {
        speed => {
 		 heading => 5,
-		 move => 0.1,
+		 move => 1,
 		 pilot => 5,
 		 roll => 5,
 		},
@@ -163,6 +163,10 @@ sub draw
     }
     elsif ($active_level eq 'ATOMIC')
     {
+	use Data::Dumper;
+
+	print Dumper((@$children)[0 .. 10]);
+
 	$result
 	    = {
 	       coordinates => [
@@ -170,30 +174,41 @@ sub draw
 			       {
 				   my $index1 = $_;
 
-				   my $index2
-				       = $_ + 1 > $#$children
-					   ? 0
-					       : $_ + 1;
+				   if ($children->[$index1]->[1] eq 'contou')
+				   {
+				       my $index2
+					   = $_ + 1 > $#$children
+					       ? 0
+						   : $_ + 1;
 
-				   (
-				    # dia
+				       (
+					# dia
 
-				    1e-6,
+					1e-6,
 
-				    # two coordinates
+					# two coordinates
 
-				    [
-				     $children->[$index1]->[3]->{this}->{'x'},
-				     $children->[$index1]->[3]->{this}->{'y'},
-				     $children->[$index1]->[3]->{this}->{'z'},
-				    ],
+					[
+					 $children->[$index1]->[3]->{this}->{'x'},
+					 $children->[$index1]->[3]->{this}->{'y'},
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
 
-				    [
-				     $children->[$index2]->[3]->{this}->{'x'},
-				     $children->[$index2]->[3]->{this}->{'y'},
-				     $children->[$index2]->[3]->{this}->{'z'},
-				    ],
-				   ),
+					[
+					 $children->[$index2]->[3]->{this}->{'x'},
+					 $children->[$index2]->[3]->{this}->{'y'},
+					 $children->[$index2]->[3]->{this}->{'z'},
+					],
+				       );
+				   }
+				   else
+				   {
+				       (
+					# no coordinates indicator
+
+					undef,
+				       );
+				   }
 			       }
 			       0 .. $#$children
 			      ],
@@ -347,7 +362,7 @@ sub get_visible_coordinates
 
     my $level = $options->{biolevel} || $Neurospaces::Biolevels::biolevel2internal->{$active_level};
 
-    return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level);
+    return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level, $SwiggableNeurospaces::SELECTOR_BIOLEVEL_INCLUSIVE);
 }
 
 
