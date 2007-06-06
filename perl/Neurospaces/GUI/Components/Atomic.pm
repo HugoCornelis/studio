@@ -182,34 +182,32 @@ sub draw
 				       {
 					   $contour_start_index = $index1;
 				       }
-				       else
-				       {
-					   my $index2
-					       = ($index1 + 1 <= $#$children
-						  && $children->[$index1 + 1]->[1] eq 'contou')
-						   ? $index1 + 1
-						       : $contour_start_index;
 
-					   (
-					    # thickness
+				       my $index2
+					   = ($index1 + 1 <= $#$children
+					      && $children->[$index1 + 1]->[1] eq 'contou')
+					       ? $index1 + 1
+						   : $contour_start_index;
 
-					    1e-6,
+				       (
+					# thickness
 
-					    # two coordinates
+					1e-6,
 
-					    [
-					     $children->[$index1]->[3]->{this}->{'x'},
-					     $children->[$index1]->[3]->{this}->{'y'},
-					     $children->[$index1]->[3]->{this}->{'z'},
-					    ],
+					# two coordinates
 
-					    [
-					     $children->[$index2]->[3]->{this}->{'x'},
-					     $children->[$index2]->[3]->{this}->{'y'},
-					     $children->[$index2]->[3]->{this}->{'z'},
-					    ],
-					   );
-				       }
+					[
+					 $children->[$index1]->[3]->{this}->{'x'},
+					 $children->[$index1]->[3]->{this}->{'y'},
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					[
+					 $children->[$index2]->[3]->{this}->{'x'},
+					 $children->[$index2]->[3]->{this}->{'y'},
+					 $children->[$index2]->[3]->{this}->{'z'},
+					],
+				       );
 				   }
 				   else
 				   {
