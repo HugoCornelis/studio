@@ -163,9 +163,11 @@ sub draw
     }
     elsif ($active_level eq 'ATOMIC')
     {
-	use Data::Dumper;
+# 	use Data::Dumper;
 
-	print Dumper((@$children)[0 .. 10]);
+# 	print Dumper((@$children)[0 .. 100]);
+
+	my $contour_start_index;
 
 	$result
 	    = {
@@ -176,33 +178,43 @@ sub draw
 
 				   if ($children->[$index1]->[1] eq 'contou')
 				   {
-				       my $index2
-					   = $_ + 1 > $#$children
-					       ? 0
-						   : $_ + 1;
+				       if (!defined $contour_start_index)
+				       {
+					   $contour_start_index = $index1;
+				       }
+				       else
+				       {
+					   my $index2
+					       = ($index1 + 1 <= $#$children
+						  && $children->[$index1 + 1]->[1] eq 'contou')
+						   ? $index1 + 1
+						       : $contour_start_index;
 
-				       (
-					# dia
+					   (
+					    # thickness
 
-					1e-6,
+					    1e-6,
 
-					# two coordinates
+					    # two coordinates
 
-					[
-					 $children->[$index1]->[3]->{this}->{'x'},
-					 $children->[$index1]->[3]->{this}->{'y'},
-					 $children->[$index1]->[3]->{this}->{'z'},
-					],
+					    [
+					     $children->[$index1]->[3]->{this}->{'x'},
+					     $children->[$index1]->[3]->{this}->{'y'},
+					     $children->[$index1]->[3]->{this}->{'z'},
+					    ],
 
-					[
-					 $children->[$index2]->[3]->{this}->{'x'},
-					 $children->[$index2]->[3]->{this}->{'y'},
-					 $children->[$index2]->[3]->{this}->{'z'},
-					],
-				       );
+					    [
+					     $children->[$index2]->[3]->{this}->{'x'},
+					     $children->[$index2]->[3]->{this}->{'y'},
+					     $children->[$index2]->[3]->{this}->{'z'},
+					    ],
+					   );
+				       }
 				   }
 				   else
 				   {
+				       undef $contour_start_index;
+
 				       (
 					# no coordinates indicator
 

@@ -447,8 +447,17 @@ sub drawing_render
 
 	my $begun = 0;
 
-	foreach my $coordinate (@$coordinates)
+	foreach my $coordinate_index (0 .. $#$coordinates)
 	{
+	    my $coordinate = $coordinates->[$coordinate_index];
+
+# 	    if ($coordinate_index < 300)
+# 	    {
+# 		use Data::Dumper;
+
+# 		print "$coordinate_index:" . Dumper($coordinate);
+# 	    }
+
 	    if (!defined $coordinate)
 	    {
 		# termination indicator, so terminate
@@ -479,10 +488,6 @@ sub drawing_render
 	    else
 	    {
 		# x, y, z
-
-# 		use Data::Dumper;
-
-# 		print "non dia $coordinate\n" . Dumper($coordinate);
 
 		if (!$begun)
 		{
