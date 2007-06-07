@@ -281,12 +281,12 @@ sub factory
 	= {
 	   T_sym_cell => 'Neurospaces::GUI::Components::Cell',
 	   T_sym_connection => 'Neurospaces::GUI::Components::Link',
-	   T_sym_e_m_contour => 'Neurospaces::GUI::Components::Molecule',
+	   T_sym_e_m_contour => 'Neurospaces::GUI::Components::Atomic',
 	   T_sym_network => 'Neurospaces::GUI::Components::Network',
 	   T_sym_population => 'Neurospaces::GUI::Components::Network',
 	   T_sym_projection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_v_connection => 'Neurospaces::GUI::Components::Link',
-	   T_sym_v_contour => 'Neurospaces::GUI::Components::Molecule',
+	   T_sym_v_contour => 'Neurospaces::GUI::Components::Atomic',
 	  };
 
     my $perl_type = $perl_types->{$self->{type}} || 'Neurospaces::GUI::Components::Node';
