@@ -18,7 +18,7 @@
 ##############################################################################
 
 
-package Neurospaces::GUI::Components::Molecule;
+package Neurospaces::GUI::Components::Atomic;
 
 
 use strict;
