@@ -1,5 +1,21 @@
 -*- outline -*-
 
+* Make it possible to load a model from the GUI
+** button in the menu: load model
+** edit box for filename
+** file selection dialog
+** read model
+
 * Allow to override the spine-prototype options from the library
 Requires changes throughout the different packages.
+
+* Pilot View window
+** Add buttons
+*** Stop
+halts any motion
+*** Center
+center the object in a way that makes sense
+
+** Add info
+*** Bounding box
 
