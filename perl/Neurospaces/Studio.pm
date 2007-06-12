@@ -36,18 +36,30 @@ push @INC, './perl';
 
 my $loaded_neurospaces_gui_tools_renderer = eval "require Neurospaces::GUI::Tools::Renderer;";
 
-
 if ($@)
 {
     print "$0: cannot load rendering module because of: $@\n";
     print "$0: continuing.\n";
 }
 
-
 our $renderer
     = ($loaded_neurospaces_gui_tools_renderer
        ? (print "$0: initialized rendering engine\n" || 1) && Neurospaces::GUI::Tools::Renderer->new()
        : (print "$0: could not initialize rendering engine\n" || 1) && 0);
+
+
+my $loaded_geometry = eval "require Geometry;";
+
+if ($@)
+{
+    print "$0: cannot load the geometry module because of: $@\n";
+    print "$0: continuing.\n";
+}
+
+our $geometry
+    = ($loaded_geometry
+       ? (print "$0: initialized geometry module\n" || 1)
+       : (print "$0: could not initialize geometry module\n" || 1) && 0);
 
 
 sub explore

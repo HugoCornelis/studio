@@ -167,7 +167,7 @@ sub main
 
     # read symboltype definitions in the Neurospaces core
 
-    my $symboltype_code = `cat /tmp/hierarchy/symbols/type_defines.h`;
+    my $symboltype_code = `cat /usr/local/neurospaces/instrumentor/hierarchy/output/symbols/type_defines.h`;
 
 #     print Dumper($symboltype_code);
 

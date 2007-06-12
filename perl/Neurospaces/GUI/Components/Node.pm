@@ -333,6 +333,12 @@ sub signal_cursor_changed
 
 	print "Parameters for symbol $current\n";
 
+	my $specific_parameters = $self->get_parameters($current);
+
+	my $textbuffer_specific_parameters = $self->{gtk2_textbuffer_specific_parameters};
+
+	$textbuffer_specific_parameters->set_text(YAML::Dump($specific_parameters));
+
 	my $parameters = $self->get_parameters($current);
 
 	my $textbuffer_parameters = $self->{gtk2_textbuffer_parameters};
@@ -468,7 +474,29 @@ sub window_add_layout
 
 	$list_scroller->add($list);
 
-	# center : scrollable text
+	# center1 : specific parameters scrollable text
+
+	my $specific_table_scroller = Gtk2::ScrolledWindow->new();
+
+	$specific_table_scroller->set_size_request(250, 300);
+
+	$specific_table_scroller->set_policy (qw/automatic automatic/);
+
+	$hbox->pack_start ($specific_table_scroller, 0, 1, 0);
+
+	my $textbuffer_specific_parameters = Gtk2::TextBuffer->new();
+
+	$self->{gtk2_textbuffer_specific_parameters} = $textbuffer_specific_parameters;
+
+	my $text_specific_parameters = Gtk2::TextView->new();
+
+	$text_specific_parameters->set_editable(FALSE);
+
+	$text_specific_parameters->set_buffer($textbuffer_specific_parameters);
+
+	$specific_table_scroller->add($text_specific_parameters);
+
+	# center2 : all parameters scrollable text
 
 	my $table_scroller = Gtk2::ScrolledWindow->new();
 
