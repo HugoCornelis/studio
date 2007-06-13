@@ -127,7 +127,7 @@ sub draw
 
     $gui_command2->execute();
 
-    my $active_level = $self->{state}->{molecule_active_level};
+    my $active_level = $self->{state}->{atomic_active_level};
 
     # obtain coordinates
 
@@ -260,7 +260,7 @@ sub get_buttons
 
     my $window = $self->{gui}->{window};
 
-    my $active_level = $self->{state}->{molecule_active_level};
+    my $active_level = $self->{state}->{atomic_active_level};
 
     my $all_levels
 	= [
@@ -335,7 +335,7 @@ sub get_buttons
 
 					my $active_level = $all_levels->[$active_index];
 
-					$self->{state}->{molecule_active_level} = $active_level;
+					$self->{state}->{atomic_active_level} = $active_level;
 				    },
 				   },
 		       },
@@ -350,13 +350,20 @@ sub get_buttons
 }
 
 
-sub initialize_state
+sub get_specific_parameters
 {
     my $self = shift;
 
-    $self->SUPER::initialize_state(@_);
+    my $current = shift;
 
-    $self->{state}->{molecule_active_level} = 'ATOMIC';
+    my $specific_parameters
+	= {
+	   THICKNESS => 1,
+	  };
+
+    my $result = $self->parameters_2_array_ref($current, $specific_parameters);
+
+    return $result;
 }
 
 
@@ -366,13 +373,23 @@ sub get_visible_coordinates
 
     my $options = shift;
 
-    my $active_level = $self->{state}->{molecule_active_level};
+    my $active_level = $self->{state}->{atomic_active_level};
 
     my $serial = $self->{this};
 
     my $level = $options->{biolevel} || $Neurospaces::Biolevels::biolevel2internal->{$active_level};
 
     return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level, $SwiggableNeurospaces::SELECTOR_BIOLEVEL_INCLUSIVE);
+}
+
+
+sub initialize_state
+{
+    my $self = shift;
+
+    $self->SUPER::initialize_state(@_);
+
+    $self->{state}->{atomic_active_level} = 'ATOMIC';
 }
 
 

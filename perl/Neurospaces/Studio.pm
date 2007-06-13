@@ -70,6 +70,10 @@ sub explore
 
     my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => $serial, studio => $self, }, );
 
+#     use Data::Dumper;
+
+#     print Dumper($symbol);
+
     $symbol->explore();
 }
 

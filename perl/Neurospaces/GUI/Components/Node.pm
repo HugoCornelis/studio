@@ -35,6 +35,7 @@ use Neurospaces::GUI::Components::Atomic;
 use Neurospaces::GUI::Components::Cell;
 use Neurospaces::GUI::Components::Link;
 use Neurospaces::GUI::Components::Network;
+use Neurospaces::GUI::Components::Root;
 
 
 sub explore
@@ -257,6 +258,18 @@ sub get_parameters
 }
 
 
+# sub get_specific_parameters
+# {
+#     my $self = shift;
+
+#     my $current = shift;
+
+#     my $result = [];
+
+#     return $result;
+# }
+
+
 sub initialize_state
 {
     my $self = shift;
@@ -285,6 +298,7 @@ sub factory
 	   T_sym_network => 'Neurospaces::GUI::Components::Network',
 	   T_sym_population => 'Neurospaces::GUI::Components::Network',
 	   T_sym_projection => 'Neurospaces::GUI::Components::Link',
+	   T_sym_root => 'Neurospaces::GUI::Components::Root',
 	   T_sym_v_connection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_v_contour => 'Neurospaces::GUI::Components::Atomic',
 	  };
@@ -302,6 +316,71 @@ sub factory
 sub factory_with_window
 {
     factory(@_)->explore();
+}
+
+
+sub parameters_2_array_ref
+{
+    my $self = shift;
+
+    my $current = shift;
+
+    my $parameters = shift;
+
+    my $result = [];
+
+    # loop over the parameters
+
+    foreach my $parameter_name (keys %$parameters)
+    {
+	# get specification for this parameter
+
+	my $specs = $parameters->{$parameter_name};
+
+	# process simple values
+
+	if (!ref $specs
+	    && $specs)
+	{
+	    my $current_symbol = SwiggableNeurospaces::objectify_serial($current);
+
+	    # simple values are reported as direct values
+
+	    my $value = SwiggableNeurospaces::symbol_parameter_value($current_symbol->{_symbol}, $parameter_name, $current_symbol->{_context});
+
+	    push @$result, { $parameter_name => $value, };
+	}
+
+	# for a hashed spec
+
+	elsif (ref $specs eq 'HASH')
+	{
+	    # loop over the spec
+
+	    foreach my $spec_name (keys %$specs)
+	    {
+		my $spec = $specs->{$spec_name};
+
+		#t fetch the method and arguments
+
+		#t call method, store value
+	    }
+	}
+	else
+	{
+	    #t not sure how to report this in the right way
+
+	    print "$0: cannot process parameter spec: " . Dumper($specs);
+	}
+    }
+
+#     use Data::Dumper;
+
+#     print Dumper($result);
+
+    # return result
+
+    return $result;
 }
 
 
@@ -333,11 +412,11 @@ sub signal_cursor_changed
 
 	print "Parameters for symbol $current\n";
 
-	my $specific_parameters = $self->get_parameters($current);
+	my $specific_parameters = $self->get_specific_parameters($current);
 
 	my $textbuffer_specific_parameters = $self->{gtk2_textbuffer_specific_parameters};
 
-	$textbuffer_specific_parameters->set_text(YAML::Dump($specific_parameters));
+	$textbuffer_specific_parameters->set_text(YAML::Dump( { 'specific parameters' => $specific_parameters, }, ));
 
 	my $parameters = $self->get_parameters($current);
 

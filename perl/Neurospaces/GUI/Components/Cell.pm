@@ -234,13 +234,19 @@ sub get_buttons
 }
 
 
-sub initialize_state
+sub get_specific_parameters
 {
     my $self = shift;
 
-    $self->SUPER::initialize_state(@_);
+    my $current = shift;
 
-    $self->{state}->{cell_active_level} = 'SEGMENT';
+    my $specific_parameters
+	= {
+	  };
+
+    my $result = $self->parameters_2_array_ref($current, $specific_parameters);
+
+    return $result;
 }
 
 
@@ -259,6 +265,16 @@ sub get_visible_coordinates
 #     print "Cell.pm: Drawing level is $level\n";
 
     return SwiggableNeurospaces::swig_get_visible_coordinates($serial, $level, $SwiggableNeurospaces::SELECTOR_BIOLEVEL_EXCLUSIVE);
+}
+
+
+sub initialize_state
+{
+    my $self = shift;
+
+    $self->SUPER::initialize_state(@_);
+
+    $self->{state}->{cell_active_level} = 'SEGMENT';
 }
 
 
