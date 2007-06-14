@@ -1,5 +1,5 @@
 dnl
-dnl The neurospaces studio : a graphical frontend for neurospaces.
+dnl The neurospaces studio: a frontend for neurospaces, including a GUI.
 dnl
 
 dnl ##########################################################################
