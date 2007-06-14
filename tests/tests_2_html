@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 #!/usr/bin/perl -d:ptkdb
 #
-# $Id: tests_2_html 1.20 Thu, 19 Apr 2007 12:41:33 -0500 hugo $
+#
 #
 
 use strict;
@@ -390,44 +390,100 @@ options :
 		    $html .= $cgi->h2("This command definition is currently disabled (disabled is '$command_definition->{disabled}')");
 		}
 
-		my $model = [ $command_definition->{command}, @{$command_definition->{arguments} || []}, ];
-
-		if (@$model)
+		if ($command_definition->{command} =~ /CODE/)
 		{
-		    # output source code
+		    # embedded perl code
 
-		    my $source_information = output_source($file, $model, { guessing => 0, }, );
+		    use Data::Dumper;
 
-		    my $source_anchor = defined $source_information->{result_anchor} ? " href=\"$source_information->{result_anchor}\"" . $source_information->{result_anchor} : "" ;
+		    $Data::Dumper::Deparse = 1;
 
-		    my $command .= "<a$source_anchor>" . (join ' ', @$model) . "</a>";
-
-		    $html .= $cgi->h4("Startup command : " . $command);
-
-		    if (! scalar grep { /^[^-]/ } @$model [ 1 .. $#$model ] )
 		    {
-			$html .= "(No model has been loaded for the following set of commands.)";
+			my $perl_code = Dumper($command_definition->{command});
+
+			if (0)
+			{
+			    require PPI;
+			    require PPI::HTML;
+
+# 			    print $perl_code;
+
+			    # Load your Perl file
+			    my $Document = PPI::Document->new(\$perl_code);
+
+			    # Create a reusable syntax highlighter
+			    my $Highlight = PPI::HTML->new( line_numbers => 1 );
+
+			    # Spit out the HTML
+			    $html .= "\n<verbatim>\n" . $Highlight->html( $Document ) . "\n</verbatim>\n";
+			}
+			elsif (0)
+			{
+			    require IPC::Open3;
+
+			    my ($wtr, $rdr, $err);
+			    my $pid = open3($wtr, $rdr, $err, "source-highlight 2>&1 --line-number-ref --src-lang perl --out-format html");
+
+			    #! this might block for long code fragments ?
+
+			    print $wtr $perl_code;
+
+			    my $source_html;
+
+			    read $rdr, $source_html, 100000;
+
+			    $html .= "\n<verbatim>\n" . $source_html . "\n</verbatim>\n";
+			}
+			elsif (1)
+			{
+			    use File::Temp qw/ tempfile tempdir /;
+
+			    my ($fh, $filename) = tempfile();
+
+			    print $fh $perl_code;
+
+			    $fh->close();
+
+			    use IO::File;
+
+			    my $reader;
+
+			    open($reader, "source-highlight 2>&1 --line-number-ref --src-lang perl --out-format html --input \"$filename\" |");
+
+			    local $/;
+
+			    my $source_html = <$reader>;
+
+			    close($reader);
+
+			    $html .= "\n<verbatim>\n" . $source_html . "\n</verbatim>\n";
+			}
+
 		    }
 		}
 		else
 		{
-		    #t embedded perl code
+		    my $model = [ $command_definition->{command}, @{$command_definition->{arguments} || []}, ];
 
-# 		{
-# 		    use PPI;
-# 		    use PPI::HTML;
+		    if (@$model)
+		    {
+			# output source code
 
-# 		    # Load your Perl file
-# 		    my $Document = PPI::Document->load( 'script.pl' );
+			#! guessing turned on to turn executables into highligted source code.
 
-# 		    # Create a reusable syntax highlighter
-# 		    my $Highlight = PPI::HTML->new( line_numbers => 1 );
+			my $source_information = output_source($file, $model, { guessing => 0, }, );
 
-# 		    # Spit out the HTML
-# 		    print $Highlight->html( $Document );
+			my $source_anchor = defined $source_information->{result_anchor} ? " href=\"$source_information->{result_anchor}\"" . $source_information->{result_anchor} : "" ;
 
-# 		}
+			my $command .= "<a$source_anchor>" . (join ' ', @$model) . "</a>";
 
+			$html .= $cgi->h4("Startup command : " . $command);
+
+			if (! scalar grep { /^[^-]/ } @$model [ 1 .. $#$model ] )
+			{
+			    $html .= "(No model has been loaded for the following set of commands.)";
+			}
+		    }
 		}
 
 		$html .= $cgi->hr();
@@ -504,7 +560,7 @@ options :
 			$entries++;
 		    }
 
-		    if (defined $command_test->{disabled}
+		    if ($command_test->{disabled}
 			|| $command_definition->{disabled})
 		    {
 			#! loose some info here, don't really care
