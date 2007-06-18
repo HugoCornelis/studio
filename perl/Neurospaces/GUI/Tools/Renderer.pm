@@ -458,9 +458,11 @@ sub drawing_render
 # 		print "$coordinate_index:" . Dumper($coordinate);
 # 	    }
 
+	    # if termination indicator
+
 	    if (!defined $coordinate)
 	    {
-		# termination indicator, so terminate
+		# terminate drawing
 
 		if ($begun)
 		{
@@ -469,8 +471,13 @@ sub drawing_render
 		    $begun = 0;
 		}
 	    }
+
+	    # if a thickness
+
 	    elsif (!ref $coordinate)
 	    {
+		# terminate drawing
+
 		if ($begun)
 		{
 		    glEnd();
@@ -485,9 +492,12 @@ sub drawing_render
 		glLineWidth($thickness);
 
 	    }
+
+	    # else a regular coordinate
+
 	    else
 	    {
-		# x, y, z
+		# start drawing if not needed
 
 		if (!$begun)
 		{
@@ -496,9 +506,18 @@ sub drawing_render
 		    $begun = 1;
 		}
 
+# 		if ($coordinate_index < 300)
+# 		{
+# 		    print "Drawing vertex\n";
+# 		}
+
+		# vertex x, y, z
+
 		glVertex(@$coordinate);
 	    }
 	}
+
+	# end drawing
 
 	if ($begun)
 	{

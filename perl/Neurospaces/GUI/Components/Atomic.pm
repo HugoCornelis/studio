@@ -176,6 +176,8 @@ sub draw
 			       {
 				   my $index1 = $_;
 
+				   # a em contour point
+
 				   if ($children->[$index1]->[1] eq 'contou')
 				   {
 				       if (!defined $contour_start_index)
@@ -194,7 +196,57 @@ sub draw
 
 					1e-6,
 
-					# two coordinates
+					# a rectangle for the point
+
+					[
+					 $children->[$index1]->[3]->{this}->{'x'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					[
+					 $children->[$index1]->[3]->{this}->{'x'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					[
+					 $children->[$index1]->[3]->{this}->{'x'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					[
+					 $children->[$index1]->[3]->{this}->{'x'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					[
+					 $children->[$index1]->[3]->{this}->{'x'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					[
+					 $children->[$index1]->[3]->{this}->{'x'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					[
+					 $children->[$index1]->[3]->{this}->{'x'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					[
+					 $children->[$index1]->[3]->{this}->{'x'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'z'},
+					],
+
+					# connect with next coordinate
 
 					[
 					 $children->[$index1]->[3]->{this}->{'x'},
@@ -220,7 +272,7 @@ sub draw
 				       );
 				   }
 			       }
-			       0 .. $#$children
+			       0 .. $#$children,
 			      ],
 	       color => [ 1, 1, 1, ],
  	       light => 0,
