@@ -195,50 +195,50 @@ sub draw
 					# a rectangle for the point
 
 					[
-					 $children->[$index1]->[3]->{this}->{'x'} - 0.0005e-6,
-					 $children->[$index1]->[3]->{this}->{'y'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'x'} - 0.001e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} - 0.001e-6,
 					 $children->[$index1]->[3]->{this}->{'z'},
 					],
 
 					[
-					 $children->[$index1]->[3]->{this}->{'x'} + 0.0005e-6,
-					 $children->[$index1]->[3]->{this}->{'y'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'x'} + 0.001e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} - 0.001e-6,
 					 $children->[$index1]->[3]->{this}->{'z'},
 					],
 
 					[
-					 $children->[$index1]->[3]->{this}->{'x'} + 0.0005e-6,
-					 $children->[$index1]->[3]->{this}->{'y'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'x'} + 0.001e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} - 0.001e-6,
 					 $children->[$index1]->[3]->{this}->{'z'},
 					],
 
 					[
-					 $children->[$index1]->[3]->{this}->{'x'} + 0.0005e-6,
-					 $children->[$index1]->[3]->{this}->{'y'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'x'} + 0.001e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} + 0.001e-6,
 					 $children->[$index1]->[3]->{this}->{'z'},
 					],
 
 					[
-					 $children->[$index1]->[3]->{this}->{'x'} + 0.0005e-6,
-					 $children->[$index1]->[3]->{this}->{'y'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'x'} + 0.001e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} + 0.001e-6,
 					 $children->[$index1]->[3]->{this}->{'z'},
 					],
 
 					[
-					 $children->[$index1]->[3]->{this}->{'x'} - 0.0005e-6,
-					 $children->[$index1]->[3]->{this}->{'y'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'x'} - 0.001e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} + 0.001e-6,
 					 $children->[$index1]->[3]->{this}->{'z'},
 					],
 
 					[
-					 $children->[$index1]->[3]->{this}->{'x'} - 0.0005e-6,
-					 $children->[$index1]->[3]->{this}->{'y'} + 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'x'} - 0.001e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} + 0.001e-6,
 					 $children->[$index1]->[3]->{this}->{'z'},
 					],
 
 					[
-					 $children->[$index1]->[3]->{this}->{'x'} - 0.0005e-6,
-					 $children->[$index1]->[3]->{this}->{'y'} - 0.0005e-6,
+					 $children->[$index1]->[3]->{this}->{'x'} - 0.001e-6,
+					 $children->[$index1]->[3]->{this}->{'y'} - 0.001e-6,
 					 $children->[$index1]->[3]->{this}->{'z'},
 					],
 
