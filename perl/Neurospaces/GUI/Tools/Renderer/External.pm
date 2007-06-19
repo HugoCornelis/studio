@@ -151,9 +151,9 @@ sub draw
 	   type => 'GL_LINES',
 	  };
 
-#     use Data::Dumper;
+    use Data::Dumper;
 
-#     print "For Neurospaces::GUI::Tools::Renderer::External:\n" . Dumper($result);
+    print "For Neurospaces::GUI::Tools::Renderer::External:\n" . Dumper($result);
 
     return $result;
 }

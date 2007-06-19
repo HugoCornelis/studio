@@ -159,12 +159,12 @@ sub main
 	Neurospaces::GUI::gui($0);
     }
 
-    my $renderer = $Neurospaces::Studio::renderer;
+#     my $renderer = $Neurospaces::Studio::renderer;
 
-    if ($renderer)
-    {
-	$renderer->start();
-    }
+#     if ($renderer)
+#     {
+# 	$renderer->start();
+#     }
 
     # from here on, go through the options alphabetically
 
