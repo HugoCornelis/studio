@@ -163,10 +163,6 @@ sub draw
     }
     elsif ($active_level eq 'ATOMIC')
     {
-# 	use Data::Dumper;
-
-# 	print Dumper((@$children)[0 .. 100]);
-
 	my $contour_start_index;
 
 	$result
@@ -300,7 +296,9 @@ sub draw
 
 #     use Data::Dumper;
 
-#     print Dumper($result);
+#     my $coordinates = $result->{coordinates};
+
+#     print Dumper((@$coordinates)[0 .. 10]);
 
     return $result;
 }
@@ -341,7 +339,11 @@ sub get_buttons
 					}
 					else
 					{
-					    $renderer->symbol_set($self);
+					    $renderer->symbols_clear();
+
+					    $renderer->symbol_add($self);
+
+ 					    $renderer->start();
 					}
 				    },
 				    arguments => [],

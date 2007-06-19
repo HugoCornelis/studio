@@ -86,22 +86,26 @@ sub commands_replay
     {
 	print "No rendering engine defined\n";
     }
-
-    $renderer->symbol_set($symbol);
-
-    foreach my $command (@$commands)
+    else
     {
-	print "Executing command $command->{name}\n";
+	$renderer->symbol_add($symbol);
 
-	if ($command->{target} eq 'Neurospaces::GUI::Tools::Renderer')
+	$renderer->start();
+
+	foreach my $command (@$commands)
 	{
-	    $command = Neurospaces::GUI::Tools::Renderer->command_preprocessor($command);
+	    print "Executing command $command->{name}\n";
 
-	    Neurospaces::GUI::Tools::Renderer->command_processor($command);
+	    if ($command->{target} eq 'Neurospaces::GUI::Tools::Renderer')
+	    {
+		$command = Neurospaces::GUI::Tools::Renderer->command_preprocessor($command);
+
+		Neurospaces::GUI::Tools::Renderer->command_processor($command);
+	    }
 	}
-    }
 
-    print "Played " . (scalar @$commands) . " commands\n";
+	print "Played " . (scalar @$commands) . " commands\n";
+    }
 }
 
 

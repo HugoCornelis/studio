@@ -1,25 +1,5 @@
 $files = {
-           '_<perl/Neurospaces/Studio.pm' => [
-                                               {
-                                                 'expr' => undef,
-                                                 'value' => '1',
-                                                 'text' => '    my $serial = shift;
-',
-                                                 'fname' => 'perl/Neurospaces/Studio.pm',
-                                                 'type' => 'user',
-                                                 'line' => '33'
-                                               }
-                                             ],
            '_<bin/neurospaces' => [
-                                    {
-                                      'expr' => undef,
-                                      'value' => '1',
-                                      'text' => '    if ($option_models)
-',
-                                      'fname' => 'bin/neurospaces',
-                                      'type' => 'user',
-                                      'line' => 113
-                                    },
                                     {
                                       'expr' => undef,
                                       'value' => '1',
@@ -27,9 +7,29 @@ $files = {
 ',
                                       'fname' => 'bin/neurospaces',
                                       'type' => 'user',
-                                      'line' => 143
+                                      'line' => 156
+                                    },
+                                    {
+                                      'expr' => undef,
+                                      'value' => '1',
+                                      'text' => '    if ($option_models)
+',
+                                      'fname' => 'bin/neurospaces',
+                                      'type' => 'user',
+                                      'line' => 114
                                     }
-                                  ]
+                                  ],
+           '_<perl/Neurospaces/GUI/Components/Atomic.pm' => [
+                                                              {
+                                                                'expr' => undef,
+                                                                'value' => '1',
+                                                                'text' => '					if (!$renderer)
+',
+                                                                'fname' => 'perl/Neurospaces/GUI/Components/Atomic.pm',
+                                                                'type' => 'user',
+                                                                'line' => '338'
+                                                              }
+                                                            ]
          };
 $expr_list = [];
 $eval_saved_text = undef;

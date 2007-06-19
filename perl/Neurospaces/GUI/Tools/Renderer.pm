@@ -4,8 +4,6 @@
 ## Neurospaces: a library which implements a global typed symbol table to
 ## be used in neurobiological model maintenance and simulation.
 ##
-## $Id: Renderer.pm 1.41 Thu, 10 May 2007 20:53:37 -0500 hugo $
-##
 
 ##############################################################################
 ##'
@@ -244,7 +242,7 @@ sub draw_axes
 
 sub draw_view
 {
-    my $self    = shift;
+    my $self = shift;
 
     my $objects = $self->{objects};
 
@@ -389,7 +387,7 @@ sub drawing_render
 {
     my $drawing = shift;
 
-    my $models = shift;
+    my $lists = shift;
 
 #     print $drawing->{name}               if $drawing->{name};
 
@@ -409,7 +407,7 @@ sub drawing_render
     {
 # 	print "Calling list $drawing->{model}\n";
 
-	my $list = $models->{$drawing->{model}};
+	my $list = $lists->{$drawing->{model}};
 
 	if (defined $list)
 	{
@@ -667,6 +665,20 @@ sub events_trigger
     # return command list
 
     return \@commands;
+}
+
+
+sub external_add
+{
+    my $self = shift;
+
+    my $external = shift;
+
+    my $externals = $self->{externals} || [];
+
+    push @$externals, $external;
+
+    $self->{externals} = $externals;
 }
 
 
@@ -961,48 +973,87 @@ sub models_init
 {
     my $self = shift;
 
-    my $symbol = $self->{symbol};
+    # assemble the list of models ...
 
-    my %models
-	= (
+    # ... from symbols
+
+    my $symbols = $self->{symbols};
+
+    # ... and from the external data
+
+    my $externals = $self->{externals};
+
+    my $models
+	= {
 # 	   cube => \&drawing_cube,
-	   $symbol ? ($symbol->{context} => 0) : (),
-	  );
+	   (
+	    map
+	    {
+		$_->{context} => $_;
+	    }
+	    @$symbols,
+	   ),
+	   (
+	    map
+	    {
+		$_->{identifier} => $_;
+	    }
+	    @$externals,
+	   ),
+	  };
 
-    my $number = glGenLists(scalar keys %models);
+    # determine the number of gl lists we will create
+
+    my $number = glGenLists(scalar @$symbols);
+
+    my $display_lists;
 
     # compile all models
 
-    my %display_lists;
-
-    foreach my $model (keys %models)
+    foreach my $model_name (keys %$models)
     {
-        glNewList($number, GL_COMPILE);
+	print "Compiling $model_name\n";
 
-	if ($models{$model})
+	# start the gl list
+
+	glNewList($number, GL_COMPILE);
+
+	# for inline code
+
+	if (ref $models->{$model_name} eq 'CODE')
 	{
-	    $models{$model}->();
+	    # call the code, supposed to do gl calls
+
+	    $models->{$model_name}->();
 	}
+
+	# else a regular interface
+
 	else
 	{
-	    #! relative_depth is ignored for now,
-	    #! the cell component will configure to draw upto the segment level,
-	    #! the population component will configure to draw upto cell level.
-	    #!
-	    #! the previously used depth option is now replaced with biolevel.
-	    #! biolevels are defined in the core of Neurospaces.
+	    # compile the object to gl code
 
-	    my $drawing = $symbol->draw($self, { relative_depth => 1, }, );
+	    my $drawing = $models->{$model_name}->draw($self, );
 
 	    drawing_render($drawing, {}, );
 	}
 
-        glEndList();
+	# end the list
 
-        $display_lists{$model} = $number++;
+	glEndList();
+
+	# assign the number to model
+
+	$display_lists->{$model_name} = $number;
+
+	# next gl list identifier
+
+	$number++;
     }
 
-    $self->{models}->{lists} = \%display_lists;
+    # store the compile lists
+
+    $self->{models}->{lists} = $display_lists;
 }
 
 
@@ -1140,11 +1191,14 @@ sub objects_init
 
 #     $self->{objects} = \@objects;
 
-    my $symbol = $self->{symbol};
+    my $symbols = $self->{symbols};
 
-    if ($symbol)
+    foreach my $symbol (@$symbols)
     {
-	push @$objects, { model => $symbol->{context}, };
+	if ($symbol)
+	{
+	    push @$objects, { model => $symbol->{context}, };
+	}
     }
 
     $self->{objects} = $objects;
@@ -1155,15 +1209,15 @@ sub process_key
 {
     my $self = shift;
 
-    my $event   = shift;
+    my $event = shift;
 
-    my $symbol  = $event->key_sym();
+    my $key_sym = $event->key_sym();
 
-    my $name    = SDL::GetKeyName($symbol);
+    my $name = SDL::GetKeyName($key_sym);
 
     my $command = $self->{conf}->{bind}->{$name} || '';
 
-    my $down    = $event->type() == SDL_KEYDOWN;
+    my $down = $event->type() == SDL_KEYDOWN;
 
     if ($command =~ /^\+/)
     {
@@ -1352,13 +1406,45 @@ sub set_view_3d
 }
 
 
-sub symbol_set
+sub symbol_add
 {
     my $self = shift;
 
     my $symbol = shift;
 
-    $self->{symbol} = $symbol;
+    my $symbols = $self->{symbols} || [];
+
+    push @$symbols, $symbol;
+
+    $self->{symbols} = $symbols;
+}
+
+
+# sub symbol_set
+# {
+#     my $self = shift;
+
+#     my $symbol = shift;
+
+#     $self->{symbols} = [ $symbol, ];
+
+#     $self->{done} = 0;
+
+#     $self->init();
+# }
+
+
+sub symbols_clear
+{
+    my $self = shift;
+
+    $self->{symbols} = [];
+}
+
+
+sub start
+{
+    my $self = shift;
 
     $self->{done} = 0;
 

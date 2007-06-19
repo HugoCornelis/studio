@@ -172,7 +172,11 @@ sub get_buttons
 					}
 					else
 					{
-					    $renderer->symbol_set($self);
+					    $renderer->symbols_clear();
+
+					    $renderer->symbol_add($self);
+
+ 					    $renderer->start();
 					}
 				    },
 				    arguments => [],
