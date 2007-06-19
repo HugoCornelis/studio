@@ -244,13 +244,15 @@ sub draw_view
 {
     my $self = shift;
 
+    # loop over all object in the view
+
     my $objects = $self->{objects};
 
     foreach my $object (@$objects)
     {
-	drawing_render($object, $self->{models}->{lists});
+	# draw the object
 
-	glPopMatrix();
+	$self->drawing_render($object);
     }
 }
 
@@ -385,11 +387,11 @@ sub drawing_quad_face
 
 sub drawing_render
 {
+    my $self = shift;
+
     my $drawing = shift;
 
-    my $lists = shift;
-
-#     print $drawing->{name}               if $drawing->{name};
+    my $lists = $self->{models}->{lists};
 
     $drawing->{light}
 	? glEnable(GL_LIGHTING)
@@ -397,17 +399,21 @@ sub drawing_render
 
     glColor(@{$drawing->{color}})        if $drawing->{color};
 
+    # push a working matrix for this drawing
+
     glPushMatrix();
+
+    # set the matrix parameters
 
     glTranslate(@{$drawing->{position}}) if $drawing->{position};
     glRotate(@{$drawing->{orientation}}) if $drawing->{orientation};
     glScale(@{$drawing->{scale}})        if $drawing->{scale};
 
-    if ($drawing->{model})
-    {
-# 	print "Calling list $drawing->{model}\n";
+    # if there is a request to draw from a display list
 
-	my $list = $lists->{$drawing->{model}};
+    if ($drawing->{list})
+    {
+	my $list = $lists->{$drawing->{list}};
 
 	if (defined $list)
 	{
@@ -415,126 +421,131 @@ sub drawing_render
 	}
 	else
 	{
-	    print "list $drawing->{model} does not exist (internal error)\n";
+	    print "list $drawing->{list} does not exist (internal error)\n";
 	}
     }
+
+    # for hardcoded drawing routines
+
+    elsif ($drawing->{draw})
+    {
+	$drawing->{draw}->();
+    }
+
+    # else
+
     else
     {
-# 	print "Calling draw sub for $drawing->{name}\n";
-
-	$drawing->{draw}->() if $drawing->{draw};
-    }
-
-#     use Data::Dumper;
-
-#     print Dumper($drawing);
-
-    if (defined $drawing->{type}
-	&& $drawing->{type} eq 'GL_LINES')
-    {
-# 	glEnable(GL_LINE_SMOOTH);
-
-# 	glEnable(GL_BLEND);
-# # 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-# # 	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-# 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-# 	glPointSize(100);
-
-	my $coordinates = $drawing->{coordinates};
-
-	my $begun = 0;
-
-	foreach my $coordinate_index (0 .. $#$coordinates)
+	if (defined $drawing->{type}
+	    && $drawing->{type} eq 'GL_LINES')
 	{
-	    my $coordinate = $coordinates->[$coordinate_index];
+	    # 	glEnable(GL_LINE_SMOOTH);
 
-# 	    if ($coordinate_index < 300)
-# 	    {
-# 		use Data::Dumper;
+	    # 	glEnable(GL_BLEND);
+	    # # 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	    # # 	glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+	    # 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-# 		print "$coordinate_index:" . Dumper($coordinate);
-# 	    }
+	    # 	glPointSize(100);
 
-	    # if termination indicator
+	    my $coordinates = $drawing->{coordinates};
 
-	    if (!defined $coordinate)
+	    my $begun = 0;
+
+	    foreach my $coordinate_index (0 .. $#$coordinates)
 	    {
-		# terminate drawing
+		my $coordinate = $coordinates->[$coordinate_index];
 
-		if ($begun)
+		# 	    if ($coordinate_index < 300)
+		# 	    {
+		# 		use Data::Dumper;
+
+		# 		print "$coordinate_index:" . Dumper($coordinate);
+		# 	    }
+
+		# if termination indicator
+
+		if (!defined $coordinate)
 		{
-		    glEnd();
+		    # terminate drawing
 
-		    $begun = 0;
+		    if ($begun)
+		    {
+			glEnd();
+
+			$begun = 0;
+		    }
+		}
+
+		# if a thickness
+
+		elsif (!ref $coordinate)
+		{
+		    # terminate drawing
+
+		    if ($begun)
+		    {
+			glEnd();
+
+			$begun = 0;
+		    }
+
+		    # set thickness according to diameter
+
+		    my $thickness = $coordinate * 1e6;
+
+		    glLineWidth($thickness);
+
+		}
+
+		# else a regular coordinate
+
+		else
+		{
+		    # start drawing if not needed
+
+		    if (!$begun)
+		    {
+			glBegin(GL_LINES);
+
+			$begun = 1;
+		    }
+
+		    # 		if ($coordinate_index < 300)
+		    # 		{
+		    # 		    print "Drawing vertex\n";
+		    # 		}
+
+		    # vertex x, y, z
+
+		    glVertex(@$coordinate);
 		}
 	    }
 
-	    # if a thickness
+	    # end drawing
 
-	    elsif (!ref $coordinate)
+	    if ($begun)
 	    {
-		# terminate drawing
+		glEnd();
 
-		if ($begun)
-		{
-		    glEnd();
-
-		    $begun = 0;
-		}
-
-	        # set thickness according to diameter
-
-		my $thickness = $coordinate * 1e6;
-
-		glLineWidth($thickness);
-
+		$begun = 0;
 	    }
+	}
+	elsif (defined $drawing->{type}
+	       && $drawing->{type} eq 'cubes')
+	{
+	    my $coordinate_specs = $drawing->{coordinates};
 
-	    # else a regular coordinate
-
-	    else
+	    foreach my $coordinate_spec (@$coordinate_specs)
 	    {
-		# start drawing if not needed
-
-		if (!$begun)
-		{
-		    glBegin(GL_LINES);
-
-		    $begun = 1;
-		}
-
-# 		if ($coordinate_index < 300)
-# 		{
-# 		    print "Drawing vertex\n";
-# 		}
-
-		# vertex x, y, z
-
-		glVertex(@$coordinate);
+		drawing_cube($drawing, @$coordinate_spec);
 	    }
 	}
 
-	# end drawing
+	# pop the matrix that was associated with this drawing
 
-	if ($begun)
-	{
-	    glEnd();
-
-	    $begun = 0;
-	}
+	glPopMatrix();
     }
-    elsif (defined $drawing->{type}
-	   && $drawing->{type} eq 'cubes')
-    {
-	my $coordinate_specs = $drawing->{coordinates};
-
-	foreach my $coordinate_spec (@$coordinate_specs)
-	{
-	    drawing_cube($drawing, @$coordinate_spec);
-	}
-    }
-
 }
 
 
@@ -973,6 +984,10 @@ sub models_init
 {
     my $self = shift;
 
+    # there are no models defined, so clear out the display lists
+
+    $self->{models}->{lists} = {};
+
     # assemble the list of models ...
 
     # ... from symbols
@@ -1035,7 +1050,11 @@ sub models_init
 
 	    my $drawing = $models->{$model_name}->draw($self, );
 
-	    drawing_render($drawing, {}, );
+	    print "Created $drawing->{model}\n";
+
+	    #! force an empty list of gl lists
+
+	    $self->drawing_render($drawing, );
 	}
 
 	# end the list
@@ -1152,6 +1171,10 @@ sub objects_init
 
     # map all objects to their models
 
+    my $symbols = $self->{symbols};
+
+    my $externals = $self->{externals};
+
     my $objects
 	= [
 	   {
@@ -1173,6 +1196,20 @@ sub objects_init
 # 	    scale       => [.2, 1, 2],
 # 	    draw        => \&drawing_cube,
 # 	   },
+	   (
+	    map
+	    {
+		{ list => $_->{context}, };
+	    }
+	    @$symbols,
+	   ),
+	   (
+	    map
+	    {
+		{ list => $_->{identifier}, };
+	    }
+	    @$externals,
+	   ),
 	  ];
 
 #     foreach my $num (1 .. 5)
@@ -1190,16 +1227,6 @@ sub objects_init
 #     }
 
 #     $self->{objects} = \@objects;
-
-    my $symbols = $self->{symbols};
-
-    foreach my $symbol (@$symbols)
-    {
-	if ($symbol)
-	{
-	    push @$objects, { model => $symbol->{context}, };
-	}
-    }
 
     $self->{objects} = $objects;
 }

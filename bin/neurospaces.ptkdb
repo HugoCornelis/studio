@@ -3,6 +3,15 @@ $files = {
                                     {
                                       'expr' => undef,
                                       'value' => '1',
+                                      'text' => '	Neurospaces::GUI::gui($0);
+',
+                                      'fname' => 'bin/neurospaces',
+                                      'type' => 'user',
+                                      'line' => '159'
+                                    },
+                                    {
+                                      'expr' => undef,
+                                      'value' => '1',
                                       'text' => '    if ($option_gui)
 ',
                                       'fname' => 'bin/neurospaces',
@@ -18,18 +27,7 @@ $files = {
                                       'type' => 'user',
                                       'line' => 114
                                     }
-                                  ],
-           '_<perl/Neurospaces/GUI/Components/Atomic.pm' => [
-                                                              {
-                                                                'expr' => undef,
-                                                                'value' => '1',
-                                                                'text' => '					if (!$renderer)
-',
-                                                                'fname' => 'perl/Neurospaces/GUI/Components/Atomic.pm',
-                                                                'type' => 'user',
-                                                                'line' => '338'
-                                                              }
-                                                            ]
+                                  ]
          };
 $expr_list = [];
 $eval_saved_text = undef;
