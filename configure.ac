@@ -17,12 +17,12 @@ dnl ##########################################################################
 AC_PREREQ(2.59)
 
 # $Format: "AC_INIT(${package}, ${label}, ${email})"$
-AC_INIT(neurospaces-studio, purkinje-1, hugo.cornelis@gmail.com)
+AC_INIT(studio, i64-4, hugo.cornelis@gmail.com)
 
 AC_CONFIG_SRCDIR([studio_test.pm])
 
 # $Format: "AM_INIT_AUTOMAKE(${package}, ${label})"$
-AM_INIT_AUTOMAKE(neurospaces-studio, purkinje-1)
+AM_INIT_AUTOMAKE(studio, i64-4)
 
 PERL_EMBED_DATA=`(cd perl ; find . -name "*.pm" -printf "%p ")`
 AC_SUBST(PERL_EMBED_DATA)
