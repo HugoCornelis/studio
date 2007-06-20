@@ -34,6 +34,7 @@ use Neurospaces::GUI;
 use Neurospaces::GUI::Components::Atomic;
 use Neurospaces::GUI::Components::Cell;
 use Neurospaces::GUI::Components::Link;
+use Neurospaces::GUI::Components::Mechanism;
 use Neurospaces::GUI::Components::Network;
 use Neurospaces::GUI::Components::Root;
 
@@ -258,16 +259,16 @@ sub get_parameters
 }
 
 
-# sub get_specific_parameters
-# {
-#     my $self = shift;
+sub get_specific_parameters
+{
+    my $self = shift;
 
-#     my $current = shift;
+    my $current = shift;
 
-#     my $result = [];
+    my $result = [];
 
-#     return $result;
-# }
+    return $result;
+}
 
 
 sub initialize_state
@@ -293,6 +294,7 @@ sub factory
     my $perl_types
 	= {
 	   T_sym_cell => 'Neurospaces::GUI::Components::Cell',
+	   T_sym_channel => 'Neurospaces::GUI::Components::Mechanism',
 	   T_sym_connection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_e_m_contour => 'Neurospaces::GUI::Components::Atomic',
 	   T_sym_network => 'Neurospaces::GUI::Components::Network',
@@ -301,9 +303,15 @@ sub factory
 	   T_sym_root => 'Neurospaces::GUI::Components::Root',
 	   T_sym_v_connection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_v_contour => 'Neurospaces::GUI::Components::Atomic',
+	   T_sym_v_segment => 'Neurospaces::GUI::Components::Cell',
 	  };
 
     my $perl_type = $perl_types->{$self->{type}} || 'Neurospaces::GUI::Components::Node';
+
+    if (not $perl_types->{$self->{type}})
+    {
+	print STDERR "$0: warning: no GUI component defined for $self->{type}, some things might not work.\n";
+    }
 
     bless $self, $perl_type;
 
@@ -325,52 +333,47 @@ sub parameters_2_array_ref
 
     my $current = shift;
 
-    my $parameters = shift;
+    my $parameter_specs = shift;
 
     my $result = [];
 
-    # loop over the parameters
+    # loop over the parameters specifications
 
-    foreach my $parameter_name (keys %$parameters)
+    foreach my $parameter_spec (@$parameter_specs)
     {
-	# get specification for this parameter
-
-	my $specs = $parameters->{$parameter_name};
-
 	# process simple values
 
-	if (!ref $specs
-	    && $specs)
+	if (!ref $parameter_spec)
 	{
 	    my $current_symbol = SwiggableNeurospaces::objectify_serial($current);
 
 	    # simple values are reported as direct values
 
-	    my $value = SwiggableNeurospaces::symbol_parameter_value($current_symbol->{_symbol}, $parameter_name, $current_symbol->{_context});
+	    my $value = SwiggableNeurospaces::symbol_parameter_value($current_symbol->{_symbol}, $parameter_spec, $current_symbol->{_context});
 
-	    push @$result, { $parameter_name => $value, };
+	    push @$result, { $parameter_spec => $value, };
 	}
 
 	# for a hashed spec
 
-	elsif (ref $specs eq 'HASH')
+	elsif (ref $parameter_spec eq 'HASH')
 	{
-	    # loop over the spec
+# 	    # loop over the spec
 
-	    foreach my $spec_name (keys %$specs)
-	    {
-		my $spec = $specs->{$spec_name};
+# 	    foreach my $spec_name (keys %$parameter_spec)
+# 	    {
+# 		my $spec = $specs->{$spec_name};
 
-		#t fetch the method and arguments
+# 		#t fetch the method and arguments
 
-		#t call method, store value
-	    }
+# 		#t call method, store value
+# 	    }
 	}
 	else
 	{
 	    #t not sure how to report this in the right way
 
-	    print "$0: cannot process parameter spec: " . Dumper($specs);
+	    print "$0: cannot process parameter spec: " . Dumper($parameter_spec);
 	}
     }
 

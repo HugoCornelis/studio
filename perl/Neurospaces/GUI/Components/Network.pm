@@ -231,8 +231,11 @@ sub get_specific_parameters
     my $current = shift;
 
     my $specific_parameters
-	= {
-	  };
+	= [
+	   'EXTENT_X',
+	   'EXTENT_Y',
+	   'EXTENT_Z',
+	  ];
 
     my $result = $self->parameters_2_array_ref($current, $specific_parameters);
 
