@@ -58,6 +58,8 @@ sub get_specific_parameters
 
     my $specific_parameters
 	= [
+	   'LENGTH',
+	   'DIA',
 	  ];
 
     my $result = $self->parameters_2_array_ref($current, $specific_parameters);

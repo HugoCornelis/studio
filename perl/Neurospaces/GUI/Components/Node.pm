@@ -301,6 +301,7 @@ sub factory
 	   T_sym_population => 'Neurospaces::GUI::Components::Network',
 	   T_sym_projection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_root => 'Neurospaces::GUI::Components::Root',
+	   T_sym_segment => 'Neurospaces::GUI::Components::Mechanism',
 	   T_sym_v_connection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_v_contour => 'Neurospaces::GUI::Components::Atomic',
 	   T_sym_v_segment => 'Neurospaces::GUI::Components::Cell',
