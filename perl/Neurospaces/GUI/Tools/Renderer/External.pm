@@ -49,7 +49,9 @@ sub load
 
     if (!$renderer)
     {
-	print "renderer is not initialized (value is $renderer)\n";
+	print STDERR "renderer is not initialized (value is $renderer)\n";
+
+	return undef;
     }
 
     my $self;

@@ -335,7 +335,7 @@ sub get_buttons
 
 					if (!$renderer)
 					{
-					    print "renderer is not initialized (value is $renderer)\n";
+					    print STDERR "renderer is not initialized (value is $renderer)\n";
 					}
 					else
 					{

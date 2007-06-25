@@ -690,6 +690,8 @@ sub external_add
     push @$externals, $external;
 
     $self->{externals} = $externals;
+
+    return 1;
 }
 
 

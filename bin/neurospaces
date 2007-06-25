@@ -309,7 +309,7 @@ sub main
 		print "final_value = $final_value\n";
 	    }
 
-	    print "Traversal ok\n";
+	    print STDERR "Traversal ok\n";
 	}
     }
 
