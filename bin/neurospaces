@@ -83,7 +83,7 @@ $SIG{__DIE__}
 
 
 my $option_algorithm;
-my $option_condition;
+my $option_condition = [];
 my $option_cumulate;
 my $option_force_library;
 my $option_gui;
@@ -220,18 +220,21 @@ sub main
 			  }
 		      }
 
-		      if ($option_condition)
+		      if (@$option_condition)
 		      {
-			  my $condition = eval $option_condition;
-
-			  if ($@)
+			  foreach my $condition (@$option_condition)
 			  {
-			      die $@;
-			  }
+			      my $value = eval $condition;
 
-			  if (!$condition)
-			  {
-			      return 1;
+			      if ($@)
+			      {
+				  die $@;
+			      }
+
+			      if (!$value)
+			      {
+				  return 1;
+			      }
 			  }
 		      }
 
@@ -322,7 +325,7 @@ sub read_cmd_line
 	= GetOptions
 	    (
 	     "algorithm=s" => \$option_algorithm,
-	     "condition=s" => \$option_condition,
+	     "condition=s" => $option_condition,
 	     "cumulate!" => \$option_cumulate,
 	     "force-library!" => \$option_force_library,
 	     "gui!" => \$option_gui,
