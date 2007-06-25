@@ -1,5 +1,9 @@
 -*- outline -*-
 
+* add a good interface for parameter queries
+** to bin/neurospaces
+** to the GUI
+
 * specific_parameters
 The component that defines specific_parameters is the parent of the
 component selected in the list box.
