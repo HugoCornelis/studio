@@ -18,6 +18,18 @@
 ##############################################################################
 
 
+package Neurospaces::GUI::Tools::Renderer::External::Mat;
+
+
+our @ISA = qw(Neurospaces::GUI::Tools::Renderer::External);
+
+
+package Neurospaces::GUI::Tools::Renderer::External::NDF;
+
+
+our @ISA = qw(Neurospaces::GUI::Tools::Renderer::External);
+
+
 package Neurospaces::GUI::Tools::Renderer::External;
 
 
@@ -40,13 +52,25 @@ sub load
 	print "renderer is not initialized (value is $renderer)\n";
     }
 
-    # load mat
+    my $self;
 
-    my $mat = LoadFile($filename);
+    # determine file type based on extension
 
-    # add to external data for rendering
+    if ($filename =~ /\.mat$/i)
+    {
+	# load mat
 
-    my $self = bless { data => $mat, identifier => $filename, type => 'mat', }, 'Neurospaces::GUI::Tools::Renderer::External';
+	my $mat = LoadFile($filename);
+
+	# add to external data for rendering
+
+	$self = bless { data => $mat, identifier => $filename, type => 'mat', }, 'Neurospaces::GUI::Tools::Renderer::External::Mat';
+    }
+
+    elsif ($filename =~ /\.ndf$/i)
+    {
+	#t not sure here, seems a bit out of scope to read it in in neurospaces
+    }
 
     $renderer->external_add($self);
 }
