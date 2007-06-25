@@ -1,5 +1,8 @@
 -*- outline -*-
 
+* add a GUI for simple interaction with SSP
+such that we have a simulator with a GUI.
+
 * add a good interface for parameter queries
 ** to bin/neurospaces
 ** to the GUI
