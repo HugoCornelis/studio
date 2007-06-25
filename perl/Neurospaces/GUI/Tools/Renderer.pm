@@ -620,6 +620,7 @@ sub events_init
 	= {
 	   &SDL_KEYDOWN => \&process_key,
 	   &SDL_KEYUP => \&process_key,
+	   &SDL_MOUSEMOTION => \&process_motion,
 	   &SDL_QUIT => \&process_quit,
 	   &SDL_VIDEORESIZE => \&process_resize,
 	  };
@@ -1256,6 +1257,20 @@ sub process_key
     {
         return !$down ? $command : '';
     }
+}
+
+
+sub process_motion
+{
+    my $self = shift;
+
+    my $event = shift;
+
+    my $x = $event->motion_x();
+
+    my $y = $event->motion_y();
+
+    return '';
 }
 
 
