@@ -157,7 +157,7 @@ sub draw
 			      ],
 	       color => [ 1, 1, 1, ],
 	       light => 1,
-	       name => 'sections',
+	       name => $self->{context},
 	       type => 'cubes',
 	      };
     }
@@ -272,7 +272,7 @@ sub draw
 			      ],
 	       color => [ 1, 1, 1, ],
  	       light => 0,
-	       name => 'contours',
+	       name => $self->{context},
 	       type => 'GL_LINES',
 	      };
     }
@@ -289,7 +289,7 @@ sub draw
 			      ],
 	       color => [ 1, 1, 1, ],
  	       light => 1,
-	       name => 'sections',
+	       name => $self->{context},
 	       type => 'cubes',
 	      };
     }

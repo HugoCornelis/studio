@@ -697,16 +697,16 @@ sub fonts_init
 {
     my $self  = shift;
 
-    my %fonts
-	= (
-	   numbers => ($Neurospaces::neurospaces_perl_modules || "perl") . '/Neurospaces/GUI/Tools/numbers-7x11.txt',
-	  );
+    my $fonts
+	= {
+	   numbers => '/usr/local/neurospaces/studio/Neurospaces/GUI/Tools/numbers-7x11.txt',
+	  };
 
     glPixelStore(GL_UNPACK_ALIGNMENT, 1);
 
-    foreach my $font (keys %fonts)
+    foreach my $font (keys %$fonts)
     {
-        my ($bitmaps, $w, $h) = $self->fonts_read($fonts{$font});
+        my ($bitmaps, $w, $h) = $self->fonts_read($fonts->{$font});
 
         my @cps    = sort {$a <=> $b} keys %$bitmaps;
         my $max_cp = $cps[-1];
@@ -1050,7 +1050,7 @@ sub models_init
 
 	    my $drawing = $models->{$model_name}->draw($self, );
 
-	    print "Created $drawing->{model}\n";
+	    print "Created internal drawing for $drawing->{name}\n";
 
 	    #! force an empty list of gl lists
 

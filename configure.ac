@@ -24,8 +24,11 @@ AC_CONFIG_SRCDIR([bin/neurospaces])
 # $Format: "AM_INIT_AUTOMAKE(${package}, ${label})"$
 AM_INIT_AUTOMAKE(studio, i64-5)
 
-PERL_EMBED_DATA=`(cd perl ; find . -name "*.pm" -printf "%p ")`
-AC_SUBST(PERL_EMBED_DATA)
+PERL_MODULES=`(cd perl ; find . -name "*.pm" -printf "%p ")`
+AC_SUBST(PERL_MODULES)
+
+PERL_DATA=`(cd perl ; find . -name "numbers-7x11.txt" -printf "%p ")`
+AC_SUBST(PERL_DATA)
 
 # Checks for programs.
 

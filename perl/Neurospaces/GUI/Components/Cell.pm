@@ -137,7 +137,7 @@ sub draw
 			  ],
 	   color => [ 1, 1, 1, ],
 	   light => 0,
-	   name => 'segment_group',
+	   name => $self->{context},
 	   type => 'GL_LINES',
 	  };
 
