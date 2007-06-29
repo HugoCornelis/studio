@@ -1,5 +1,9 @@
 -*- outline -*-
 
+* map the neurospaces coordinate cache
+to renderer commands.  The cache is extensible, so incoming (solved
+and non-solved) values should be merged in, then send to the renderer.
+
 * add a GUI for simple interaction with SSP
 such that we have a simulator with a GUI.
 
