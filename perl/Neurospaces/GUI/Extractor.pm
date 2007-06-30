@@ -23,6 +23,16 @@
 package Neurospaces::GUI::Extractor::Overview;
 
 
+my $loaded_graphviz = eval "require GraphViz";
+
+
+if ($@)
+{
+    print STDERR "$0: cannot load graphviz module because of: $@\n";
+    print STDERR "$0: continuing.\n";
+}
+
+
 sub conclude
 {
     my $self = shift;
@@ -59,7 +69,7 @@ sub extract
 
     my ($graph, $shapes) = @$self{qw(graph shapes)};
 
-    my $parent = Neurospaces::GUI::Components::Node::factory( { serial => $symbol->{parent}, }, );
+    my $parent = Neurospaces::GUI::Components::Node::factory( { serial => $symbol->{parent}, studio => $symbol->{studio}, }, );
 
     # get unqualified symbol name
 
@@ -101,6 +111,11 @@ sub extract
 
 sub new
 {
+    if (!$loaded_graphviz)
+    {
+	return "GraphViz is not loaded\n";
+    }
+
     my $class = shift;
 
     my $options = shift;
@@ -121,8 +136,6 @@ sub new
 	   HIERARCHY_TYPE_channel => 'triangle',
 	   HIERARCHY_TYPE_pool => 'triangle',
 	  };
-
-    use GraphViz;
 
     my $graph = GraphViz->new();
 
@@ -438,6 +451,8 @@ sub new
 
     $self->{serial} = $options->{serial};
 
+    $self->{studio} = $options->{studio};
+
     bless $self, $class;
 
     $self->initialize_state();
@@ -455,6 +470,8 @@ sub new_with_window
 sub extract
 {
     my $self = shift;
+
+#     print Dumper($self);
 
     # synchronize the rendering selection levels with the current state
 
@@ -506,7 +523,7 @@ sub extract
 
 	$seen->{$node}++;
 
-	my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => $node, }, );
+	my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => $node, studio => $self->{studio}, }, );
 
 	# collect biolevel info about the symbol
 
@@ -548,7 +565,7 @@ sub extract
 		next;
 	    }
 
-	    my $parent = Neurospaces::GUI::Components::Node::factory( { serial => $symbol->{parent}, }, );
+	    my $parent = Neurospaces::GUI::Components::Node::factory( { serial => $symbol->{parent}, studio => $symbol->{studio}, }, );
 
 	    my $parent_type = $parent->{type};
 

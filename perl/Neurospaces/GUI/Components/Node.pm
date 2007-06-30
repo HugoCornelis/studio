@@ -137,9 +137,16 @@ sub get_buttons
 				    {
 					my $widget = shift;
 
-					my $extractor = Neurospaces::GUI::Extractor->new( { context => $self->{context}, serial => $self->{this}, }, );
+					my $extractor = Neurospaces::GUI::Extractor->new( { context => $self->{context}, serial => $self->{this}, studio => $self->{studio}, }, );
 
-					$extractor->explore();
+					if ($extractor)
+					{
+					    $extractor->explore();
+					}
+					else
+					{
+					    print STDERR "$0: cannot create an extractor\n";
+					}
 				    },
 				    arguments => [],
 				   },

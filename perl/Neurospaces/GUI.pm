@@ -143,9 +143,16 @@ sub create_menu
 	      {
 		  my $widget = shift;
 
-		  my $extractor = Neurospaces::GUI::Extractor->new( { context => '/', serial => 0, }, );
+		  my $extractor = Neurospaces::GUI::Extractor->new( { context => '/', serial => 0, studio => $studio, }, );
 
-		  $extractor->explore();
+		  if ($extractor)
+		  {
+		      $extractor->explore();
+		  }
+		  else
+		  {
+		      print STDERR "$0: cannot create an extractor\n";
+		  }
 	      },
 	     ],
 	     [

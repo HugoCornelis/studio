@@ -90,22 +90,26 @@ sub get_long_label
 
     my $result = $self->SUPER::get_long_label();
 
+    my $sources = SwiggableNeurospaces::swig_get_parameters($self->{this});
+
     my $source
 	= [
 	   map { s(.*/)(); $_ }
 	   map { $_->{Value} }
 	   grep { $_->{Name} =~ /SOURCE|PRE/ }
-	   SwiggableNeurospaces::swig_get_parameters($self->{this}),
+	   @$sources,
 	  ];
 
     $source = join ', ', @$source;
+
+    my $targets = SwiggableNeurospaces::swig_get_parameters($self->{this});
 
     my $target
 	= [
 	   map { s(.*/)(); $_ }
 	   map { $_->{Value} }
 	   grep { $_->{Name} =~ /TARGET|POST/ }
-	   SwiggableNeurospaces::swig_get_parameters($self->{this}),
+	   @$targets,
 	  ];
 
     $target = join ', ', @$target;
