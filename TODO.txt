@@ -1,5 +1,23 @@
 -*- outline -*-
 
+
+* traceback at svn.cbi.utsa.edu
+Illegal character in prototype for Neurospaces::GUI::Tools::Renderer::BEGIN : @_ at (eval 182)[/usr/lib/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi/SDL/OpenGL.pm:29] line 1.
+ at (eval 182)[/usr/lib/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi/SDL/OpenGL.pm:29] line 1
+        eval 'sub SDL::OpenGL::glBEGIN { BEGIN(@_); }
+;' called at /usr/lib/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi/SDL/OpenGL.pm line 29
+        require SDL/OpenGL.pm called at /usr/local/glue/swig/perl/Neurospaces/GUI/Tools/Renderer.pm line 49
+        Neurospaces::GUI::Tools::Renderer::BEGIN() called at (eval 182)[/usr/lib/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi/SDL/OpenGL.pm:29] line 1
+        eval {...} called at (eval 182)[/usr/lib/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi/SDL/OpenGL.pm:29] line 1
+        require Neurospaces/GUI/Tools/Renderer.pm called at (eval 7)[/usr/local/glue/swig/perl/Neurospaces/Studio.pm:37] line 1
+        eval 'require Neurospaces::GUI::Tools::Renderer;' called at /usr/local/glue/swig/perl/Neurospaces/Studio.pm line 37
+        require Neurospaces/Studio.pm called at /usr/local/bin/neurospaces line 28
+        main::BEGIN() called at (eval 182)[/usr/lib/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi/SDL/OpenGL.pm:29] line 1
+        eval {...} called at (eval 182)[/usr/lib/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi/SDL/OpenGL.pm:29] line 1
+/usr/local/bin/neurospaces: cannot load rendering module because of: Bareword "GL_LINE_SMOOTH" not allowed while "strict subs" in use at /usr/local/glue/swig/perl/Neurospaces/GUI/Tools/Renderer.pm line 294.
+Compilation failed in require at (eval 7)[/usr/local/glue/swig/perl/Neurospaces/Studio.pm:37] line 1.
+
+
 * map the neurospaces coordinate cache
 to renderer commands.  The cache is extensible, so incoming (solved
 and non-solved) values should be merged in, then send to the renderer.
