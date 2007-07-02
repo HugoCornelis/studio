@@ -270,15 +270,15 @@ sub create_menu
 	      },
 	      $window,
 	     ],
-# 	     [
-# 	      'C_lose All',
-# 	      'Close all windows',
-# 	      sub
-# 	      {
-# 		  window_close_all();
-# 	      },
-# 	      $window,
-# 	     ],
+	     [
+	      '_Quit',
+	      'Close all windows & Quit',
+	      sub
+	      {
+		  window_close_all();
+	      },
+	      $window,
+	     ],
 	    )
     {
 	my $button = Gtk2::Button->new($_->[0]);
