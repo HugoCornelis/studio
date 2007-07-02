@@ -80,6 +80,8 @@ our $molecular_view
 		   1e5,
 		   1e5,
 		  ],
+       'dv_zoom' => 0,
+       'v_zoom' => 0,
       };
 
 sub draw

@@ -78,6 +78,8 @@ our $atomic_view
 		   1e7,
 		   1e7,
 		  ],
+       'dv_zoom' => 0,
+       'v_zoom' => 0,
       };
 
 our $movements
