@@ -74,12 +74,15 @@ use Neurospaces::Studio;
 # use Neurospaces_embed;
 
 
-$SIG{__DIE__}
-    = sub {
-	use Carp;
+BEGIN
+{
+    $SIG{__DIE__}
+	= sub {
+	    use Carp;
 
-	confess @_;
-    };
+	    confess @_;
+	};
+}
 
 
 my $option_algorithm;
