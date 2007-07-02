@@ -74,7 +74,14 @@ sub load
 	#t not sure here, seems a bit out of scope to read it in in neurospaces
     }
 
-    $renderer->external_add($self);
+    if (defined $self)
+    {
+	$renderer->external_add($self);
+    }
+    else
+    {
+	print "$0: *** Error: Unable to determine type of $filename as an external component for the rendering engine\n";
+    }
 }
 
 
