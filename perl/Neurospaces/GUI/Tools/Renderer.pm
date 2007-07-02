@@ -1497,6 +1497,8 @@ sub set_view_3d
 
 #     glRotate(@$pilotview_pitch, );
 
+    # set final origin position
+
     my $position = $view->{position};
 
     glTranslate(@$position, );
@@ -1506,6 +1508,7 @@ sub set_view_3d
     my $scale = $self->{view}->{scale} || [ 1e6, 1e6, 1e6, ];
 
     glScale(@$scale);
+
 }
 
 
