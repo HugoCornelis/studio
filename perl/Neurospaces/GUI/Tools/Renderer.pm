@@ -423,7 +423,29 @@ sub drawing_render
 
     glTranslate(@{$drawing->{position}}) if $drawing->{position};
     glRotate(@{$drawing->{orientation}}) if $drawing->{orientation};
-    glScale(@{$drawing->{scale}})        if $drawing->{scale};
+
+    my $drawing_scale = $drawing->{scale};
+
+    glScale(@$drawing_scale) if $drawing_scale && @$drawing_scale;
+
+#     # apply additional scaling according to zoom factor, for balance
+
+#     my $scale = $self->{view}->{scale};
+
+#     my $scale2
+# 	= [
+# 	   map
+# 	   {
+# 	       ($scale->[$_] / ($drawing_scale->[$_] || 1e7)),
+# 	   }
+# 	   0 .. 2
+# 	  ];
+
+#     use Data::Dumper;
+
+#     print Dumper($scale2);
+
+#     glScale(@$scale2);
 
     # if there is a request to draw from a display list
 
