@@ -105,7 +105,7 @@ sub action_move
 
     if (defined $update)
     {
-	# apply the movement vector the current view
+	# apply the update to the current view
 
 	$view->{$update->[0]} += $update->[1] * $sign;
     }
