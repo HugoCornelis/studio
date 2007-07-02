@@ -87,6 +87,7 @@ our $movements
 		 move => 1,
 		 pilot => 5,
 		 roll => 5,
+		 zoom => 1e6,
 		},
       };
 

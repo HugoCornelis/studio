@@ -73,6 +73,10 @@ sub action_move
 
     my $speed_pilot = $movements->{speed}->{pilot};
 
+    my $speed_zoom = $movements->{speed}->{zoom};
+
+    # movement bindings
+
     my $move_update
 	= {
 	   '+look_behind'  => [ d_roll  =>  180 ],
@@ -87,12 +91,22 @@ sub action_move
 	   'pilot_move'    => [ v_pilot    => -$speed_pilot ],
 	   '+pilot_right'  => [ dv_roll    =>  $speed_roll ],
 	   '+pilot_up'     => [ dv_heading =>  $speed_heading ],
+	   '+zoom'  => [ dv_zoom =>  $speed_zoom ],
+	   '-zoom'  => [ dv_zoom => -$speed_zoom ],
 	  };
+
+    # select which one to apply
 
     my $update = $move_update->{$command};
 
+#     use Data::Dumper;
+
+#     print "applying " . Dumper($update);
+
     if (defined $update)
     {
+	# apply the movement vector the current view
+
 	$view->{$update->[0]} += $update->[1] * $sign;
     }
 }
@@ -192,6 +206,8 @@ sub commands_init
 	   '+pilot_up'     => \&action_move,
 	   'quit' => \&action_quit,
 	   'screenshot' => \&action_screenshot,
+	   '+zoom' => \&action_move,
+	   '-zoom' => \&action_move,
 	  };
 }
 
@@ -574,13 +590,13 @@ sub events_do
 
         my $command = shift @$queue;
 
-	my $gui_command;
-
 	if ((ref $command) =~ /ARRAY/)
 	{
+	    # convert to a GUI command
+
 	    my ($command_name, @arguments) = @$command;
 
-	    $gui_command
+	    my $gui_command
 		= Neurospaces::GUI::Command->new
 		    (
 		     {
@@ -592,16 +608,17 @@ sub events_do
 		      target => 'Neurospaces::GUI::Tools::Renderer',
 		     },
 		    );
-	}
 
-	if ($gui_command)
-	{
-	    $gui_command->execute();
+	    if ($gui_command)
+	    {
+		# execute the GUI command
+
+		$gui_command->execute();
+	    }
 	}
 	else
 	{
-	    print "Undefined command : " . YAML::Dump($gui_command);
-
+	    print "Undefined command (not an array): " . YAML::Dump($command);
 	}
     }
 }
@@ -634,7 +651,7 @@ sub events_process
     my $event  = $self->{sdl_event};
     my $event_processor = $self->{event_processor};
 
-    my ($process, $command, @commands);
+    my $result = [];
 
     # fetch next event if any
 
@@ -646,19 +663,32 @@ sub events_process
     while (not $self->{done}
 	   and $event->poll())
     {
+	# get SDL event type (e.g. SDL_KEYDOWN)
+
 	my $type = $event->type();
 
-        $process = $event_processor->{$type}
-	    or next;
+	# get processor registered for this type
 
-        $command = $self->$process($event);
+        my $processor = $event_processor->{$type};
 
-        push @commands, $command if $command;
+	if ($processor)
+	{
+	    # convert to internal command array
+
+	    my $command = $self->$processor($event);
+
+	    if ($command)
+	    {
+		# push onto internal event list
+
+		push @$result, $command;
+	    }
+	}
     }
 
     # return command list
 
-    return \@commands;
+    return $result;
 }
 
 
@@ -1090,6 +1120,7 @@ sub movements_init
 		     move => 15,
 		     pilot => 5,
 		     roll => 5,
+		     zoom => 1e6,
 		    },
 	  };
 
@@ -1141,13 +1172,17 @@ sub new
 				   x   => '+move_up',
 				   z   => '+move_down',
 				   escape => 'quit',
-				   f12    => 'screenshot',
+				   f12    => '+screenshot',
 				   a      => '+pilot_left',
 				   d      => '+pilot_right',
 				   w      => '+pilot_up',
 				   's'    => '+pilot_down',
 				   space  => 'pilot_move',
 				   tab    => '+look_behind',
+				   '+' => '+zoom',
+				   '=' => '+zoom',
+				   '-' => '-zoom',
+				   '_' => '-zoom',
 				  },
 			fovy   => 80,
 			height => 1000,
@@ -1249,7 +1284,7 @@ sub process_key
 
     my $down = $event->type() == SDL_KEYDOWN;
 
-    if ($command =~ /^\+/)
+    if ($command =~ /^(\+|-)/)
     {
         return [ $command, $down, ];
     }
@@ -1345,6 +1380,8 @@ sub screenshot
 
     SDL::OpenGL::SaveBMP($file, $w, $h, 24, $data);
 
+    print "$0: wrote screenshot to $file\n";
+
     # no automatic updates for screenshots : clear flag
 
     $self->{need_screenshot} = 0;
@@ -1426,8 +1463,6 @@ sub set_view_3d
 
     my $normalizer = $view->{normalizer};
 
-    my $position = $view->{position};
-
     glRotate(@$normalizer, );
 
     my $pilotview_roll = $view->{pilotview}->{roll};
@@ -1440,11 +1475,13 @@ sub set_view_3d
 
 #     glRotate(@$pilotview_pitch, );
 
+    my $position = $view->{position};
+
     glTranslate(@$position, );
 
     # we are dealing with very small thing, zoom to get something out.
 
-    my $scale = $self->{view}->{scale} || [ 1e5, 1e5, 1e5, ];
+    my $scale = $self->{view}->{scale} || [ 1e6, 1e6, 1e6, ];
 
     glScale(@$scale);
 }
@@ -1562,6 +1599,8 @@ our $global_view
 		       ],
        'v_roll' => 0,
        'v_heading' => 0,
+       'dv_zoom' => 0,
+       'v_zoom' => 0,
       };
 
 
@@ -1650,7 +1689,7 @@ sub view_update
 	   0,
 	  ];
 
-    # apply and clear out pilot velocity such that it only is applied once (we do not have breaks)
+    # apply and clear out pilot velocity such that it only is applied once (we do not have breaks yet)
 
     $view->{pilotview}->{move}->{d_pilot} = 0;
 
@@ -1659,6 +1698,16 @@ sub view_update
     $view->{position}->[0]    += $vx * $d_time;
     $view->{position}->[1]    += $vy * $d_time;
     $view->{position}->[2]    += $vz * $d_time;
+
+    # apply zoom changes
+
+    $view->{v_zoom} += $view->{dv_zoom};
+    $view->{dv_zoom} = 0;
+
+    foreach (0 .. 2)
+    {
+	$view->{scale}->[$_] -= $view->{v_zoom};
+    }
 }
 
 
@@ -1750,6 +1799,7 @@ sub view_window_update
 		     },
 	   perspective => $self->{conf}->{fovy},
 	   position => $view->{position},
+	   scale => $view->{scale},
 	  },
 	 )
 	);
