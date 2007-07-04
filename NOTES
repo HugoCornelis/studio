@@ -1,0 +1,6 @@
+This is package is the result of an architecture refactoring of the
+neurospaces package.
+
+For installation, refer to the neurospaces HOWTO.outline document.
+Most perl packages mentioned overthere are not needed for neurospaces,
+but for are needed for the using the studio package.

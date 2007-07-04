@@ -1,0 +1,69 @@
+# 
+# old_revision [056e6ab61fd6901a67aabc6d78f1c6e381c338dd]
+# 
+# patch "perl/Neurospaces/GUI/Tools/Renderer.pm"
+#  from [d2d052cbbb8cb48d2b1d920f5f71dd3b0d4c2d62]
+#    to [d111ebb57491d6118ab136679be3cfa73f32b35b]
+# 
+============================================================
+--- perl/Neurospaces/GUI/Tools/Renderer.pm	d2d052cbbb8cb48d2b1d920f5f71dd3b0d4c2d62
++++ perl/Neurospaces/GUI/Tools/Renderer.pm	d111ebb57491d6118ab136679be3cfa73f32b35b
+@@ -490,17 +490,30 @@ sub drawing_render
+ 
+ 	    my $begun = 0;
+ 
++	    my $skipped = 0;
++
+ 	    foreach my $coordinate_index (0 .. $#$coordinates)
+ 	    {
+ 		my $coordinate = $coordinates->[$coordinate_index];
+ 
+-		# 	    if ($coordinate_index < 300)
+-		# 	    {
+-		# 		use Data::Dumper;
++		if (ref $coordinate eq 'ARRAY'
++		    && $coordinate->[2] > 5)
++		{
++		    $skipped++;
+ 
+-		# 		print "$coordinate_index:" . Dumper($coordinate);
+-		# 	    }
++		    next;
++		}
+ 
++# 		if ($coordinate_index < 1300)
++# 		{
++# 		    use Data::Dumper;
++
++# 		    if (ref $coordinate eq 'ARRAY')
++# 		    {
++# 			print "$coordinate_index:" . Dumper($coordinate);
++# 		    }
++# 		}
++
+ 		# if termination indicator
+ 
+ 		if (!defined $coordinate)
+@@ -560,6 +573,8 @@ sub drawing_render
+ 		}
+ 	    }
+ 
++	    print "$skipped skipped coordinates\n";
++
+ 	    # end drawing
+ 
+ 	    if ($begun)
+@@ -1207,11 +1222,11 @@ sub new
+ 				   '_' => '-zoom',
+ 				  },
+ 			fovy   => 80,
+-			height => 1000,
++			height => 1500,
+ # 			height => 480,
+ 			title  => 'Neurospaces Renderer',
+ # 			width  => 640,
+-			width  => 1000,
++			width  => 1500,
+ 		       },
+ 	       sdl_app => undef,
+ 	      };
