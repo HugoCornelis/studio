@@ -3,4 +3,13 @@ neurospaces package.
 
 For installation, refer to the neurospaces HOWTO.outline document.
 Most perl packages mentioned overthere are not needed for neurospaces,
-but for are needed for the using the studio package.
+but for are needed for using the studio package.
+
+- Bugfix: added renderer font.
+- Modularized the renderer's external object facilities.
+- Mapped T_sym_segment to a GUI component.
+- Allowed to give multiple conditions to bin/neurospaces,
+  for improved model queries.
+- Bugfixes for the overview extractor.
+- Added 'Quit' button.
+- Cleanup in the rendering engine.
