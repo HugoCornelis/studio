@@ -108,12 +108,25 @@ use YAML;
 
 
 my $option_help;
+my $option_flattenout;
 my $option_regex_selector = ".*";
+my $option_timeout_multiplier = 1;
 my $option_verbose;
 
 
 print "Executable is $0,\n";
 print "core_directory is $core_directory\n";
+
+
+# $Format: "my $package_name = \"${package}\";"$
+my $package_name = "heccer";
+# $Format: "my $package_label = \"${label}\";"$
+my $package_label = "i64-6";
+# $Format: "my $package_version = \"${major}-${minor}-${micro}\";"$
+my $package_version = "i64-6-0";
+
+my $monotone_id = `mtn automate get_current_revision_id`;
+chomp $monotone_id;
 
 
 my $error_count = 0;
@@ -123,6 +136,12 @@ my $test_report
        description => {
 		       command => $0,
 		       name => "Test report",
+		       package => {
+				   label => $package_label,
+				   name => $package_name,
+				   version => $package_version,
+				   version_control_id => $monotone_id,
+				  },
 		      },
        global => {
 		  error_count => $error_count,
@@ -170,7 +189,7 @@ sub main
 	    report_message(1, 2, "Module $module_definition->{description} is disabled ($module_definition->{disabled}).
 Total of $test_count tests (encountered $error_count error(s) so far)");
 
-	    push @{$test_report->{disabled}->{modules}}, $module_name;
+	    $test_report->{disabled}->{modules}->{$module_name} = $module_definition->{disabled};
 
 	    next;
 	}
@@ -187,10 +206,10 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 	    if ($command_definition->{disabled})
 	    {
-		report_message(1, 2, "Tests of $description are disable ($command_definition->{disabled})
+		report_message(1, 2, "Tests of $description are disabled ($command_definition->{disabled})
 Total of $test_count tests (encountered $error_count error(s) so far)");
 
-		push @{$test_report->{disabled}->{command_definitions}}, $description;
+		$test_report->{disabled}->{command_definitions}->{$module_name}->{$description} = $command_definition->{disabled};
 
 		next;
 	    }
@@ -332,10 +351,10 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 		if ($command_test->{disabled})
 		{
-		    report_message(1, 2, "Tests of $description are disable ($command_test->{disabled})
+		    report_message(1, 2, "Tests of $description are disabled ($command_test->{disabled})
 Total of $test_count tests (encountered $error_count error(s) so far)");
 
-		    push @{$test_report->{disabled}->{command_tests}}, $description;
+		    $test_report->{disabled}->{command_tests}->{$module_name}->{$description} = $command_test->{disabled};
 
 		    next;
 		}
@@ -385,10 +404,10 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 		    my $timeout
 			= defined $command_test->{timeout}
-			    ? $command_test->{timeout}
-				: $spawn_new
-				    ? 4
-					: 2;
+			    ? $command_test->{timeout} * $option_timeout_multiplier
+				: $spawn_new * $option_timeout_multiplier
+				    ? 4 * $option_timeout_multiplier
+					: 2 * $option_timeout_multiplier;
 
 		    # write
 
@@ -555,7 +574,9 @@ sub read_cmd_line
 	= GetOptions
 	    (
 	     "help!" => \$option_help,
+	     "flattenout" => \$option_flattenout,
 	     "regex-selector=s" => \$option_regex_selector,
+	     "timeout-multiplier=s" => \$option_timeout_multiplier,
 	     "v|verbose+" => \$option_verbose,
 	    );
 
@@ -566,9 +587,13 @@ sub read_cmd_line
 $0: test definition executor
 
 options :
-    regex-selector  defines a regex to run specific tests.
-    help            print usage information.
-    verbose         set verbosity level.
+    flattenout         flattenout the test definitions before testing,
+                       this experimental feature might increase test performance,
+                       by recycling test definitions.
+    help               print usage information.
+    regex-selector     defines a regex to run specific tests.
+    timeout-multiplier multiply all timeout values with this constant.
+    verbose            set verbosity level.
 ";
 
 	exit 1;
@@ -755,114 +780,142 @@ sub test_library_expand
 	}
 	else
 	{
-	    if (!$module_definition->{disabled})
+# 	    if (!$module_definition->{disabled})
 	    {
 		push @$result, $module_definition;
 	    }
 	}
     }
 
-    # sort modules
+    if ($option_flattenout)
+    {
+	# sort modules
 
-    #t first need to transform: select command_definitions, flatten
-    #t out, keep the module names (for referencing errors).
+	#t first need to transform: select command_definitions, flatten
+	#t out, keep the module names (for referencing errors).
 
-    my $transformator
-	= Data::Transformator->new
-	    (
-             apply_identity_transformation => 0,
-	     name => 'test-module-selector',
-	     contents => $result,
-	     separator => '`',
-	     array_filter =>
-	     sub
-	     {
-		 my ($context, $component) = @_;
-
-		 # never filter for the first two component in the path
-
-		 my $depth = $context->{array};
-		 $depth = $#$depth;
-
-		 if ($depth < 2)
+	my $transformator
+	    = Data::Transformator->new
+		(
+		 apply_identity_transformation => 0,
+		 name => 'test-module-selector',
+		 contents => $result,
+		 separator => '`',
+		 array_filter =>
+		 sub
 		 {
-		     return 1;
-		 }
+		     my ($context, $component) = @_;
 
-		 # extract the data
+		     # never filter for the first two component in the path
 
-		 $context->{path} =~ m|^[^/]*/([^/]*)/([^/]*)|;
+		     my $depth = $context->{array};
+		     $depth = $#$depth;
 
-		 my $content = Data::Transformator::_context_get_current_content($context);
+		     if ($depth < 2)
+		     {
+			 return 1;
+		     }
 
-		 # push it onto the result
+		     # extract the data: command definitions with test commands
 
-		 my $result = Data::Transformator::_context_get_main_result($context);
+		     $context->{path} =~ m|^[^/]*/([^/]*)/([^/]*)|;
 
-		 if (!$result->{content})
-		 {
-		     $result->{content} = [];
-		 }
+		     my $content = Data::Transformator::_context_get_current_content($context);
 
-		 push @{$result->{content}}, $content;
+		     # push it onto the result
 
-		 # add the module name
+		     my $result = Data::Transformator::_context_get_main_result($context);
 
-		 my $module_name = $context->{array}->[1]->{content}->{name};
+		     if (!$result->{content})
+		     {
+			 $result->{content} = [];
+		     }
 
-		 $content->{module_name} = $module_name;
+		     push @{$result->{content}}, $content;
 
-		 # result is known, everything gets filtered
+		     # add the module name
 
-		 0;
-	     },
-	    );
+		     my $module_name = $context->{array}->[1]->{content}->{name};
 
-    #t for an empty array as content, the transformator returns an
-    #t undef, this is a bug that still needs fixing.
+		     $content->{module_name} = $module_name;
 
-    my $tests = $transformator->transform() || [];
+		     # add the module description
 
-    $tests
-	= [
-	   sort
-	   {
-	       my $module1 = $a;
-	       my $module2 = $b;
+		     my $module_description = $context->{array}->[1]->{content}->{description};
 
-# 	       my $command1 = $module1->{command_definitions}->[0]->{command};
-# 	       my $command2 = $module2->{command_definitions}->[0]->{command};
+		     $content->{module_description} = $module_description;
 
-# 	       my $command1_arguments = $module1->{command_definitions}->[0]->{arguments};
-# 	       my $command2_arguments = $module2->{command_definitions}->[0]->{arguments};
+		     # result is known, everything gets filtered
 
-	       my $command1 = $module1->{command};
-	       my $command2 = $module2->{command};
+		     0;
+		 },
+		);
 
-	       my $command1_arguments = $module1->{arguments} || [];
-	       my $command2_arguments = $module2->{arguments} || [];
+	#t for an empty array as content, the transformator returns an
+	#t undef, this is a bug that still needs fixing.
 
-	       my $command1_string = join ' ', $command1, @$command1_arguments;
-	       my $command2_string = join ' ', $command2, @$command2_arguments;
+	my $tests = $transformator->transform() || [];
 
-	       my $comparison = $command1_string cmp $command2_string;
+	# sort the flattened test definitions
 
-	       if ($module1->{tester_head})
+	$tests
+	    = [
+	       sort
 	       {
-		   $comparison = -1;
+		   my $module1 = $a;
+		   my $module2 = $b;
+
+		   my $command1 = $module1->{command};
+		   my $command2 = $module2->{command};
+
+		   my $command1_arguments = $module1->{arguments} || [];
+		   my $command2_arguments = $module2->{arguments} || [];
+
+		   my $command1_string = join ' ', $command1, @$command1_arguments;
+		   my $command2_string = join ' ', $command2, @$command2_arguments;
+
+		   my $comparison = $command1_string cmp $command2_string;
+
+		   if ($module1->{tester_head})
+		   {
+		       $comparison = -1;
+		   }
+		   elsif ($module2->{tester_head})
+		   {
+		       $comparison = 1;
+		   }
+
+		   $comparison;
 	       }
-	       elsif ($module2->{tester_head})
+	       @$tests,
+	      ];
+
+	# transform back to the regular test module format by putting
+	# every command definition in its own module
+
+	$tests
+	    = [
+	       map
 	       {
-		   $comparison = 1;
+		   my $command_definition = $_;
+
+		   (
+		    {
+		     command_definitions => [
+					     $command_definition,
+					    ],
+		     description => $command_definition->{module_description},
+		     name => $command_definition->{module_name},
+		    }
+		   );
 	       }
+	       @$tests,
+	      ];
 
-	       $comparison;
-	   }
-	   @$tests,
-	  ];
+	# set result
 
-    #t Need to figure out how to deal with the library reparation and
-    #t preparation.
+	$result = $tests;
+    }
 
     # return result
 
