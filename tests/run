@@ -129,6 +129,7 @@ my $test_report
 		      },
        global => {
 		  error_count => $error_count,
+		  status => 'initializing',
 		 },
       };
 
@@ -136,6 +137,8 @@ my $test_report
 $SIG{'INT'}
     = sub
       {
+	  $test_report->{global}->{status} = 'Interrupted';
+
 	  report_exit(2);
       };
 
@@ -155,6 +158,10 @@ sub main
     # the previous command had no side effects on the loaded model (since there is no model yet)
 
     my $previous_side_effects = 0;
+
+    # set status: running
+
+    $test_report->{global}->{status} = 'Running';
 
     # loop over all test modules
 
@@ -547,6 +554,8 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 	$exp->hard_close();
     }
+
+    $test_report->{global}->{status} = 'Finished';
 
     report_exit(0);
 }
