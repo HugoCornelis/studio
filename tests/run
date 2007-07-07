@@ -118,17 +118,6 @@ print "Executable is $0,\n";
 print "core_directory is $core_directory\n";
 
 
-# $Format: "my $package_name = \"${package}\";"$
-my $package_name = "heccer";
-# $Format: "my $package_label = \"${label}\";"$
-my $package_label = "i64-6";
-# $Format: "my $package_version = \"${major}-${minor}-${micro}\";"$
-my $package_version = "i64-6-0";
-
-my $monotone_id = `mtn automate get_current_revision_id`;
-chomp $monotone_id;
-
-
 my $error_count = 0;
 
 my $test_report
@@ -136,12 +125,7 @@ my $test_report
        description => {
 		       command => $0,
 		       name => "Test report",
-		       package => {
-				   label => $package_label,
-				   name => $package_name,
-				   version => $package_version,
-				   version_control_id => $monotone_id,
-				  },
+		       package => $config->{package},
 		      },
        global => {
 		  error_count => $error_count,
