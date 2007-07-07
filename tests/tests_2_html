@@ -21,6 +21,7 @@ my $tests_disabled = 0;
 
 my $option_header;
 my $option_help;
+my $option_introduction;
 my $option_verbose;
 
 
@@ -231,6 +232,7 @@ sub main
 	    (
 	     "help!" => \$option_help,
 	     "header=s" => \$option_header,
+	     "introduction=s" => \$option_introduction,
 	     "v|verbose+" => \$option_verbose,
 	    );
 
@@ -241,8 +243,9 @@ sub main
 $0: convert test definitions to html.
 
 options :
-    help           print usage information.
     header         header to insert before any titles.
+    help           print usage information.
+    introduction   optional introduction file (literal HTML).
     v|verbose      tell what is being done, specify multiple times to get
                    more feedback.
 ";
@@ -635,9 +638,13 @@ options :
 	(
 	 {
 	  cgi => $cgi,
-	  content => html_index($cgi, $sections, ) . "<hr> Total of $total_tests tests ($tests_disabled test(s) disabled)",
+	  content => (
+		      html_index($cgi, $sections, )
+		      . "<hr> Total of $total_tests tests ($tests_disabled test(s) disabled)"
+		     ),
 	  filename => "index.html",
 	  header => $option_header,
+	  introduction => (defined $option_introduction ? (join "\n", `cat $option_introduction`) : ""),
 	  title => "Main Index",
 	 },
 	);
@@ -655,6 +662,8 @@ sub output_content
     my $filename = $arguments->{filename};
 
     my $header = $arguments->{header};
+
+    my $introduction = $arguments->{introduction};
 
     my $title = $arguments->{title};
 
@@ -685,6 +694,13 @@ sub output_content
     if (defined $header)
     {
 	$result .= $header;
+    }
+
+    if ($introduction)
+    {
+	$result .= $introduction;
+
+	$result .= '<hr>';
     }
 
     $result .= $cgi->h1("$title");
