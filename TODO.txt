@@ -1,5 +1,7 @@
 -*- outline -*-
 
+* Need to clean up dist-hook
+And synchronize with SSP and Heccer.
 
 * traceback at svn.cbi.utsa.edu
 Illegal character in prototype for Neurospaces::GUI::Tools::Renderer::BEGIN : @_ at (eval 182)[/usr/lib/perl5/vendor_perl/5.8.8/x86_64-linux-thread-multi/SDL/OpenGL.pm:29] line 1.
