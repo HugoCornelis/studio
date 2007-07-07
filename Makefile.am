@@ -29,6 +29,7 @@ dist-hook:
 	cp -R $(srcdir)/tests/tests.config $(distdir)/tests/tests.config
 	cp -R $(srcdir)/tests.config $(distdir)
 #	cp -R $(srcdir)/tests/perl $(distdir)/tests
+	( cd $(distdir)/tests && chmod -R u+w . && ./tests_2_html --introduction introduction.html )
 
 #check_SCRIPTS = $(srcdir)/tests/run
 
