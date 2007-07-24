@@ -91,7 +91,7 @@ my $option_cumulate;
 my $option_force_library;
 my $option_gui;
 my $option_interactive;
-my $option_models = '/local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/library';
+my $option_models = '/usr/local/neurospaces/models/library';
 my $option_no_use_library;
 my $option_querymachine;
 my $option_render = [];
@@ -363,7 +363,7 @@ options :
     gui                    enter the gui.
     help                   print usage information.
     interactive            enter interactive mode.
-    models                 directory where to find the neurospaces library.
+    models                 directory where to find the neurospaces library (default is $option_models).
     no-use-library         do not use the library with specific settings for each morphology.
     query                  enter the query machine after parsing.
     reporting-fields       report these fields during traversing (use multiple options to report multiple fields).
