@@ -19,7 +19,7 @@ dist-hook:
 	$(RM) -fr `find $(distdir) -name _Inline`
 	cp $(srcdir)/license.txt $(distdir)
 #	cp -R $(srcdir)/docs $(distdir)
-	cp -R $(srcdir)/perl $(distdir)
+#	cp -a $(srcdir)/perl $(distdir)
 	test -d $(distdir)/tests || mkdir $(distdir)/tests
 	test -d $(distdir)/tests/specifications || mkdir $(distdir)/tests/specifications
 	cp -R $(srcdir)/tests/run $(distdir)/tests/run

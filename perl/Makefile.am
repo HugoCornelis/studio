@@ -12,9 +12,9 @@
 
 perldir = $(prefix)/glue/swig/perl
 
-nobase_perl_DATA = @PERL_MODULES@
+nobase_dist_perl_DATA = @PERL_MODULES@
 
 perldatadir = $(prefix)/neurospaces/studio
 
-nobase_perldata_DATA = @PERL_DATA@
+nobase_dist_perldata_DATA = @PERL_DATA@
 

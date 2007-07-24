@@ -37,11 +37,14 @@ BEGIN
 
     if (!defined $config)
     {
-	$config = do "$ENV{srcdir}/tests.config";
+	if ($ENV{srcdir})
+	{
+	    $config = do "$ENV{srcdir}/tests.config";
 
-	# register that we are running from automake
+	    # register that we are running from automake
 
-	$test_mode = 'automake';
+	    $test_mode = 'automake';
+	}
     }
 
     if (!defined $config)
@@ -58,6 +61,9 @@ BEGIN
     else
     {
 	$core_directory = "$ENV{srcdir}/$config->{core_directory}";
+
+# 	$core_directory = $config->{core_directory};
+
     }
 
     # remove parent and current directories
@@ -86,6 +92,10 @@ BEGIN
     # add to include path
 
     unshift @INC, $perl_modules_directory;
+
+    #! this one is for distcheck, second run of the disthook
+
+    unshift @INC, '../../../perl';
 
     # more automake hacking : if there is a special _build directory
     # that separates sources and derived files, we assume that the
