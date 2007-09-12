@@ -134,13 +134,16 @@ report:
 					      'LENGTH',
 					      '--condition',
 					      '$d->{context} !~ /Purk_spine/i',
-					      '--cumulate',
+					      '--operator',
+					      'cumulate',
 					     ],
 				command => 'bin/neurospaces',
 				command_tests => [
 						  {
 						   description => "What is the cumulated spiny dendrite length ?",
-						   read => 'final_value = 0.012075620569123',
+						   read => 'cumulate:
+  description: cumulated value
+  final_value: 0.012075620569123',
 						   timeout => 100,
 						   write => undef,
 						  },

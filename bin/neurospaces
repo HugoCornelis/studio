@@ -28,7 +28,39 @@ use Neurospaces::Traversal;
 use Neurospaces::Studio;
 
 
-# use Data::Dumper;
+my $global_operators
+    = {
+       cumulate =>
+       sub
+       {
+	   my ($description, $final_value, $context, $parameter, $value) = @_;
+
+	   return ('cumulated value', ($final_value || 0) + $value);
+       },
+       maximum =>
+       sub
+       {
+	   my ($description, $final_value, $context, $parameter, $value) = @_;
+
+	   !defined $final_value && return("$context->$parameter", $value);
+
+	   return $final_value >= $value ? ($description, $final_value) : ("$context->$parameter", $value);
+       },
+       minimum =>
+       sub
+       {
+	   my ($description, $final_value, $context, $parameter, $value) = @_;
+
+	   !defined $final_value && return("$context->$parameter", $value);
+
+	   return $final_value <= $value ? ($description, $final_value) : ("$context->$parameter", $value);
+       },
+      };
+
+my $operator_results = {};
+
+
+use Data::Dumper;
 
 
 # {
@@ -87,12 +119,12 @@ BEGIN
 
 my $option_algorithm;
 my $option_condition = [];
-my $option_cumulate;
 my $option_force_library;
 my $option_gui;
 my $option_interactive;
 my $option_models = '/usr/local/neurospaces/models/library';
 my $option_no_use_library;
+my $option_operators = [];
 my $option_querymachine;
 my $option_render = [];
 my $option_reporting_fields = [];
@@ -180,6 +212,7 @@ sub main
     {
 	my $symbol;
 	my $parameters = [];
+	my $operator_names = [];
 
 	#! never use this functionality, avoid shell quoting issues,
 	#! use the field options instead.
@@ -199,7 +232,10 @@ sub main
 	    $parameters = $option_reporting_fields;
 	}
 
-	my $final_value = 0.0;
+	if (@$option_operators)
+	{
+	    $operator_names = $option_operators;
+	}
 
 	my $traversal
 	    = Neurospaces::Traversal->new
@@ -268,15 +304,36 @@ sub main
 					  );
 			      }
 
-			      if ($option_cumulate)
+			      if (@$operator_names)
 			      {
-				  if ($value != $SwiggableNeurospaces::dFLT_MAX)
+				  foreach my $operator_name (@$operator_names)
 				  {
-				      $final_value += $value;
-				  }
-				  else
-				  {
-				      die "$parameter value cannot be determined for $descendant->{context}";
+				      my $operator = $global_operators->{$operator_name};
+
+				      if (!defined $operator)
+				      {
+					  die "$0: $operator_name is not defined";
+				      }
+
+				      if (ref $operator eq 'CODE')
+				      {
+					  my $description = $operator_results->{$operator_name}->{description};
+					  my $final_value = $operator_results->{$operator_name}->{final_value};
+
+					  ($description, $final_value) = &$operator($description, $final_value, $descendant->{context}, $parameter, $value);
+
+					  if (!defined $final_value)
+					  {
+					      die "$0: $operator_name returned an error condition";
+					  }
+
+					  $operator_results->{$operator_name}->{description} = $description;
+					  $operator_results->{$operator_name}->{final_value} = $final_value;
+				      }
+				      else
+				      {
+					  die "$0: $operator_name is not a CODE reference";
+				      }
 				  }
 			      }
 			      else
@@ -307,9 +364,17 @@ sub main
 	}
 	else
 	{
-	    if ($option_cumulate)
+	    if (@$operator_names)
 	    {
-		print "final_value = $final_value\n";
+		foreach my $operator_name (sort @$operator_names)
+		{
+		    my $description = $operator_results->{$operator_name}->{description};
+		    my $final_value = $operator_results->{$operator_name}->{final_value};
+
+		    print "$operator_name:
+  description: $description
+  final_value: $final_value\n";
+		}
 	    }
 
 	    print STDERR "Traversal ok\n";
@@ -329,13 +394,13 @@ sub read_cmd_line
 	    (
 	     "algorithm=s" => \$option_algorithm,
 	     "condition=s" => $option_condition,
-	     "cumulate!" => \$option_cumulate,
 	     "force-library!" => \$option_force_library,
 	     "gui!" => \$option_gui,
 	     "help!" => \$option_help,
 	     "interactive!" => \$option_interactive,
 	     "models=s" => \$option_models,
 	     "no-use-library!" => \$option_no_use_library,
+	     "operators=s" => $option_operators,
 	     "query!" => \$option_querymachine,
 	     "reporting-fields=s" => $option_reporting_fields,
 	     "render=s" => $option_render,
@@ -365,6 +430,7 @@ options :
     interactive            enter interactive mode.
     models                 directory where to find the neurospaces library (default is $option_models).
     no-use-library         do not use the library with specific settings for each morphology.
+    operators              apply these operators to each reported field.
     query                  enter the query machine after parsing.
     reporting-fields       report these fields during traversing (use multiple options to report multiple fields).
     render                 render a file, using a renderer plugin.

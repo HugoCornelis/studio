@@ -1,33 +1,15 @@
 $files = {
-           '_<bin/neurospaces' => [
-                                    {
-                                      'expr' => undef,
-                                      'value' => '1',
-                                      'text' => '	Neurospaces::GUI::gui($0);
+           '_</local_home/local_home/hugo/neurospaces_project/studio/source/perl/snapshots/0/bin/neurospaces' => [
+                                                                                                                   {
+                                                                                                                     'expr' => undef,
+                                                                                                                     'value' => '1',
+                                                                                                                     'text' => '	Neurospaces::GUI::gui($0);
 ',
-                                      'fname' => 'bin/neurospaces',
-                                      'type' => 'user',
-                                      'line' => '159'
-                                    },
-                                    {
-                                      'expr' => undef,
-                                      'value' => '1',
-                                      'text' => '    if ($option_gui)
-',
-                                      'fname' => 'bin/neurospaces',
-                                      'type' => 'user',
-                                      'line' => 156
-                                    },
-                                    {
-                                      'expr' => undef,
-                                      'value' => '1',
-                                      'text' => '    if ($option_models)
-',
-                                      'fname' => 'bin/neurospaces',
-                                      'type' => 'user',
-                                      'line' => 114
-                                    }
-                                  ]
+                                                                                                                     'fname' => '/local_home/local_home/hugo/neurospaces_project/studio/source/perl/snapshots/0/bin/neurospaces',
+                                                                                                                     'type' => 'user',
+                                                                                                                     'line' => '163'
+                                                                                                                   }
+                                                                                                                 ]
          };
 $expr_list = [];
 $eval_saved_text = undef;
