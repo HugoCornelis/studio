@@ -248,6 +248,8 @@ sub get_specific_parameters
 
     my $specific_parameters
 	= [
+	   'SURFACE',
+	   'TOTALSURFACE',
 	  ];
 
     my $result = $self->parameters_2_array_ref($current, $specific_parameters);
