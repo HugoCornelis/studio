@@ -30,6 +30,26 @@ use Neurospaces::Studio;
 
 my $global_operators
     = {
+       average =>
+       sub
+       {
+	   my ($description, $final_value, $context, $parameter, $value) = @_;
+
+	   my $count = 0;
+
+	   if (defined $description)
+	   {
+	       $description =~ /([0-9]+)/;
+
+	       $count = $1;
+	   }
+
+	   $count++;
+
+	   !defined $final_value && $final_value = 0;
+
+	   return ("average of $count value(s)", $final_value + $value / $count);
+       },
        cumulate =>
        sub
        {
