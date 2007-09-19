@@ -446,7 +446,6 @@ $0: parse a model description, interact with the model.
 options :
     algorithm              report on an algorithm instance.
     condition              a (perl) condition to apply, where applicable.
-    cumulate               accumulate field values, then final report.
     force-library          force the use of library values for morphology2ndf.
     gui                    enter the gui.
     help                   print usage information.
