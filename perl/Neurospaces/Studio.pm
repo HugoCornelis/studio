@@ -38,8 +38,11 @@ my $loaded_neurospaces_gui_tools_renderer = eval "require Neurospaces::GUI::Tool
 
 if ($@)
 {
-    print STDERR "$0: cannot load rendering module because of: $@\n";
-    print STDERR "$0: continuing.\n";
+    if (exists ${"::"}{verbose} && $::option_verbose)
+    {
+	print STDERR "$0: cannot load rendering module because of: $@\n";
+	print STDERR "$0: continuing.\n";
+    }
 }
 
 our $renderer
@@ -52,8 +55,11 @@ my $loaded_geometry = eval "require Geometry;";
 
 if ($@)
 {
-    print STDERR "$0: cannot load the geometry module because of: $@\n";
-    print STDERR "$0: continuing.\n";
+    if (exists ${"::"}{verbose} && $::option_verbose)
+    {
+	print STDERR "$0: cannot load the geometry module because of: $@\n";
+	print STDERR "$0: continuing.\n";
+    }
 }
 
 our $geometry

@@ -23,10 +23,6 @@ BEGIN
 
 use Getopt::Long;
 
-use Neurospaces;
-use Neurospaces::Traversal;
-use Neurospaces::Studio;
-
 
 my $global_operators
     = {
@@ -153,12 +149,19 @@ my $option_shrinkage_correction;
 my $option_spine_prototypes = [];
 my $option_traversal_symbol;
 my $option_type;
-my $option_verbose;
+our $option_verbose;
 
 
 sub main
 {
     read_cmd_line();
+
+    #! for proper error reporting of loading modules (Renderer etc),
+    #! 'require' must be used, not 'use'.
+
+    require Neurospaces;
+    require Neurospaces::Traversal;
+    require Neurospaces::Studio;
 
     my $neurospaces = Neurospaces->new();
 
