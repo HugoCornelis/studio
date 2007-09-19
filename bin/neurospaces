@@ -42,7 +42,7 @@ my $global_operators
 
 	   $count++;
 
-	   !defined $final_value && $final_value = 0;
+	   (!defined $final_value) && ($final_value = 0);
 
 	   return ("average of $count value(s)", $final_value + $value / $count);
        },
