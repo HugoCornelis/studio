@@ -34,3 +34,6 @@ sub all_morphologies
 }
 
 
+1;
+
+
