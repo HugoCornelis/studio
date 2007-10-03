@@ -26,6 +26,35 @@ package Neurospaces::Project;
 use strict;
 
 
+sub load
+{
+    my $package = shift;
+
+    my $options = shift;
+
+    if (!defined $options->{name})
+    {
+	die "$0: need a project name";
+    }
+
+    use YAML 'LoadFile';
+
+    my $neurospaces_config = LoadFile('/etc/neurospaces/project_browser/project_browser.yml');
+
+    my $project_config = LoadFile("$neurospaces_config->{project_browser}->{root_directory}/$options->{name}/configuration.yml");
+
+    my $result
+	= Neurospaces::Project->new
+	    (
+	     {
+	      config => $project_config,
+	      name => $options->{name},
+	      root => "$neurospaces_config->{project_browser}->{root_directory}",
+	     },
+	    );
+}
+
+
 sub new
 {
     my $package = shift;
@@ -41,5 +70,8 @@ sub new
 
     return $self;
 }
+
+
+1;
 
 
