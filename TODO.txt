@@ -1,5 +1,8 @@
 -*- outline -*-
 
+* link the annotations in neurospaces hierarchy/symbols
+with the parameters displayed for each component.
+
 * Need to clean up dist-hook
 And synchronize with SSP and Heccer.
 
