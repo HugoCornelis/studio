@@ -26,6 +26,33 @@ package Neurospaces::Project;
 use strict;
 
 
+use Neurospaces::Project::Modules::Morphology;
+
+
+sub all_morphologies
+{
+    my $self = shift;
+
+    my $project_name = $self->{name};
+
+    my $project_root = $self->{root};
+
+    #t replace with File::Find;
+
+    my $result
+	= [
+	   sort
+	   map
+	   {
+	       chomp; $_;
+	   }
+	   `find "$project_root/$project_name/morphologies" -name "*.ndf" -o -name "*.p" -o -iname "*.swc"`,
+	  ];
+
+    return $result;
+}
+
+
 sub load
 {
     my $package = shift;

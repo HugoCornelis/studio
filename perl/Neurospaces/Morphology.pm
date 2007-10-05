@@ -24,17 +24,54 @@ sub dendritic_tips
 
     my $component_name = shift;
 
-    my $result = [];
+    my $result;
 
-    # get context
+    my $in_memory = 0;
 
-    my $context = SwiggableNeurospaces::PidinStackParse($component_name);
+    if ($in_memory)
+    {
+	# get context
 
-    # get component
+	my $context = SwiggableNeurospaces::PidinStackParse($component_name);
 
-    my $component = $context->PidinStackLookupTopSymbol();
+	# get component
 
-    $component->SymbolLinearize($context);
+	my $component = $context->PidinStackLookupTopSymbol();
+
+	$component->SymbolLinearize($context);
+
+    }
+
+    else
+    {
+	my $yaml_tips_string = join '', `echo segmentertips "$component_name" | neurospaces --query "$self->{filename}"`;
+
+	$yaml_tips_string =~ s/.*---/---/gs;
+
+	$yaml_tips_string =~ s/\n.*$/\n/;
+
+# 	print "($yaml_tips_string)";
+
+	use YAML;
+
+	my $tips = Load($yaml_tips_string);
+
+	$result->{tips} = $tips;
+
+	my $yaml_linearize_string = join '', `echo segmenterlinearize "$component_name" | neurospaces --query "$self->{filename}"`;
+
+	$yaml_linearize_string =~ s/.*---/---/gs;
+
+	$yaml_linearize_string =~ s/\n.*$/\n/;
+
+# 	print "($yaml_tips_string)";
+
+	use YAML;
+
+	my $linearize = Load($yaml_linearize_string);
+
+	$result->{linearize} = $linearize;
+    }
 
     # cache result
 
@@ -55,6 +92,13 @@ sub instantiate_backend
 	my $neurospaces = Neurospaces->new();
 
 	$self->{backend} = $neurospaces;
+
+	#t consolidation and grouping / structuring of these settings is really required
+
+	if (defined $self->{model_library})
+	{
+	    $neurospaces->{model_library} = $self->{model_library};
+	}
     }
 
     return 1;
@@ -69,13 +113,12 @@ sub load
 
     $self->instantiate_backend();
 
+    $self->{filename} = $morphology;
+
     my $success
 	= $self->{backend}->load
 	    (
-	     {
-	      %$self,
-	      'filename' => $morphology,
-	     },
+	     $self,
 	     [
 	      defined $self->{description} ? $self->{description} : 'description missing',
 	     ],
