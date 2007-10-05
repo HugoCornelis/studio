@@ -134,6 +134,7 @@ BEGIN
 
 
 my $option_algorithm;
+my $option_commands = [];
 my $option_condition = [];
 my $option_force_library;
 my $option_gui;
@@ -185,6 +186,7 @@ sub main
 	= $neurospaces->load
 	    (
 	     {
+	      'commands' => $option_commands,
 	      'force-library' => $option_force_library,
 	      'filename' => $ARGV[0],
 	      (defined $option_no_use_library) ? ('no-use-library' => $option_no_use_library) : (),
@@ -416,6 +418,7 @@ sub read_cmd_line
 	= GetOptions
 	    (
 	     "algorithm=s" => \$option_algorithm,
+	     "commands=s" => $option_commands,
 	     "condition=s" => $option_condition,
 	     "force-library!" => \$option_force_library,
 	     "gui!" => \$option_gui,
@@ -445,6 +448,7 @@ $0: parse a model description, interact with the model.
 
 options :
     algorithm              report on an algorithm instance.
+    commands               execute these query machine commands after loading a file.
     condition              a (perl) condition to apply, where applicable.
     force-library          force the use of library values for morphology2ndf.
     gui                    enter the gui.
