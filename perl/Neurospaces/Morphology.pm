@@ -44,7 +44,22 @@ sub dendritic_tips
 
     else
     {
-	my $yaml_tips_string = join '', `echo segmentertips "$component_name" | neurospaces --query "$self->{filename}"`;
+	my $self_commands
+	    = join
+		' ',
+		    (
+		     map
+		     {
+			 "--command '$_'"
+		     }
+		     @{$self->{commands}},
+		    );
+
+	my $system_command1 = "neurospaces $self_commands --command 'segmentertips $component_name' \"$self->{filename}\"";
+
+	print STDERR "executing ($system_command1)\n";
+
+	my $yaml_tips_string = join '', `$system_command1`;
 
 	$yaml_tips_string =~ s/.*---/---/gs;
 
@@ -58,7 +73,9 @@ sub dendritic_tips
 
 	$result->{tips} = $tips;
 
-	my $yaml_linearize_string = join '', `echo segmenterlinearize "$component_name" | neurospaces --query "$self->{filename}"`;
+	my $system_command2 = "neurospaces $self_commands --command 'segmenterlinearize $component_name' \"$self->{filename}\"";
+
+	my $yaml_linearize_string = join '', `$system_command2`;
 
 	$yaml_linearize_string =~ s/.*---/---/gs;
 
@@ -140,6 +157,13 @@ sub new
 	  };
 
     bless $self, $package;
+
+#     # cache dendritic tips
+
+#     if ($self->{dendritic_tips_request})
+#     {
+# 	$self->cache_dendritic_tips($self->{dendritic_tips_request});
+#     }
 
     return $self;
 }
