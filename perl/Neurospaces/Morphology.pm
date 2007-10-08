@@ -55,7 +55,18 @@ sub dendritic_tips
 		     @{$self->{commands}},
 		    );
 
-	my $system_command1 = "neurospaces $self_commands --command 'segmentertips $component_name' \"$self->{filename}\"";
+	my $self_options
+	    = join
+		' ',
+		    (
+		     map
+		     {
+			 "--backend-option '$_'"
+		     }
+		     @{$self->{backend_options}},
+		    );
+
+	my $system_command1 = "neurospaces $self_options $self_commands --command 'segmentertips $component_name' \"$self->{filename}\"";
 
 	print STDERR "executing ($system_command1)\n";
 
@@ -73,7 +84,7 @@ sub dendritic_tips
 
 	$result->{tips} = $tips;
 
-	my $system_command2 = "neurospaces $self_commands --command 'segmenterlinearize $component_name' \"$self->{filename}\"";
+	my $system_command2 = "neurospaces $self_options $self_commands --command 'segmenterlinearize $component_name' \"$self->{filename}\"";
 
 	my $yaml_linearize_string = join '', `$system_command2`;
 
