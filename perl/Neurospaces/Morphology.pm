@@ -63,7 +63,7 @@ sub dendritic_tips
 
 	$yaml_tips_string =~ s/.*---/---/gs;
 
-	$yaml_tips_string =~ s/\n.*$/\n/;
+# 	$yaml_tips_string =~ s/\n.*$/\n/;
 
 # 	print "($yaml_tips_string)";
 
@@ -79,9 +79,9 @@ sub dendritic_tips
 
 	$yaml_linearize_string =~ s/.*---/---/gs;
 
-	$yaml_linearize_string =~ s/\n.*$/\n/;
+# 	$yaml_linearize_string =~ s/\n.*$/\n/;
 
-# 	print "($yaml_tips_string)";
+# 	print "($yaml_linearize_string)";
 
 	use YAML;
 
