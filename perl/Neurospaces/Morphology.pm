@@ -378,6 +378,71 @@ sub somatopetaldistances
 }
 
 
+sub spiny_length
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    my $dia = shift;
+
+    my $result;
+
+    my $in_memory = 0;
+
+    if ($in_memory)
+    {
+# 	# get context
+
+# 	my $context = SwiggableNeurospaces::PidinStackParse($component_name);
+
+# 	# get component
+
+# 	my $component = $context->PidinStackLookupTopSymbol();
+
+# 	$component->SymbolLinearize($context);
+
+    }
+
+    else
+    {
+	my $self_commands
+	    = join
+		' ',
+		    (
+		     map
+		     {
+			 "--command '$_'"
+		     }
+		     @{$self->{commands}},
+		    );
+
+	my $self_options
+	    = join
+		' ',
+		    (
+		     map
+		     {
+			 "--backend-option '$_'"
+		     }
+		     @{$self->{backend_options}},
+		    );
+
+	my $system_command = "neurospaces $self_options $self_commands  --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'LENGTH' --operator cumulate --condition 'SwiggableNeurospaces::symbol_parameter_resolve_value(\$d->{_symbol}, \"DIA\", \$d->{_context}) < $dia' \"$self->{filename}\"";
+
+	print STDERR "executing ($system_command)\n";
+
+	my $output_command = join '', `$system_command`;
+
+	$output_command =~ /final_value: (\S+)/;
+
+	$result = $1;
+    }
+
+    return $result;
+}
+
+
 sub volume
 {
     my $self = shift;
