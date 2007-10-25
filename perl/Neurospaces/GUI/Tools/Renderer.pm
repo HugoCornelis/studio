@@ -505,7 +505,7 @@ sub drawing_render
 
 		if (!defined $coordinate)
 		{
-		    # terminate drawing
+		    # terminate line
 
 		    if ($begun)
 		    {
@@ -519,7 +519,7 @@ sub drawing_render
 
 		elsif (!ref $coordinate)
 		{
-		    # terminate drawing
+		    # terminate line
 
 		    if ($begun)
 		    {
@@ -538,7 +538,7 @@ sub drawing_render
 
 		# else a regular coordinate
 
-		else
+		elsif (ref $coordinate eq 'ARRAY')
 		{
 		    # start drawing if not needed
 
@@ -557,6 +557,31 @@ sub drawing_render
 		    # vertex x, y, z
 
 		    glVertex(@$coordinate);
+		}
+		elsif (ref $coordinate eq 'HASH')
+		{
+		    # terminate line
+
+		    if ($begun)
+		    {
+			glEnd();
+
+			$begun = 0;
+		    }
+
+		    # set color
+
+		    if ($coordinate->{color})
+		    {
+			my $color = $coordinate->{color};
+
+			glColor(@$color);
+
+		    }
+		}
+		else
+		{
+		    die "$0: drawing_render() does not know how to render type $coordinate";
 		}
 	    }
 

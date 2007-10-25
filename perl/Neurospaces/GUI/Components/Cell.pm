@@ -110,6 +110,28 @@ sub draw
 
     my $children = $self->get_visible_coordinates($options, );
 
+#     use Data::Dumper;
+
+#     print Dumper($children->[0]);
+
+#     print Dumper($children->[$#$children]);
+#     print Dumper($children->[- 1]);
+
+#     use IO::File;
+
+#     my $file = IO::File->new(">/tmp/coordinates");
+
+    my $colors_filename = "/tmp/coloring.yml";
+
+    my $colors;
+
+    if (-e $colors_filename)
+    {
+	use YAML;
+
+	$colors = YAML::LoadFile("<$colors_filename");
+    }
+
     my $result
 	= {
 	   coordinates => [
@@ -118,7 +140,19 @@ sub draw
 			       (
 				# dia
 
-				$_->[4],
+				(
+# 				 (
+# 				  print $file "  - $_->[0]\n"
+# 				 )
+				 1 && $_->[4]),
+
+# 				{
+# 				 color => [ 1 - $_->[4] * 1e5, 1 - $_->[4] * 1e5, 1 - $_->[4] * 1e5, ],
+# 				},
+
+				{
+				 color => defined $colors ? $colors->{colors}->{$_->[0]} : [ 1, 1, 1, ],
+				},
 
 				# two coordinates
 
