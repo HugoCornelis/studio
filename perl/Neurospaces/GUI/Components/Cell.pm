@@ -121,6 +121,59 @@ sub draw
 
 #     my $file = IO::File->new(">/tmp/coordinates");
 
+    # create a colormap
+
+    my $colormap;
+
+    {
+	my $colormap_filename = "/tmp/colormap.yml";
+
+	if (-e $colormap_filename)
+	{
+	    use YAML;
+
+	    $colormap = YAML::LoadFile("<$colormap_filename");
+	}
+	else
+	{
+	    my $colormap_resolution = 24;
+
+	    $colormap
+		= [
+		   (
+		    map
+		    {
+			[ 1, $_ / $colormap_resolution, 0, ];
+		    }
+		    0 .. $colormap_resolution,
+		   ),
+		   (
+		    map
+		    {
+			[ 1 - $_ / $colormap_resolution, 1, 0, ];
+		    }
+		    0 .. $colormap_resolution,
+		   ),
+		   (
+		    map
+		    {
+			[ 0, 1, $_ / $colormap_resolution, ];
+		    }
+		    0 .. $colormap_resolution,
+		   ),
+		   (
+		    map
+		    {
+			[ 0, 1 - $_ / $colormap_resolution, 1, ];
+		    }
+		    0 .. $colormap_resolution,
+		   ),
+		  ];
+	}
+    }
+
+    # load the color map for the morphology
+
     my $colors_filename = "/tmp/coloring.yml";
 
     my $colors;
@@ -130,11 +183,71 @@ sub draw
 	use YAML;
 
 	$colors = YAML::LoadFile("<$colors_filename");
+
+	# we are only interested in the colors key
+
+	if (exists $colors->{colors})
+	{
+	    $colors = $colors->{colors};
+	}
     }
+
+    # convert keys to serials, convert result values to color codes
+
+    {
+	my $converted_colors;
+
+	foreach my $component (keys %$colors)
+	{
+	    my $converted_component = $component;
+
+	    if ($component !~ /^[0-9]+$/)
+	    {
+		#t map name to serial
+
+		$converted_component = $component;
+	    }
+
+	    $converted_colors->{$converted_component} = $colors->{$component};
+
+	    my $value = $converted_colors->{$converted_component};
+
+	    # convert to color code from the colormap
+
+	    if (ref $value ne 'ARRAY')
+	    {
+		$converted_colors->{$converted_component} = $colormap->{$value};
+	    }
+	}
+
+	$colors = $converted_colors;
+    }
+
+#     use Data::Dumper;
+
+#     print Dumper($colormap);
+
+    my $visible_colorbar = 1;
 
     my $result
 	= {
 	   coordinates => [
+			   ($visible_colorbar
+			    ? (
+			       map
+			       {
+				   (
+				    {
+				     color => $colormap->[$_],
+				    },
+				    [ 1e-6 + $_ * -1e-6, 10e-6, -10e-6, ],
+				    [ 2e-6 + $_ * -1e-6, 10e-6, -10e-6, ],
+				   );
+			       }
+			       0 .. $#$colormap
+			      )
+			    : ()
+			   ),
 			   map
 			   {
 			       (
@@ -151,7 +264,7 @@ sub draw
 # 				},
 
 				{
-				 color => defined $colors ? $colors->{colors}->{$_->[0]} : [ 1, 1, 1, ],
+				 color => defined $colors ? $colors->{$_->[0]} : [ 1, 1, 1, ],
 				},
 
 				# two coordinates
@@ -169,7 +282,7 @@ sub draw
 				],
 			       );
 			   }
-			   @$children
+			   @$children,
 			  ],
 	   color => [ 1, 1, 1, ],
 	   light => 0,
