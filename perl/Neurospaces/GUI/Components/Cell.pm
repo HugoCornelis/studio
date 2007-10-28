@@ -195,30 +195,84 @@ sub draw
     # convert keys to serials, convert result values to color codes
 
     {
+	# create a mapping from component names to serials
+
+	my $name_convertor
+	    = {
+	       map
+	       {
+		   $_->[5] => $_->[0];
+	       }
+	       @$children,
+	      };
+
+# 	use Data::Dumper;
+
+# 	print Dumper($name_convertor);
+
+	my $max = -1000;
+
+	my $min = 1000;
+
 	my $converted_colors;
 
-	foreach my $component (keys %$colors)
+	foreach my $component_name (keys %$colors)
 	{
-	    my $converted_component = $component;
+	    # map name to serial
 
-	    if ($component !~ /^[0-9]+$/)
+	    my $component_serial = $component_name;
+
+	    if ($component_serial !~ /^[0-9]+$/)
 	    {
-		#t map name to serial
+		$component_serial =~ s/.*\///;
 
-		$converted_component = $component;
+		$component_serial = $name_convertor->{$component_serial};
 	    }
 
-	    $converted_colors->{$converted_component} = $colors->{$component};
+	    # get color value
 
-	    my $value = $converted_colors->{$converted_component};
+	    my $value = $colors->{$component_name};
 
 	    # convert to color code from the colormap
 
 	    if (ref $value ne 'ARRAY')
 	    {
-		$converted_colors->{$converted_component} = $colormap->{$value};
+		#t normalize the value
+
+# 		if ($value > -0.1
+# 		    && $value < 0.1)
+# 		{
+# 		}
+
+# 		if ($max < $value)
+# 		{
+# 		    $max = $value;
+# 		}
+
+# 		if ($min > $value)
+# 		{
+# 		    $min = $value;
+# 		}
+
+# 		$value = $value;
+
+# 		$value = 1;
+
+		my $max = -0.0600877445620876;
+		my $min = -0.0636427866426715;
+
+		$value -= $min;
+
+		$value *= (scalar @$colormap) / ($max - $min);
+
+		# get corresponding from the color map
+
+		$converted_colors->{$component_serial} = $colormap->[$value];
 	    }
 	}
+
+	print "max = $max\n";
+	print "min = $min\n";
 
 	$colors = $converted_colors;
     }
