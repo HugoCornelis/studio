@@ -33,6 +33,157 @@ use Glib qw/TRUE FALSE/;
 use Neurospaces::GUI;
 use Neurospaces::Biolevels;
 
+use YAML;
+
+
+my $view_angles_yaml
+    = "---
+e1cb4a1_CNG:
+ angles:
+  x: 90
+  y: 140
+ position:
+  - -5.75
+  - 8.25
+  - -17.0
+e1cb4a5_CNG:
+ angles:
+  x: 90
+  y: 50
+ position:
+  - -3.0
+  - -2.0
+  - -17.0
+e4cb2a2_CNG:
+ angles:
+  x: 90
+  y: 25
+ position:
+  - 0.0
+  - -6.0
+  - -17.0
+e4cb3a1_CNG:
+ angles:
+  x: 90
+  y: -25
+ position:
+  - 0.0
+  - -6.0
+  - -17.0
+fish1:
+ angles:
+  x: 90
+  y: 0
+ position:
+  - 0.0
+  - -20.0
+  - -37.0
+fish2_remesh:
+ angles:
+  x: 90
+  y: 0
+ position:
+  - 0.0
+  - -20.0
+  - -37.0
+gp_pc1:
+ angles:
+  x: 90
+  y: -180
+ position:
+  - 0.0
+  - 14.0
+  - -27.0
+gp_pc2:
+ angles:
+  x: 90
+  y: -215
+ position:
+  - -1.4
+  - 9.0
+  - -27.0
+gp_pc3:
+ angles:
+  x: 90
+  y: -205
+ position:
+  - -5.0
+  - 10.0
+  - -27.0
+p19_CNG:
+ angles:
+  x: 90
+  y: 40
+ position:
+  - -5.0
+  - -6.0
+  - -27.0
+p20_CNG:
+ angles:
+  x: 90
+  y: 0
+ position:
+  - 0.0
+  - -6.0
+  - -27.0
+Purk2M9s:
+ angles:
+  x: 0
+  y: 0
+ position:
+  - 0.0
+  - 27.0
+  - -10.0
+RatPC1_copy:
+ angles:
+  x: 90
+  y: -165
+ position:
+  - -5.0
+  - 8.0
+  - -27.0
+RatPC2_110104:
+ angles:
+  x: 90
+  y: 0
+ position:
+  - 0.0
+  - -6.0
+  - -27.0
+RatPC3_072205:
+ angles:
+  x: 90
+  y: -110
+ position:
+  - 7.2
+  - 3.5
+  - -27.0
+TurtlePC1_110504:
+ angles:
+  x: 90
+  y: -25
+ position:
+  - 1.0
+  - -4.0
+  - -37.0
+TurtlePC2_020105:
+ angles:
+  x: 90
+  y: -180
+ position:
+  - 0.0
+  - 14.0
+  - -37.0
+TurtlePC3_061105:
+ angles:
+  x: 90
+  y: -25
+ position:
+  - 10.0
+  - -12.0
+  - -37.0
+";
+
 
 our $molecular_view
     = {
@@ -84,6 +235,7 @@ our $molecular_view
        'v_zoom' => 0,
       };
 
+
 sub draw
 {
     my $self = shift;
@@ -91,6 +243,39 @@ sub draw
     my $renderer = shift;
 
     my $options = shift;
+
+    # register the morphology_name
+
+    my $morphology_name = $ARGV[0];
+
+    # determine the angles from the morphology name
+
+    {
+	my $view_angles = YAML::Load($view_angles_yaml);
+
+	$morphology_name =~ s/.*\///;
+
+	$morphology_name =~ s/\.swc$//i;
+	$morphology_name =~ s/\.p$//i;
+
+	$morphology_name =~ s/\./_/g;
+
+	if ($view_angles->{$morphology_name})
+	{
+	    print "$0: Using predetermined viewing angles for $morphology_name\n";
+
+	    $molecular_view->{pilotview}->{heading}->[0] = $view_angles->{$morphology_name}->{angles}->{x};
+	    $molecular_view->{pilotview}->{roll}->[0] = $view_angles->{$morphology_name}->{angles}->{y};
+
+	    $molecular_view->{position}->[0] = $view_angles->{$morphology_name}->{position}->[0];
+	    $molecular_view->{position}->[1] = $view_angles->{$morphology_name}->{position}->[1];
+	    $molecular_view->{position}->[2] = $view_angles->{$morphology_name}->{position}->[2];
+	}
+	else
+	{
+	    print "$0: No predetermined viewing angles for $morphology_name\n";
+	}
+    }
 
     my $gui_command1
 	= Neurospaces::GUI::Command->new
@@ -130,8 +315,6 @@ sub draw
 
 	if (-e $colormap_filename)
 	{
-	    use YAML;
-
 	    $colormap = YAML::LoadFile("<$colormap_filename");
 	}
 	else
@@ -174,14 +357,56 @@ sub draw
 
     # load the color map for the morphology
 
-    my $colors_filename = "/tmp/coloring.yml";
+#     my $colors_filename = "/tmp/coloring.yml";
+
+    my $max = -0.0600877445620876; # -0.0600877445620876;
+    my $min = -0.0700314819036194; # -0.0636427866426715;
+
+    my $protocol = 'soma_pclamp';
+
+    {
+	my $value_ranges
+	    = {
+	       'stddev' => {
+		            max => 0.0199325696618813,
+		            min => 1.36395750246899e-05,
+		           },
+	       'average' => {
+		             max => -0.0600877445620876,
+		             min => -0.0760314819036194,
+		            },
+	       'amplitude' => {
+		      	 max => -0.00114801,
+		      	 min => -0.0799868,
+		      	},
+	       'ttp' => {
+			   max => 1000, # 2433,
+			   min => 48,
+			  },
+	       'soma_pclamp' => {
+				 max => -0.04,
+				 min => -0.063474, # -0.071965,
+				},
+	      };
+
+	foreach my $range_type (sort keys %$value_ranges)
+	{
+	    if ($protocol =~ /$range_type/)
+	    {
+		print "$0: selected range_type $range_type\n";
+
+		$max = $value_ranges->{$range_type}->{max};
+		$min = $value_ranges->{$range_type}->{min};
+	    }
+	}
+    }
 
     my $colors;
 
+    my $colors_filename = "tmp/${morphology_name}_${protocol}.yml";
+
     if (-e $colors_filename)
     {
-	use YAML;
-
 	$colors = YAML::LoadFile("<$colors_filename");
 
 	# we are only interested in the colors key
@@ -210,10 +435,6 @@ sub draw
 
 # 	print Dumper($name_convertor);
 
-	my $max = -1000;
-
-	my $min = 1000;
-
 	my $converted_colors;
 
 	foreach my $component_name (keys %$colors)
@@ -224,9 +445,13 @@ sub draw
 
 	    if ($component_serial !~ /^[0-9]+$/)
 	    {
+		$component_serial =~ s/\/synchan$//;
+
 		$component_serial =~ s/.*\///;
 
 		$component_serial = $name_convertor->{$component_serial};
+
+# 		delete $name_convertor->{$component_serial};
 	    }
 
 	    # get color value
@@ -237,30 +462,6 @@ sub draw
 
 	    if (ref $value ne 'ARRAY')
 	    {
-		#t normalize the value
-
-# 		if ($value > -0.1
-# 		    && $value < 0.1)
-# 		{
-# 		}
-
-# 		if ($max < $value)
-# 		{
-# 		    $max = $value;
-# 		}
-
-# 		if ($min > $value)
-# 		{
-# 		    $min = $value;
-# 		}
-
-# 		$value = $value;
-
-# 		$value = 1;
-
-		my $max = -0.0600877445620876;
-		my $min = -0.0636427866426715;
-
 		$value -= $min;
 
 		$value *= (scalar @$colormap) / ($max - $min);
@@ -271,15 +472,8 @@ sub draw
 	    }
 	}
 
-	print "max = $max\n";
-	print "min = $min\n";
-
 	$colors = $converted_colors;
     }
-
-#     use Data::Dumper;
-
-#     print Dumper($colormap);
 
     my $visible_colorbar = 1;
 
