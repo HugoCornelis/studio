@@ -248,17 +248,17 @@ sub draw
 
     my $morphology_name = $ARGV[0];
 
+    $morphology_name =~ s/.*\///;
+
+    $morphology_name =~ s/\.swc$//i;
+    $morphology_name =~ s/\.p$//i;
+
+    $morphology_name =~ s/\./_/g;
+
     # determine the angles from the morphology name
 
     {
 	my $view_angles = YAML::Load($view_angles_yaml);
-
-	$morphology_name =~ s/.*\///;
-
-	$morphology_name =~ s/\.swc$//i;
-	$morphology_name =~ s/\.p$//i;
-
-	$morphology_name =~ s/\./_/g;
 
 	if ($view_angles->{$morphology_name})
 	{
@@ -362,7 +362,7 @@ sub draw
     my $max = -0.0600877445620876; # -0.0600877445620876;
     my $min = -0.0700314819036194; # -0.0636427866426715;
 
-    my $protocol = 'soma_pclamp';
+    my $protocol = $::option_protocol || 'soma_pclamp';
 
     {
 	my $value_ranges
@@ -387,6 +387,10 @@ sub draw
 				 max => -0.04,
 				 min => -0.063474, # -0.071965,
 				},
+	       'dendrite_pclamp' => {
+				     max => -0.04,
+				     min => -0.06,
+				    },
 	      };
 
 	foreach my $range_type (sort keys %$value_ranges)
