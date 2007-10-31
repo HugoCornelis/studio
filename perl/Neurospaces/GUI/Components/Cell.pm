@@ -315,11 +315,15 @@ sub draw
 
 	if (-e $colormap_filename)
 	{
+	    print "$0: Using predetermined colormap $colormap_filename\n";
+
 	    $colormap = YAML::LoadFile("<$colormap_filename");
 	}
 	else
 	{
 	    my $colormap_resolution = 24;
+
+	    print "$0: No predetermined colormap, generating one with 4 * ($colormap_resolution + 1) entries\n";
 
 	    $colormap
 		= [
@@ -355,10 +359,6 @@ sub draw
 	}
     }
 
-    # load the color map for the morphology
-
-#     my $colors_filename = "/tmp/coloring.yml";
-
     my $max = -0.0600877445620876; # -0.0600877445620876;
     my $min = -0.0700314819036194; # -0.0636427866426715;
 
@@ -368,28 +368,28 @@ sub draw
 	my $value_ranges
 	    = {
 	       'stddev' => {
-		            max => 0.0199325696618813,
-		            min => 1.36395750246899e-05,
+		            min => 0.02, # 0.0199325696618813,
+		            max => 1.36395750246899e-05,
 		           },
 	       'average' => {
 		             max => -0.0600877445620876,
 		             min => -0.0760314819036194,
 		            },
 	       'amplitude' => {
-		      	 max => -0.00114801,
-		      	 min => -0.0799868,
-		      	},
+			       min => -0.00114801,
+			       max => -0.0799868,
+			      },
 	       'ttp' => {
-			   max => 1000, # 2433,
-			   min => 48,
-			  },
+			 max => 1000, # 2433,
+			 min => 48,
+			},
 	       'soma_pclamp' => {
 				 max => -0.04,
 				 min => -0.063474, # -0.071965,
 				},
 	       'dendrite_pclamp' => {
-				     max => -0.04,
-				     min => -0.06,
+				     max => -0.08,
+				     min => -0.04,
 				    },
 	      };
 
@@ -397,10 +397,11 @@ sub draw
 	{
 	    if ($protocol =~ /$range_type/)
 	    {
-		print "$0: selected range_type $range_type\n";
-
 		$max = $value_ranges->{$range_type}->{max};
 		$min = $value_ranges->{$range_type}->{min};
+
+		print "$0: selected color coding range $range_type for protocol $protocol (min:$min, max:$max)\n";
+
 	    }
 	}
     }
@@ -411,6 +412,8 @@ sub draw
 
     if (-e $colors_filename)
     {
+	print "$0: using color coding values from $colors_filename\n";
+
 	$colors = YAML::LoadFile("<$colors_filename");
 
 	# we are only interested in the colors key
@@ -441,7 +444,21 @@ sub draw
 
 	my $converted_colors;
 
-	foreach my $component_name (keys %$colors)
+	foreach my $component_name (
+				    sort
+				    {
+					(
+					 $a eq 'soma'
+					 ? -1
+					 : (
+					    $b eq 'soma'
+					    ? 1
+					    : $a cmp $b
+					   )
+					)
+				    }
+				    keys %$colors
+				   )
 	{
 	    # map name to serial
 
@@ -468,7 +485,19 @@ sub draw
 	    {
 		$value -= $min;
 
-		$value *= (scalar @$colormap) / ($max - $min);
+		#! I can get a too high value when I use scalar @$colormap,
+		#! due to rounding or so, so I use $#$colormap.
+
+		$value *= $#$colormap / ($max - $min);
+
+		if ($value > $#$colormap)
+		{
+		    $value = $#$colormap;
+		}
+		elsif ($value < 0)
+		{
+		    $value = 0;
+		}
 
 		# get corresponding from the color map
 
@@ -479,63 +508,70 @@ sub draw
 	$colors = $converted_colors;
     }
 
+    my $coordinates = [];
+
+    foreach my $child (@$children)
+    {
+	my $coordinate
+	    = [
+	       (
+		# dia
+
+		(
+# 		 (
+# 		  print $file "  - $child->[0]\n"
+# 		 )
+		 1 && $child->[4]),
+
+# 		{
+# 		 color => [ 1 - $child->[4] * 1e5, 1 - $child->[4] * 1e5, 1 - $child->[4] * 1e5, ],
+# 		},
+
+		{
+		 color => defined $colors ? $colors->{$child->[0]} : [ 1, 1, 1, ],
+		},
+
+		# two coordinates
+
+		[
+		 $child->[3]->{this}->{'x'},
+		 $child->[3]->{this}->{'y'},
+		 $child->[3]->{this}->{'z'},
+		],
+
+		[
+		 $child->[3]->{parent}->{'x'},
+		 $child->[3]->{parent}->{'y'},
+		 $child->[3]->{parent}->{'z'},
+		],
+	       ),
+	      ];
+
+	push @$coordinates, @$coordinate;
+    }
+
     my $visible_colorbar = 1;
+
+    if ($visible_colorbar)
+    {
+	push
+	    @$coordinates,
+		map
+		{
+		    (
+		     {
+		      color => $colormap->[$_],
+		     },
+		     [ 1e-6 + $_ * -1e-6, 10e-6, -10e-6, ],
+		     [ 2e-6 + $_ * -1e-6, 10e-6, -10e-6, ],
+		    );
+		}
+		    0 .. $#$colormap;
+    }
 
     my $result
 	= {
-	   coordinates => [
-			   ($visible_colorbar
-			    ? (
-			       map
-			       {
-				   (
-				    {
-				     color => $colormap->[$_],
-				    },
-				    [ 1e-6 + $_ * -1e-6, 10e-6, -10e-6, ],
-				    [ 2e-6 + $_ * -1e-6, 10e-6, -10e-6, ],
-				   );
-			       }
-			       0 .. $#$colormap
-			      )
-			    : ()
-			   ),
-			   map
-			   {
-			       (
-				# dia
-
-				(
-# 				 (
-# 				  print $file "  - $_->[0]\n"
-# 				 )
-				 1 && $_->[4]),
-
-# 				{
-# 				 color => [ 1 - $_->[4] * 1e5, 1 - $_->[4] * 1e5, 1 - $_->[4] * 1e5, ],
-# 				},
-
-				{
-				 color => defined $colors ? $colors->{$_->[0]} : [ 1, 1, 1, ],
-				},
-
-				# two coordinates
-
-				[
-				 $_->[3]->{this}->{'x'},
-				 $_->[3]->{this}->{'y'},
-				 $_->[3]->{this}->{'z'},
-				],
-
-				[
-				 $_->[3]->{parent}->{'x'},
-				 $_->[3]->{parent}->{'y'},
-				 $_->[3]->{parent}->{'z'},
-				],
-			       );
-			   }
-			   @$children,
-			  ],
+	   coordinates => $coordinates,
 	   color => [ 1, 1, 1, ],
 	   light => 0,
 	   name => $self->{context},

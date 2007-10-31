@@ -1,15 +1,26 @@
 $files = {
-           '_</local_home/local_home/hugo/neurospaces_project/studio/source/perl/snapshots/0/bin/neurospaces' => [
-                                                                                                                   {
-                                                                                                                     'expr' => undef,
-                                                                                                                     'value' => '1',
-                                                                                                                     'text' => '	Neurospaces::GUI::gui($0);
+           '_<bin/neurospaces' => [
+                                    {
+                                      'expr' => undef,
+                                      'value' => '1',
+                                      'text' => '	    $renderer->symbol_add($symbol);
 ',
-                                                                                                                     'fname' => '/local_home/local_home/hugo/neurospaces_project/studio/source/perl/snapshots/0/bin/neurospaces',
-                                                                                                                     'type' => 'user',
-                                                                                                                     'line' => '163'
-                                                                                                                   }
-                                                                                                                 ]
+                                      'fname' => 'bin/neurospaces',
+                                      'type' => 'user',
+                                      'line' => 252
+                                    }
+                                  ],
+           '_<perl/Neurospaces/GUI/Components/Cell.pm' => [
+                                                            {
+                                                              'expr' => undef,
+                                                              'value' => '1',
+                                                              'text' => '    $morphology_name =~ s/\\./_/g;
+',
+                                                              'fname' => 'perl/Neurospaces/GUI/Components/Cell.pm',
+                                                              'type' => 'user',
+                                                              'line' => '256'
+                                                            }
+                                                          ]
          };
 $expr_list = [];
 $eval_saved_text = undef;

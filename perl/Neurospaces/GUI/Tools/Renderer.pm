@@ -1262,10 +1262,10 @@ sub objects_init
 
     my $objects
 	= [
-	   {
-            draw        => \&draw_axes,
-	    name        => 'axes',
-	   },
+# 	   {
+#             draw        => \&draw_axes,
+# 	    name        => 'axes',
+# 	   },
 # 	   {
 # 	    lit         => 1,
 # 	    color       => [ 1, 1,  1],
