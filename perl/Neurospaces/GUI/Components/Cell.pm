@@ -69,7 +69,7 @@ e4cb3a1_CNG:
  position:
   - 0.0
   - -6.0
-  - -17.0
+  - -27.0
 fish1:
  angles:
   x: 90
@@ -93,7 +93,7 @@ gp_pc1:
  position:
   - 0.0
   - 14.0
-  - -27.0
+  - -37.0
 gp_pc2:
  angles:
   x: 90
@@ -141,7 +141,7 @@ RatPC1_copy:
  position:
   - -5.0
   - 8.0
-  - -27.0
+  - -37.0
 RatPC2_110104:
  angles:
   x: 90
@@ -161,7 +161,7 @@ RatPC3_072205:
 TurtlePC1_110504:
  angles:
   x: 90
-  y: -25
+  y: -15
  position:
   - 1.0
   - -4.0
