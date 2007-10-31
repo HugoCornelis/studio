@@ -423,6 +423,23 @@ sub draw
 	    $colors = $colors->{colors};
 	}
     }
+    else
+    {
+	# replace the color map with a full white one
+
+	print "$0: replacing color map with a white scale bar\n";
+
+	$colormap
+	    = [
+	       (
+		map
+		{
+		    [ 1, 1, 1, ];
+		}
+		0 .. $#$colormap,
+	       ),
+	      ];
+    }
 
     # convert keys to serials, convert result values to color codes
 
@@ -554,19 +571,27 @@ sub draw
 
     if ($visible_colorbar)
     {
-	push
-	    @$coordinates,
+	#! gives 100 entries of 1um, so 100um or 0.1 mm.
+
+	my $colormap_coordinates
+	    = [
+	       10e-6,
+	       (
 		map
 		{
 		    (
 		     {
 		      color => $colormap->[$_],
 		     },
-		     [ 1e-6 + $_ * -1e-6, 10e-6, -10e-6, ],
-		     [ 2e-6 + $_ * -1e-6, 10e-6, -10e-6, ],
+		     [ -2.5e-4 + ($_ * 1e-6), -1e-5, -10e-6, ],
+		     [ -2.5e-4 + (($_ + 1) * 1e-6), -1e-5, -10e-6, ],
 		    );
 		}
-		    0 .. $#$colormap;
+		0 .. $#$colormap,
+	       ),
+	      ];
+
+	push @$coordinates, @$colormap_coordinates;
     }
 
     my $result
