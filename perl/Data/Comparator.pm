@@ -1,4 +1,4 @@
-# $Id: Comparator.pm 1.3 Thu, 15 Jun 2006 16:57:56 -0500 hugo $
+# $Id: Comparator.pm 1.4 Wed, 26 Sep 2007 11:34:00 -0500 hugo $
 
 
 package Data::Comparator;
@@ -162,7 +162,7 @@ sub data_comparator
     {
 	# simply clone second argument
 
-	$result = clone($data2);
+	$result = Data::Differences->new(clone(\$data2));
     }
 
     # if the user was already expecting differences
