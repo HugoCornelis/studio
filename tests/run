@@ -109,6 +109,7 @@ use YAML;
 
 my $option_help;
 my $option_flattenout;
+my $option_random_order;
 my $option_regex_selector = ".*";
 my $option_timeout_multiplier = 1;
 my $option_verbose;
@@ -130,7 +131,25 @@ my $test_report
        global => {
 		  error_count => $error_count,
 		  status => 'initializing',
+		  test_count => 0,
+		  time_start => `date`,
 		 },
+       target => {
+		  OS => $^O,
+		 },
+      };
+
+
+$SIG{'__DIE__'}
+    = sub
+      {
+	  use Carp;
+
+	  print STDERR Carp::longmess(@_);
+
+	  $test_report->{global}->{status} = 'Died';
+
+	  report_exit(3, @_);
       };
 
 
@@ -171,6 +190,35 @@ sub main
 
     my $test_startup;
 
+    # randomize order if required
+
+    if (defined $option_random_order)
+    {
+	require List::Util;
+
+	my $seed = time() ^ $$ ^ unpack "%L*", `ps axww | gzip`;
+
+	if ($option_random_order =~ /^[0-9]*$/
+	    and $option_random_order ne 1)
+	{
+	    $seed = $option_random_order
+	}
+
+	print "Randomizing test specifications, seed is $seed\n";
+
+	srand($seed);
+
+	$test_report->{random_seed} = $seed;
+
+	# and shuffle the modules
+
+	$test_modules = [ List::Util::shuffle(@$test_modules), ];
+    }
+    else
+    {
+	$test_report->{random_seed} = 'not randomized';
+    }
+
     foreach my $module_definition (@$test_modules)
     {
 	my $module_name = $module_definition->{name};
@@ -178,7 +226,7 @@ sub main
 	if ($module_definition->{disabled})
 	{
 	    report_message(1, 2, "Module $module_definition->{description} is disabled ($module_definition->{disabled}).
-Total of $test_count tests (encountered $error_count error(s) so far)");
+Total of $test_report->{global}->{test_count} tests (encountered $error_count error(s) so far)");
 
 	    $test_report->{disabled}->{modules}->{$module_name} = $module_definition->{disabled};
 
@@ -198,7 +246,7 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 	    if ($command_definition->{disabled})
 	    {
 		report_message(1, 2, "Tests of $description are disabled ($command_definition->{disabled})
-Total of $test_count tests (encountered $error_count error(s) so far)");
+Total of $test_report->{global}->{test_count} tests (encountered $error_count error(s) so far)");
 
 		$test_report->{disabled}->{command_definitions}->{$module_name}->{$description} = $command_definition->{disabled};
 
@@ -235,13 +283,20 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 	    }
 	    else
 	    {
-		# a command can come from the _build directory
+		# a command can be an absolute pathname,
+		# can come from the _build directory
 		# or from the sources for a script
 
+# 		-f $command and print "Found command $command\n";
+# 		-f $built_exe_directory . $command and print "Found built $built_exe_directory$command\n";
+# 		-f $core_directory . $command and print "Found core $core_directory$command\n";
+
 		my $test_command
-		    = -f $built_exe_directory . $command
-			? $built_exe_directory . $command
-			    : $core_directory . $command;
+		    = -f $command
+			? $command
+			    : -f $built_exe_directory . $command
+				? $built_exe_directory . $command
+				    : $core_directory . $command;
 
 		# find differences between how to run this command and
 		# the one already running
@@ -343,7 +398,7 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 		if ($command_test->{disabled})
 		{
 		    report_message(1, 2, "Tests of $description are disabled ($command_test->{disabled})
-Total of $test_count tests (encountered $error_count error(s) so far)");
+Total of $test_report->{global}->{test_count} tests (encountered $error_count error(s) so far)");
 
 		    $test_report->{disabled}->{command_tests}->{$module_name}->{$description} = $command_test->{disabled};
 
@@ -396,7 +451,7 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 		    my $timeout
 			= defined $command_test->{timeout}
 			    ? $command_test->{timeout} * $option_timeout_multiplier
-				: $spawn_new * $option_timeout_multiplier
+				: $spawn_new
 				    ? 4 * $option_timeout_multiplier
 					: 2 * $option_timeout_multiplier;
 
@@ -473,7 +528,18 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 			$message = $before_match;
 		    }
 
- 		    report_error_add($module_name, $description, $command_definition_description, $error, $message);
+ 		    report_error_add
+			(
+			 {
+			  description => $description,
+			  error => $error,
+			  expected => (ref $command_test->{read} eq 'ARRAY' ? $command_test->{read}->[1] : $command_test->{read}),
+			  message => $message,
+			  module_name => $module_name,
+			  seen => $before_match,
+			  subdescription => $command_definition_description,
+			 },
+			);
 
 		}
 
@@ -483,7 +549,7 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 
 		# increment total test count
 
-		$test_count++;
+		$test_report->{global}->{test_count}++;
 	    }
 
 	    my $reparation = $command_definition->{reparation};
@@ -515,14 +581,22 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 # 		    $test_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{description} = $command_test->{description};
 # 		    $test_report->{modules}->{$module_name}->{$error_count}->{error} = $reparation_error;
 
-		    report_error_add($module_name, $description, $command_definition_description, $reparation_error);
+		    report_error_add
+			(
+			 {
+			  description => $description,
+			  error => $reparation_error,
+			  module_name => $module_name,
+			  subdescription => $command_definition_description,
+			 },
+			);
 		}
 	    }
 
 	    if (@$command_definitions > 1)
 	    {
 		report_message(1, 2, "End for tests of $description
-Total of $test_count tests (encountered $error_count error(s) so far)");
+Total of $test_report->{global}->{test_count} tests (encountered $error_count error(s) so far)");
 	    }
 
 	    # register if this command had side effects
@@ -539,7 +613,7 @@ Total of $test_count tests (encountered $error_count error(s) so far)");
 	$previous_side_effects ||= $module_definition->{side_effects} || 0;
 
 	report_message(1, 2, "End of tests of module $module_definition->{description}
-Total of $test_count tests (encountered $error_count error(s) so far)");
+Total of $test_report->{global}->{test_count} tests (encountered $error_count error(s) so far)");
     }
 
     # if there is a command running
@@ -568,6 +642,7 @@ sub read_cmd_line
 	    (
 	     "help!" => \$option_help,
 	     "flattenout" => \$option_flattenout,
+	     "randomize-order=s" => \$option_random_order,
 	     "regex-selector=s" => \$option_regex_selector,
 	     "timeout-multiplier=s" => \$option_timeout_multiplier,
 	     "v|verbose+" => \$option_verbose,
@@ -584,6 +659,7 @@ options :
                        this experimental feature might increase test performance,
                        by recycling test definitions.
     help               print usage information.
+    randomize-order    randomize the order of the tests before executing them (require List::Util to be installed).
     regex-selector     defines a regex to run specific tests.
     timeout-multiplier multiply all timeout values with this constant.
     verbose            set verbosity level.
@@ -597,19 +673,19 @@ options :
 
 sub report_error_add
 {
-    my $module = shift;
+    my $arguments = shift;
 
-    my $description = shift;
-
-    my $subdescription = shift;
-
-    my $error = shift;
-
-    my $message = shift;
+    my $description = $arguments->{description};
+    my $error = $arguments->{error};
+    my $expected = $arguments->{expected};
+    my $message = $arguments->{message};
+    my $module_name = $arguments->{module_name};
+    my $seen = $arguments->{seen};
+    my $subdescription = $arguments->{subdescription};
 
     $error_count++;
 
-    print STDERR "*** Error: $error ($description, $module)\n";
+    print STDERR "*** Error: $error ($description, $module_name)\n";
 
     # fill in the error report
 
@@ -617,14 +693,14 @@ sub report_error_add
 
     if ($subdescription)
     {
-	$test_report->{modules}->{$module}->{$error_count}->{$subdescription}->{description} = $description;
+	$test_report->{modules}->{$module_name}->{$error_count}->{$subdescription}->{description} = $description;
     }
     else
     {
-	$test_report->{modules}->{$module}->{$error_count}->{description} = $description;
+	$test_report->{modules}->{$module_name}->{$error_count}->{description} = $description;
     }
 
-    $test_report->{modules}->{$module}->{$error_count}->{error} = $error;
+    $test_report->{modules}->{$module_name}->{$error_count}->{error} = $error;
 
     if (defined $message)
     {
@@ -633,14 +709,42 @@ sub report_error_add
 	#! running in verbose mode seems, allows to track regex
 	#! problems ... I think.
 
-	$test_report->{modules}->{$module}->{$error_count}->{$subdescription}->{report} = $message;
+	$test_report->{modules}->{$module_name}->{$error_count}->{$subdescription}->{report} = $message;
     }
+
+    if (defined $expected
+	and defined $seen)
+    {
+	my $processed_expected = [ split "\n", $expected, ];
+
+	$processed_expected = join "\n*** Error: expected: ", "", @$processed_expected, "\n";
+
+	print STDERR $processed_expected;
+
+	my $processed_seen = [ split "\n", $seen, ];
+
+	$processed_seen = join "\n*** Error: seen: ", "", @$processed_seen, "\n";
+
+	print STDERR $processed_seen;
+
+    }
+
 }
 
 
 sub report_exit
 {
     my $exit_code = shift;
+
+    my $description = shift;
+
+    $test_report->{global}->{time_end} = `date`;
+
+    if (defined $description
+        && $exit_code eq 3)
+    {
+	print "*** die: $description\n";
+    }
 
     # yaml out the test report
 
@@ -769,7 +873,14 @@ sub test_library_expand
 
 	if ($@)
 	{
-	    report_error_add($test_module, $@, undef, $@);
+	    report_error_add
+		(
+		 {
+		  description => $@,
+		  error => $@,
+		  module_name => $test_module,
+		 },
+		);
 	}
 	else
 	{

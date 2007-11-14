@@ -16,7 +16,8 @@ our $perl_modules_directory;
 our $config;
 
 
-my $tests_disabled = 0;
+my $command_definition_disabled = [];
+my $command_tests_disabled = 0;
 
 
 my $option_header;
@@ -192,6 +193,9 @@ sub html_index
 #
 # Convert the given source to an html table with the given name.
 #
+# Source is a hash to be converted to a two column table with key --
+# value rows.
+#
 
 sub html_table_code
 {
@@ -362,6 +366,13 @@ options :
 
 	    $html .= $cgi->h1($content->{description});
 
+	    if ($content->{comment})
+	    {
+		$html .= $cgi->font( { -size => 2, }, $content->{comment});
+
+		$html .= $cgi->br();
+	    }
+
 	    # create index for this file
 
 	    my $command_definitions = $content->{command_definitions};
@@ -392,6 +403,8 @@ options :
 
 	    foreach my $command_definition (@$command_definitions)
 	    {
+		my $command_tests = $command_definition->{command_tests};
+
 		$html .= $cgi->hr();
 
 		$html .= "<a name=\"${directory}_${file}_${command_definition_count}\"></a>";
@@ -401,6 +414,13 @@ options :
 		if ($command_definition->{disabled})
 		{
 		    $html .= $cgi->h2("This command definition is currently disabled (disabled is '$command_definition->{disabled}')");
+
+		    push
+			@$command_definition_disabled,
+			{
+			 command_test_count => scalar @$command_tests,
+			 description => $command_definition->{description},
+			};
 		}
 
 		if ($command_definition->{command} =~ /CODE/)
@@ -501,20 +521,40 @@ options :
 
 		$html .= $cgi->hr();
 
-		if ($command_definition->{preparation}
+		if ($command_definition->{comment}
+		    || $command_definition->{preparation}
 		    || $command_definition->{reparation})
 		{
 		    # give header
 
-		    $html .= $cgi->h4("Preparation and reparation");
+		    $html .= $cgi->h4("Comments, Preparation, Reparation");
 
 		    # create table
 
-		    my $source
-			= {
-			   "1. Preparation needed before the commands below : " => $command_definition->{preparation}->{description},
-			   "2. And repared afterwards using : " => $command_definition->{reparation}->{description},
-			  };
+		    my $count = 1;
+
+		    my $source = {};
+
+		    if ($command_definition->{comment})
+		    {
+			$source->{$count . ". Comment for this test definition"} = $command_definition->{comment};
+
+			$count++;
+		    }
+
+		    if ($command_definition->{preparation})
+		    {
+			$source->{$count . ". Preparation needed before the commands below : "} = $command_definition->{preparation}->{description};
+
+			$count++;
+		    }
+
+		    if ($command_definition->{reparation})
+		    {
+			$source->{$count . ". And repared afterwards using : "} = $command_definition->{reparation}->{description};
+
+			$count++;
+		    }
 
 		    # render
 
@@ -529,8 +569,6 @@ options :
 		# loop over all tests
 
 		my $command_test_count = 1;
-
-		my $command_tests = $command_definition->{command_tests};
 
 		foreach my $command_test (@$command_tests)
 		{
@@ -586,7 +624,7 @@ options :
 
 			$entries++;
 
-			$tests_disabled++;
+			$command_tests_disabled++;
 		    }
 
 		    # render
@@ -644,13 +682,29 @@ options :
     #! ... and a single index.html links to all the directories
     #! (ie. 'main.html's).
 
+    my $command_definition_disabled_total = 0;
+
     output_content
 	(
 	 {
 	  cgi => $cgi,
 	  content => (
 		      html_index($cgi, $sections, )
-		      . "<hr> Total of $total_tests tests ($tests_disabled test(s) disabled)"
+		      . "<hr> Total of $total_tests tests ("
+		      . (scalar @$command_definition_disabled)
+		      . " command definition(s) disabled, with in total "
+		      . (
+			 (
+			  scalar
+			  map
+			  {
+			      $command_definition_disabled_total += $_->{command_test_count}
+			  }
+			  @$command_definition_disabled
+			 )
+			 || $command_definition_disabled_total
+			)
+		      . " test(s) disabled, $command_tests_disabled individual command test(s) disabled)"
 		     ),
 	  filename => "index.html",
 	  header => $option_header,
