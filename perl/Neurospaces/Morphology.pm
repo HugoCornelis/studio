@@ -101,6 +101,8 @@ sub dendritic_tips
 
 	my $system_command2 = "neurospaces $self_options $self_commands --command 'segmenterlinearize $component_name' \"$self->{filename}\"";
 
+	print STDERR "executing ($system_command2)\n";
+
 	my $yaml_linearize_string = join '', `$system_command2`;
 
 	$yaml_linearize_string =~ s/.*---/---/gs;
