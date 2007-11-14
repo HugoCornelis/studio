@@ -567,7 +567,7 @@ sub draw
 	push @$coordinates, @$coordinate;
     }
 
-    my $visible_colorbar = 1;
+    my $visible_colorbar = 0;
 
     if ($visible_colorbar)
     {
