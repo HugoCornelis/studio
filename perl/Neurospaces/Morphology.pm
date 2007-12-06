@@ -18,6 +18,101 @@ our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(all_morphologies);
 
 
+sub branch_order
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    my $result;
+
+    my $in_memory = 0;
+
+    if ($in_memory)
+    {
+	# get context
+
+	my $context = SwiggableNeurospaces::PidinStackParse($component_name);
+
+	# get component
+
+	my $component = $context->PidinStackLookupTopSymbol();
+
+	$component->SymbolLinearize($context);
+
+    }
+
+    else
+    {
+	my $self_commands
+	    = join
+		' ',
+		    (
+		     map
+		     {
+			 "--command '$_'"
+		     }
+		     @{$self->{commands}},
+		    );
+
+	my $self_options
+	    = join
+		' ',
+		    (
+		     map
+		     {
+			 "--backend-option '$_'"
+		     }
+		     @{$self->{backend_options}},
+		    );
+
+	my $system_command1 = "neurospaces $self_options $self_commands --command 'segmentertips $component_name' \"$self->{filename}\"";
+
+	print STDERR "executing ($system_command1)\n";
+
+	my $yaml_tips_string = join '', `$system_command1`;
+
+	$yaml_tips_string =~ s/.*---/---/gs;
+
+# 	$yaml_tips_string =~ s/\n.*$/\n/;
+
+# 	print "($yaml_tips_string)";
+
+	use YAML;
+
+	my $tips = Load($yaml_tips_string);
+
+	$result->{tips} = $tips;
+
+	my $system_command2 = "neurospaces $self_options $self_commands --command 'segmenterlinearize $component_name' \"$self->{filename}\"";
+
+	print STDERR "executing ($system_command2)\n";
+
+	my $yaml_linearize_string = join '', `$system_command2`;
+
+	$yaml_linearize_string =~ s/.*---/---/gs;
+
+# 	$yaml_linearize_string =~ s/\n.*$/\n/;
+
+# 	print "($yaml_linearize_string)";
+
+	use YAML;
+
+	my $linearize = Load($yaml_linearize_string);
+
+	$result->{linearize} = $linearize;
+    }
+
+    # cache result
+
+    $self->{dendritic_tips} = $result;
+
+    # return result
+
+    return $result;
+}
+
+
 sub cumulated_length
 {
     my $self = shift;

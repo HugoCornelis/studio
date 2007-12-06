@@ -408,7 +408,9 @@ sub draw
 
     my $colors;
 
-    my $colors_filename = "tmp/${morphology_name}_${protocol}.yml";
+    # if a color map can be found
+
+    my $colors_filename = "colormaps/${morphology_name}_${protocol}.yml";
 
     if (-e $colors_filename)
     {
@@ -423,11 +425,14 @@ sub draw
 	    $colors = $colors->{colors};
 	}
     }
+
+    # else
+
     else
     {
 	# replace the color map with a full white one
 
-	print "$0: replacing color map with a white scale bar\n";
+	print "$0: $colors_filename not found, replacing color map with a white scale bar\n";
 
 	$colormap
 	    = [
