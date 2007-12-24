@@ -51,6 +51,7 @@ my $test
 						  },
 						 ],
 				description => "surface accumulation",
+				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
 			       },
 			       {
 				arguments => [
@@ -84,6 +85,7 @@ my $test
 						  },
 						 ],
 				description => "minimum operator",
+				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
 			       },
 			       {
 				arguments => [
@@ -115,6 +117,7 @@ my $test
 						  },
 						 ],
 				description => "maximum operator",
+				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
 			       },
 			      ],
        description => "application of operators to reported fields",

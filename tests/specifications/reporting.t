@@ -50,6 +50,7 @@ my $test
 
 						 ],
 				description => "spine reporting for a passive morphology that was populated with active channels and spines",
+				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
 			       },
 			       {
 				arguments => [
@@ -84,6 +85,7 @@ my $test
 						  },
 						 ],
 				description => "delayed rectifier reporting for a passive morphology that was populated with active channels",
+				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
 			       },
 			       {
 				arguments => [
@@ -119,6 +121,7 @@ report:
 						  },
 						 ],
 				description => "spines algorithm reporting for a passive morphology that was populated with active channels",
+				disabled => (-e "$morphologies/$morphology_name2" ? '' : "$morphologies/$morphology_name2 not found"),
 			       },
 			       {
 				arguments => [
@@ -149,6 +152,7 @@ report:
 						  },
 						 ],
 				description => "cumulated spiny dendrite length",
+				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
 			       },
 			      ],
        description => "information reporting on loaded models",
