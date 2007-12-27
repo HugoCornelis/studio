@@ -11,7 +11,7 @@ our $core_directory;
 
 our $built_exe_directory;
 
-our $perl_modules_directory;
+# our $perl_modules_directory;
 
 our $config;
 
@@ -84,19 +84,19 @@ BEGIN
 
     unshift @INC, $config->{tests_directory};
 
-    # find the perl modules directory
+#     # find the perl modules directory
 
-    $perl_modules_directory = $core_directory;
+#     $perl_modules_directory = $core_directory;
 
-    $perl_modules_directory .= "perl";
+#     $perl_modules_directory .= "perl";
 
-    # add to include path
+#     # add to include path
 
-    unshift @INC, $perl_modules_directory;
+#     unshift @INC, $perl_modules_directory;
 
-    #! this one is for distcheck, second run of the disthook
+#     #! this one is for distcheck, second run of the disthook
 
-    unshift @INC, '../../../perl';
+#     unshift @INC, '../../../perl';
 
     # more automake hacking : if there is a special _build directory
     # that separates sources and derived files, we assume that the
