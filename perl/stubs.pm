@@ -97,10 +97,10 @@ sub get_children
 
 sub get_files
 {
-# /local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/perl
+# /local_home/local_home/hugo/neurospaces_project/model_container/source/c/snapshots/0/perl
     return
 	[
-	 "/local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/perl/stubs.pm",
+	 "/local_home/local_home/hugo/neurospaces_project/model_container/source/c/snapshots/0/perl/stubs.pm",
 	];
 }
 
@@ -110,7 +110,7 @@ sub get_namespaces
     return
 	[
 	 {
-	  filename => "/local_home/local_home/hugo/neurospaces_project/neurospaces/source/c/snapshots/0/perl/stubs.pm",
+	  filename => "/local_home/local_home/hugo/neurospaces_project/model_container/source/c/snapshots/0/perl/stubs.pm",
 	  namespace => "::",
 	 },
 	];
