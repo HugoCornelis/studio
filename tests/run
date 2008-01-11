@@ -107,8 +107,9 @@ use Getopt::Long;
 use YAML;
 
 
-my $option_help;
 my $option_flattenout;
+my $option_help;
+my $option_numerical_compare = 0;
 my $option_random_order;
 my $option_regex_selector = ".*";
 my $option_timeout_multiplier = 1;
@@ -493,6 +494,21 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			     $after_match)
 				= $exp->expect($timeout, @$read, );
 			}
+
+			# if things don't match
+
+			if ($error)
+			{
+			    # if allowed to compare numerically
+
+			    if (!$command_test->{string_only}
+			        && $option_numerical_compare)
+			    {
+				# compare numerically
+
+				$error = numerical_compare($command_test, $before_match, $read, $error);
+			    }
+			}
 		    }
 		}
 
@@ -640,13 +656,25 @@ sub read_cmd_line
     my $result
 	= GetOptions
 	    (
-	     "help!" => \$option_help,
 	     "flattenout" => \$option_flattenout,
+	     "help!" => \$option_help,
+	     "numerical-compare!" => \$option_numerical_compare,
 	     "randomize-order=s" => \$option_random_order,
 	     "regex-selector=s" => \$option_regex_selector,
 	     "timeout-multiplier=s" => \$option_timeout_multiplier,
 	     "v|verbose+" => \$option_verbose,
 	    );
+
+    $test_report->{options}
+	= {
+	   flattenout => $option_flattenout,
+	   help => $option_help,
+	   numerical_compare => $option_numerical_compare,
+	   random_order => $option_random_order,
+	   regex_selector => $option_regex_selector,
+	   timeout_multiplier => $option_timeout_multiplier,
+	   verbose => $option_verbose,
+	  };
 
     if ($option_help)
     {
@@ -659,6 +687,7 @@ options :
                        this experimental feature might increase test performance,
                        by recycling test definitions.
     help               print usage information.
+    numerical-compare  attempt to compare numbers numerically when string differences are found (default enabled).
     randomize-order    randomize the order of the tests before executing them (require List::Util to be installed).
     regex-selector     defines a regex to run specific tests.
     timeout-multiplier multiply all timeout values with this constant.
@@ -800,6 +829,91 @@ sub report_message
     print "$message\n\n";
     print "$line\n" for 0 .. $trailer;
     print "\n";
+}
+
+
+sub numerical_compare
+{
+    my $command_test = shift;
+
+    my $string1 = shift;
+
+    my $string2 = shift;
+
+    my $current_diffs = shift;
+
+    my $result = $current_diffs;
+
+    print "*** Comparing numerical differences ($command_test->{description})\n";
+
+    push @{$test_report->{numerical_compare}}, $command_test->{description};
+
+    my $texts1 = [ split '\n', $string1, ];
+
+    my $numbers1 = [];
+
+    foreach my $text (@$texts1)
+    {
+	while ($text =~ s/([+-]?\.?\d+(\.[0-9]+)?(e[+-]?[0-9]+)?)/HERE_WAS_A_NUMBER/)
+	{
+	    my $number = $1;
+
+	    push @$numbers1, $number;
+	}
+    }
+
+    my $texts2 = [ split '\n', $string2, ];
+
+    my $numbers2 = [];
+
+    foreach my $text (@$texts2)
+    {
+	while ($text =~ s/([+-]?\.?\d+(\.[0-9]+)?(e[+-]?[0-9]+)?)/HERE_WAS_A_NUMBER/)
+	{
+	    my $number = $1;
+
+	    push @$numbers2, $number;
+	}
+    }
+
+    # from here on the default result is no error
+
+    $result = '';
+
+    # and can be overwritten by the next tests
+
+    if (scalar @$numbers1 ne scalar @$numbers2)
+    {
+	return 'numerical_compare(): different number count, aborting with error';
+    }
+
+    if (scalar @$texts1 ne scalar @$texts2)
+    {
+	return 'numerical_compare(): different text count, aborting with error';
+    }
+
+    foreach my $index (0 .. $#$texts1)
+    {
+	if ($texts1->[$index] ne $texts2->[$index])
+	{
+	    return 'numerical_compare(): texts differ ($texts1->[$index] ne $texts2->[$index]), aborting with error';
+	}
+    }
+
+    foreach my $index (0 .. $#$numbers1)
+    {
+	if ($numbers1->[$index] != $numbers2->[$index])
+	{
+	    my $diff = $numbers1->[$index] - $numbers2->[$index];
+
+	    if ($diff > $numbers1->[$index] / 10000)
+	    {
+		return 'numerical_compare(): numbers differ above accuracy ($numbers1->[$index] != $numbers2->[$index]), aborting with error';
+	    }
+	}
+    }
+
+    return $result;
 }
 
 
