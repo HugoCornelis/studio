@@ -333,6 +333,8 @@ sub gui
 {
     my $line = shift;
 
+    print "$0: Neurospaces::GUI::gui() called ($line)\n";
+
     my $studio = Neurospaces::Studio->new();
 
     #! if option_restore is a global, you used to get infinite loops,
