@@ -7,13 +7,13 @@ use strict;
 
 BEGIN
 {
-#     #! make check
+    #! make check
 
-#     push @INC, '../perl';
+    push @INC, '../perl';
 
-#     #! normal run
+    #! normal run
 
-#     push @INC, './perl';
+    push @INC, './perl';
 
     #! after install
 
