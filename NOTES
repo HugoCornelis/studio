@@ -5,11 +5,11 @@ For installation, refer to the neurospaces HOWTO.outline document.
 Most perl packages mentioned overthere are not needed for neurospaces,
 but for are needed for using the studio package.
 
-- Bugfix: added renderer font.
-- Modularized the renderer's external object facilities.
-- Mapped T_sym_segment to a GUI component.
-- Allowed to give multiple conditions to bin/neurospaces,
-  for improved model queries.
-- Bugfixes for the overview extractor.
-- Added 'Quit' button.
-- Cleanup in the rendering engine.
+- Packaging fixes.
+- Added project support.
+- Added glue for the morphology structure analyzer.
+- Added support for color coding of morphologies.
+- Added support for setting the D3 camera view per morphology.
+- Start using Data::Utilities from CPAN (so you need that module installed).
+- Allowed the Neurospaces studio to be used as a simulation call for
+  SSP, use Neurospaces::GUI::gui() as simulation routine.
