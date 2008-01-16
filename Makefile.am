@@ -14,7 +14,10 @@ SUBDIRS = perl tests
 
 dist_bin_SCRIPTS = bin/neurospaces
 
-dist-hook:
+dist-keywords:
+	release-expand studio des 6 0 des-6 hugo.cornelis@gmail.com --verbose
+
+dist-hook: dist-keywords
 	find $(distdir) -name _Inline -exec chmod u+w -R \{\} \;
 	$(RM) -fr `find $(distdir) -name _Inline`
 	cp $(srcdir)/license.txt $(distdir)
