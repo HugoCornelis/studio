@@ -389,6 +389,10 @@ sub gui
     # start main loop
 
     window_main($studio);
+
+    #! specifically for interaction with ssp, ie as a simulation replacement.
+
+    return 1;
 }
 
 
