@@ -18,6 +18,7 @@ dist-keywords:
 	release-expand studio des 7 0 des-7 hugo.cornelis@gmail.com --verbose
 
 dist-hook: dist-keywords
+	cd $(srcdir) && if test -n "`mtn ls changed `" ; then false ; else true ; fi
 	find $(distdir) -name _Inline -exec chmod u+w -R \{\} \;
 	$(RM) -fr `find $(distdir) -name _Inline`
 	cp $(srcdir)/license.txt $(distdir)
