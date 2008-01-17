@@ -15,7 +15,7 @@ SUBDIRS = perl tests
 dist_bin_SCRIPTS = bin/neurospaces
 
 dist-keywords:
-	release-expand studio des 6 0 des-6 hugo.cornelis@gmail.com --verbose
+	release-expand studio des 7 0 des-7 hugo.cornelis@gmail.com --verbose
 
 dist-hook: dist-keywords
 	find $(distdir) -name _Inline -exec chmod u+w -R \{\} \;
