@@ -404,6 +404,7 @@ sub draw
 	       'soma_pclamp' => {
 				 max => -0.04,
 				 min => -0.063474, # -0.071965,
+# 				 min => -0.0462597, # -0.063474, # -0.071965,
 				},
 	       'dendrite_pclamp' => {
 				     max => -0.08,
@@ -568,7 +569,7 @@ sub draw
 # 		},
 
 		{
-		 color => defined $colors ? $colors->{$child->[0]} : [ 1, 1, 1, ],
+		 color => defined $colors->{$child->[0]} ? $colors->{$child->[0]} : [ 1, 1, 1, ],
 		},
 
 		# two coordinates
