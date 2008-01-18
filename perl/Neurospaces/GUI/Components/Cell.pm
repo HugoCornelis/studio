@@ -182,6 +182,14 @@ comps10:
   - 0.0
   - 14.0
   - -37.0
+comps40:
+ angles:
+  x: 90
+  y: -180
+ position:
+  - 0.0
+  - 14.0
+  - -37.0
 TurtlePC3_061105:
  angles:
   x: 90
