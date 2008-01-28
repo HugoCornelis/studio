@@ -36,7 +36,7 @@ dist-hook: dist-keywords
 #	cp -a $(srcdir)/perl $(distdir)
 	test -d $(distdir)/tests || mkdir $(distdir)/tests
 	test -d $(distdir)/tests/specifications || mkdir $(distdir)/tests/specifications
-	cp -R $(srcdir)/tests/run $(distdir)/tests/run
+	cp -R $(srcdir)/tests/neurospaces_harness $(distdir)/tests/neurospaces_harness
 	cp -R $(srcdir)/tests/tests_2_html $(distdir)/tests/tests_2_html
 	cp -R $(srcdir)/tests/specifications $(distdir)/tests
 #	cp -R $(srcdir)/tests/code/tests.config $(distdir)/tests/code/tests.config
@@ -45,9 +45,9 @@ dist-hook: dist-keywords
 #	cp -R $(srcdir)/tests/perl $(distdir)/tests
 	( cd $(distdir)/tests && chmod -R u+w . && ./tests_2_html --introduction introduction.html )
 
-#check_SCRIPTS = $(srcdir)/tests/run
+#check_SCRIPTS = $(srcdir)/tests/neurospaces_harness
 
-#TESTS = $(srcdir)/tests/run
+#TESTS = $(srcdir)/tests/neurospaces_harness
 
 #perl_HEADERS = studio_test.pm
 

@@ -12,9 +12,9 @@
 
 #t automake does not allow to pass in arguments for tests ?
 
-check_SCRIPTS = $(srcdir)/run 
+check_SCRIPTS = $(srcdir)/neurospaces_harness 
 
-TESTS = $(srcdir)/run
+TESTS = $(srcdir)/neurospaces_harness
 
 test: check
 
