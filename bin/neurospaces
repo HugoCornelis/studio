@@ -31,7 +31,7 @@ my $global_operators
        average =>
        sub
        {
-	   my ($description, $final_value, $context, $symbol, $parameter, $value) = @_;
+	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
 
 	   my $count = 0;
 
@@ -51,22 +51,16 @@ my $global_operators
        cumulate =>
        sub
        {
-	   my ($description, $final_value, $context, $symbol, $parameter, $value) = @_;
+	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
 
 	   return ('cumulated value', ($final_value || 0) + $value);
        },
        length_average =>
        sub
        {
-	   my ($description, $final_value, $context, $symbol, $parameter, $value) = @_;
+	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
 
-	   my $length
-	       = SwiggableNeurospaces::symbol_parameter_resolve_value
-		   (
-		    $descendant->{_symbol},
-		    "LENGTH",
-		    $descendant->{_context}
-		   );
+	   my $length = SwiggableNeurospaces::symbol_parameter_resolve_value($symbol, "LENGTH", $context, );
 
 	   if ($value != $SwiggableNeurospaces::dFLT_MAX)
 	   {
@@ -89,7 +83,7 @@ my $global_operators
        maximum =>
        sub
        {
-	   my ($description, $final_value, $context, $symbol, $parameter, $value) = @_;
+	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
 
 	   !defined $final_value && return("$context->$parameter", $value);
 
@@ -98,7 +92,7 @@ my $global_operators
        minimum =>
        sub
        {
-	   my ($description, $final_value, $context, $symbol, $parameter, $value) = @_;
+	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
 
 	   !defined $final_value && return("$context->$parameter", $value);
 
