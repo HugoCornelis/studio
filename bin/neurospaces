@@ -31,7 +31,7 @@ my $global_operators
        average =>
        sub
        {
-	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
+	   my ($description, $final_value, $descendant, $parameter, $value) = @_;
 
 	   my $count = 0;
 
@@ -51,16 +51,21 @@ my $global_operators
        cumulate =>
        sub
        {
-	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
+	   my ($description, $final_value, $descendant, $parameter, $value) = @_;
 
 	   return ('cumulated value', ($final_value || 0) + $value);
        },
        length_average =>
        sub
        {
-	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
+	   my ($description, $final_value, $descendant, $parameter, $value) = @_;
 
-	   my $length = SwiggableNeurospaces::symbol_parameter_resolve_value($symbol, "LENGTH", $context, );
+	   my $length
+	       = SwiggableNeurospaces::symbol_parameter_resolve_value
+		   ($descendant->{_symbol},
+		    "LENGTH",
+		    $descendant->{_context},
+		   );
 
 	   if ($value != $SwiggableNeurospaces::dFLT_MAX)
 	   {
@@ -83,20 +88,20 @@ my $global_operators
        maximum =>
        sub
        {
-	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
+	   my ($description, $final_value, $descendant, $parameter, $value) = @_;
 
-	   !defined $final_value && return("$context->$parameter", $value);
+	   !defined $final_value && return("$descendant->{context}->$parameter", $value);
 
-	   return $final_value >= $value ? ($description, $final_value) : ("$context->$parameter", $value);
+	   return $final_value >= $value ? ($description, $final_value) : ("$descendant->{context}->$parameter", $value);
        },
        minimum =>
        sub
        {
-	   my ($description, $final_value, $symbol, $context, $parameter, $value) = @_;
+	   my ($description, $final_value, $descendant, $parameter, $value) = @_;
 
-	   !defined $final_value && return("$context->$parameter", $value);
+	   !defined $final_value && return("$descendant->{context}->$parameter", $value);
 
-	   return $final_value <= $value ? ($description, $final_value) : ("$context->$parameter", $value);
+	   return $final_value <= $value ? ($description, $final_value) : ("$descendant->{context}->$parameter", $value);
        },
       };
 
@@ -215,6 +220,7 @@ sub main
     my $success
 	= $neurospaces->load
 	    (
+	     undef,
 	     {
 	      'backend_options' => $option_backend_options,
 	      'commands' => $option_commands,
@@ -416,7 +422,7 @@ sub main
 					  my $description = $operator_results->{$operator_name}->{description};
 					  my $final_value = $operator_results->{$operator_name}->{final_value};
 
-					  ($description, $final_value) = &$operator($description, $final_value, $descendant->{_symbol}, $descendant->{_context}, $parameter, $value);
+					  ($description, $final_value) = &$operator($description, $final_value, $descendant, $parameter, $value);
 
 					  if (!defined $final_value)
 					  {
