@@ -24,7 +24,7 @@ show-release-labels:
 	echo "Release information (major-minor-micro): $(RELEASE_MAJOR)-$(RELEASE_MINOR)-$(RELEASE_MICRO)"
 
 dist-keywords:
-	release-expand studio des 7 0 des-7 hugo.cornelis@gmail.com --verbose
+	release-expand studio $(RELEASE_MAJOR) $(RELEASE_MINOR) $(RELEASE_MICRO) $(RELEASE_MAJOR)-$(RELEASE_MINOR) hugo.cornelis@gmail.com --verbose
 
 dist-hook: dist-keywords
 	cd $(srcdir) && if test -n "`mtn ls changed `" ; then false ; else true ; fi
