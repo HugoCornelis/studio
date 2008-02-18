@@ -16,9 +16,9 @@ dist_bin_SCRIPTS = bin/neurospaces
 
 #! in this case the keywords are automatically extracted from the mtn database, probably this should go in a developer script.
 
-RELEASE_MAJOR = `mtn log --last 1 | grep 'Tag:' | perl -pe 's/.*Tag:\s*//; s/\s*//g; ' | perl -pe 's/-.*//'                      | perl -e '$$_ = <>; $$_ =~ /^\s*$$/ ? print "untracked" : print $$_ '`
-RELEASE_MINOR = `mtn log --last 1 | grep 'Tag:' | perl -pe 's/.*Tag:\s*//; s/\s*//g; ' | perl -pe 's/^[^-]*-?// '  | perl -e '$$_ = <>; $$_ =~ /^\s*$$/ ? print "-1" : print $$_ '`
-RELEASE_MICRO = `mtn log --last 1 | grep 'Tag:' | perl -pe 's/.*Tag:\s*//; s/\s*//g; ' | perl -pe 's/.*?-//; s/[^-]*//; s/^-//;' | perl -e '$$_ = <>; $$_ =~ /^\s*$$/ ? print "-1" : print $$_ '`
+RELEASE_MAJOR = `release-extract --major`
+RELEASE_MINOR = `release-extract --minor`
+RELEASE_MICRO = `release-extract --micro`
 
 show-release-labels:
 	echo "Release information (major-minor-micro): $(RELEASE_MAJOR)-$(RELEASE_MINOR)-$(RELEASE_MICRO)"
