@@ -1,15 +1,12 @@
 This is package is the result of an architecture refactoring of the
-neurospaces package.
+model-container package.
 
-For installation, refer to the neurospaces HOWTO.outline document.
-Most perl packages mentioned overthere are not needed for neurospaces,
-but for are needed for using the studio package.
+For installation, refer to the model-container HOWTO.outline document.
+Most perl packages mentioned overthere are not needed for the
+model-container, but for are needed for using the studio package.
 
-- Packaging fixes.
-- Added project support.
-- Added glue for the morphology structure analyzer.
-- Added support for color coding of morphologies.
-- Added support for setting the D3 camera view per morphology.
-- Start using Data::Utilities from CPAN (so you need that module installed).
-- Allowed the Neurospaces studio to be used as a simulation call for
-  SSP, use Neurospaces::GUI::gui() as simulation routine.
+- Improved messages when integrated with SSP.
+- Synchronized build management with the other packages.
+- Bugfixes for morphology color coding using an external data source.
+- Test framework synchronization.
+- Improved operator interfacing in bin/neurospaces.
