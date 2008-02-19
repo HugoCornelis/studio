@@ -14,8 +14,6 @@ SUBDIRS = perl tests
 
 dist_bin_SCRIPTS = bin/neurospaces
 
-#! in this case the keywords are automatically extracted from the mtn database, probably this should go in a developer script.
-
 RELEASE_MAJOR=`release-extract --major`
 RELEASE_MINOR=`release-extract --minor`
 RELEASE_MICRO=`release-extract --micro`
