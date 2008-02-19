@@ -16,16 +16,16 @@ dist_bin_SCRIPTS = bin/neurospaces
 
 #! in this case the keywords are automatically extracted from the mtn database, probably this should go in a developer script.
 
-RELEASE_MAJOR = des # `release-extract --major`
-RELEASE_MINOR = 10 # `release-extract --minor`
-RELEASE_MICRO = 0 # `release-extract --micro`
+RELEASE_MAJOR=`release-extract --major`
+RELEASE_MINOR=`release-extract --minor`
+RELEASE_MICRO=`release-extract --micro`
 
 show-release-labels:
 	echo "Release information (major-minor-micro): $(RELEASE_MAJOR)-$(RELEASE_MINOR)-$(RELEASE_MICRO)"
 
 dist-keywords:
-#	release-expand studio $(RELEASE_MAJOR) $(RELEASE_MINOR) $(RELEASE_MICRO) $(RELEASE_MAJOR)-$(RELEASE_MINOR) hugo.cornelis@gmail.com --verbose
-	release-expand studio des 10 0 des-10 hugo.cornelis@gmail.com --verbose
+	release-expand studio $(RELEASE_MAJOR) $(RELEASE_MINOR) $(RELEASE_MICRO) $(RELEASE_MAJOR)-$(RELEASE_MINOR) hugo.cornelis@gmail.com --verbose
+#	release-expand studio des 10 0 des-10 hugo.cornelis@gmail.com --verbose
 
 dist-hook: dist-keywords
 	cd $(srcdir) && if test -n "`mtn ls changed `" ; then false ; else true ; fi
