@@ -16,9 +16,9 @@ dist_bin_SCRIPTS = bin/neurospaces
 
 #! in this case the keywords are automatically extracted from the mtn database, probably this should go in a developer script.
 
-RELEASE_MAJOR = `release-extract --major`
-RELEASE_MINOR = `release-extract --minor`
-RELEASE_MICRO = `release-extract --micro`
+RELEASE_MAJOR = des # `release-extract --major`
+RELEASE_MINOR = 10 # `release-extract --minor`
+RELEASE_MICRO = 0 # `release-extract --micro`
 
 show-release-labels:
 	echo "Release information (major-minor-micro): $(RELEASE_MAJOR)-$(RELEASE_MINOR)-$(RELEASE_MICRO)"
