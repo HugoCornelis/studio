@@ -109,15 +109,124 @@ use YAML;
 
 my $option_flattenout;
 my $option_help;
-my $option_numerical_compare = 0;
+my $option_numerical_compare = $config->{numerical_compare} || 0;
 my $option_random_order;
 my $option_regex_selector = ".*";
 my $option_timeout_multiplier = 1;
+my $option_timings;
 my $option_verbose;
 
 
 print "Executable is $0,\n";
 print "core_directory is $core_directory\n";
+
+$config->{environment_settings}
+    = {
+       # tell the model container where to find the model library
+
+       NEUROSPACES_MODELS => {
+			      description => "Your models will be searched for in the directory %value\n\n",
+			      initialization => {
+						 shell => [
+							   # copy the model library
+
+							   'rm -fr "%value"',
+							   'mkdir -p "%value"',
+
+							   "cp -R ${core_directory}library/* \"%value\"",
+
+							   # automake distcheck makes the model library readonly (as so its copy), make it writable again
+
+							   'chmod -R +w "%value"',
+							  ],
+						},
+			      value => "/tmp/neurospaces/test/models",
+			     },
+       NEUROSPACES_PROJECT_MODELS => '',
+       NEUROSPACES_SYSTEM_MODELS => '',
+       NEUROSPACES_USER_MODELS => '',
+      };
+
+my $environment_settings = $config->{environment_settings};
+
+foreach my $environment_setting_name (keys %$environment_settings)
+{
+    my $environment_setting = $environment_settings->{$environment_setting_name};
+
+    # if simply setting values in the environment
+
+    if (!ref $environment_setting)
+    {
+	# set the value in the environment
+
+	$ENV{$environment_setting_name} = $environment_setting;
+    }
+
+    # if additional initialization required
+
+    elsif (ref $environment_setting eq 'HASH')
+    {
+	# get environment_setting value
+
+	my $value = $environment_setting->{value};
+
+	# set the value in the environment
+
+	$ENV{$environment_setting_name} = $value;
+
+	# give feedback
+
+	my $description = $environment_setting->{description};
+
+	$description =~ s/%value/$value/g;
+
+	print $description;
+
+	# loop over shell commands for initialization
+
+	my $shell_commands = $environment_setting->{initialization}->{shell};
+
+	foreach my $shell_command (@$shell_commands)
+	{
+	    # replace value
+
+	    $shell_command =~ s/%value/$value/g;
+
+	    # execute command
+
+	    print "$0: executing ($shell_command)\n";
+
+	    system $shell_command;
+	}
+    }
+    else
+    {
+	die "$0: illegal environment_settings, was processing $environment_setting";
+    }
+
+#     # copy the model library
+
+#     `rm -fr "$config->{model_library}"`;
+#     `mkdir -p "$config->{model_library}"`;
+
+#     `cp -R ${core_directory}library/* "$config->{model_library}"`;
+
+#     # automake distcheck makes the model library readonly (as so its copy), make it writable again
+
+#     `chmod -R +w "$config->{model_library}"`;
+
+#     # tell neurospaces where to find the model library of test models
+
+#     $ENV{NEUROSPACES_MODELS} = $config->{model_library};
+#     $ENV{NEUROSPACES_USER_MODELS} = '';
+#     $ENV{NEUROSPACES_PROJECT_MODELS} = '';
+#     $ENV{NEUROSPACES_SYSTEM_MODELS} = '';
+}
+
+if (defined ($config->{environment}))
+{
+    print "Your models will be searched for in the directory $ENV{NEUROSPACES_MODELS}\n\n";
+}
 
 
 my $error_count = 0;
@@ -130,6 +239,7 @@ my $test_report
 		       package => $config->{package},
 		      },
        global => {
+		  config => $config,
 		  error_count => $error_count,
 		  status => 'initializing',
 		  test_count => 0,
@@ -137,6 +247,11 @@ my $test_report
 		 },
        target => {
 		  OS => $^O,
+		  packages => {
+			       gcc => (join '', `gcc 2>&1 -v`),
+			       perl => (join '', `perl 2>&1 -V`),
+			       swig => (join '', `swig 2>&1 -version`),
+			      },
 		 },
       };
 
@@ -174,6 +289,16 @@ sub main
     # total test count so far is zero
 
     my $test_count = 0;
+
+    # compute the library checksum
+
+    my $library_sha_before;
+
+    if (defined ($config->{model_library}))
+    {
+	$library_sha_before = model_library_sha();
+
+    }
 
     # the previous command had no side effects on the loaded model (since there is no model yet)
 
@@ -222,7 +347,35 @@ sub main
 
     foreach my $module_definition (@$test_modules)
     {
+	if (!defined $module_definition->{name})
+	{
+	    $module_definition->{name} = 'unnamed';
+
+	    report_error_add
+		(
+		 {
+		  description => 'unnamed module',
+		  error => 'unnamed module',
+		  module_name => 'unnamed module',
+		 },
+		);
+	}
+
 	my $module_name = $module_definition->{name};
+
+	if (!defined $module_definition->{description})
+	{
+	    $module_definition->{description} = $module_definition->{name};
+
+	    report_error_add
+		(
+		 {
+		  description => 'no module description',
+		  error => 'no module description',
+		  module_name => $module_name,
+		 },
+		);
+	}
 
 	if ($module_definition->{disabled})
 	{
@@ -414,6 +567,8 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 		    $before_match,
 		    $after_match);
 
+		my $time_elapsed;
+
 		if (ref $command eq 'CODE')
 		{
 		    $error
@@ -456,7 +611,11 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 				    ? 4 * $option_timeout_multiplier
 					: 2 * $option_timeout_multiplier;
 
+		    use Time::HiRes qw(gettimeofday tv_interval);
+
 		    # write
+
+		    my $time_start = [ gettimeofday(), ];
 
 		    if (defined $write)
 		    {
@@ -481,6 +640,8 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			     $before_match,
 			     $after_match)
 				= $exp->expect($timeout, $read, );
+
+			    $time_elapsed = tv_interval($time_start);
 			}
 
 			#! only array supported for now.
@@ -493,6 +654,15 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			     $before_match,
 			     $after_match)
 				= $exp->expect($timeout, @$read, );
+
+			    $time_elapsed = tv_interval($time_start);
+			}
+
+			# fill in the elapsed time in the report
+
+			if ($option_timings)
+			{
+			    $test_report->{timings}->{$module_name}->{$description} = $time_elapsed;
 			}
 
 			# if things don't match
@@ -519,23 +689,6 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 		    my $description = $command_test->{description};
 
 		    my $command_definition_description = $command_definition->{description};
-
-# 		    $error_count++;
-
-# 		    print STDERR "*** Error: $error ($description)\n";
-
-# 		    # fill in the error report
-
-# 		    $test_report->{global}->{error_count} = $error_count;
-
-# 		    $test_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{description} = $command_test->{description};
-# 		    $test_report->{modules}->{$module_name}->{$error_count}->{error} = $error;
-
-# 		    if ($option_verbose)
-# 		    {
-# 			$test_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{report}
-# 			    = $before_match;
-# 		    }
 
 		    my $message;
 
@@ -586,17 +739,6 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 
 		    my $command_definition_description = $command_definition->{description};
 
-# 		    $error_count++;
-
-# 		    print STDERR "*** Error: $reparation_error ($description)\n";
-
-# 		    # fill in the error report
-
-# 		    $test_report->{global}->{error_count} = $error_count;
-
-# 		    $test_report->{modules}->{$module_name}->{$error_count}->{$command_definition_description}->{description} = $command_test->{description};
-# 		    $test_report->{modules}->{$module_name}->{$error_count}->{error} = $reparation_error;
-
 		    report_error_add
 			(
 			 {
@@ -620,6 +762,29 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 	    #! e.g. using a preparer/reparer combination
 
 	    $previous_side_effects ||= $command_definition->{side_effects} || 0;
+	}
+
+	# if library checksum mismatch
+
+	if (defined ($config->{model_library}))
+	{
+	    my $library_sha_after = model_library_sha();
+
+	    if ($library_sha_after ne $library_sha_before)
+	    {
+		my $error = 'model library checksum mismatch (model library has changed)';
+
+		my $description = $module_definition->{description};
+
+		report_error_add
+		    (
+		     {
+		      description => $description,
+		      error => $error,
+		      module_name => $module_name,
+		     },
+		    );
+	    }
 	}
 
 	# register if this command had side effects
@@ -662,8 +827,14 @@ sub read_cmd_line
 	     "randomize-order=s" => \$option_random_order,
 	     "regex-selector=s" => \$option_regex_selector,
 	     "timeout-multiplier=s" => \$option_timeout_multiplier,
+	     "timings!" => \$option_timings,
 	     "v|verbose+" => \$option_verbose,
 	    );
+
+    if (!$result)
+    {
+	die "$0: Error in option processing";
+    }
 
     $test_report->{options}
 	= {
@@ -673,6 +844,7 @@ sub read_cmd_line
 	   random_order => $option_random_order,
 	   regex_selector => $option_regex_selector,
 	   timeout_multiplier => $option_timeout_multiplier,
+	   timings => $option_timings,
 	   verbose => $option_verbose,
 	  };
 
@@ -691,6 +863,7 @@ options :
     randomize-order    randomize the order of the tests before executing them (require List::Util to be installed).
     regex-selector     defines a regex to run specific tests.
     timeout-multiplier multiply all timeout values with this constant.
+    timings            add timing information about the tests to the report.
     verbose            set verbosity level.
 ";
 
@@ -722,14 +895,14 @@ sub report_error_add
 
     if ($subdescription)
     {
-	$test_report->{modules}->{$module_name}->{$error_count}->{$subdescription}->{description} = $description;
+	$test_report->{errors}->{modules}->{$module_name}->{$error_count}->{$subdescription}->{description} = $description;
     }
     else
     {
-	$test_report->{modules}->{$module_name}->{$error_count}->{description} = $description;
+	$test_report->{errors}->{modules}->{$module_name}->{$error_count}->{description} = $description;
     }
 
-    $test_report->{modules}->{$module_name}->{$error_count}->{error} = $error;
+    $test_report->{errors}->{modules}->{$module_name}->{$error_count}->{error} = $error;
 
     if (defined $message)
     {
@@ -738,7 +911,7 @@ sub report_error_add
 	#! running in verbose mode seems, allows to track regex
 	#! problems ... I think.
 
-	$test_report->{modules}->{$module_name}->{$error_count}->{$subdescription}->{report} = $message;
+	$test_report->{errors}->{modules}->{$module_name}->{$error_count}->{$subdescription}->{report} = $message;
     }
 
     if (defined $expected
@@ -777,7 +950,7 @@ sub report_exit
 
     # yaml out the test report
 
-    print Dump($test_report);
+    print "\n" . Dump($test_report);
 
     # if there were errors
 
@@ -882,15 +1055,39 @@ sub numerical_compare
 
     # and can be overwritten by the next tests
 
-    if (scalar @$numbers1 ne scalar @$numbers2)
+    # line up the numbers expected
+
+    while (scalar @$numbers1 > scalar @$numbers2)
     {
-	return 'numerical_compare(): different number count, aborting with error';
+	shift @$numbers1;
+
+# 	return 'numerical_compare(): different number count, aborting with error';
     }
 
-    if (scalar @$texts1 ne scalar @$texts2)
+    while (scalar @$numbers1 < scalar @$numbers2)
     {
-	return 'numerical_compare(): different text count, aborting with error';
+	shift @$numbers2;
+
+# 	return 'numerical_compare(): different number count, aborting with error';
     }
+
+    # we also line up the texts expected
+
+    while (scalar @$texts1 > scalar @$texts2)
+    {
+	shift @$texts1;
+
+# 	return 'numerical_compare(): different text count, aborting with error';
+    }
+
+    while (scalar @$texts1 < scalar @$texts2)
+    {
+	shift @$texts2;
+
+# 	return 'numerical_compare(): different text count, aborting with error';
+    }
+
+    # compare the texts between the numbers
 
     foreach my $index (0 .. $#$texts1)
     {
@@ -900,13 +1097,17 @@ sub numerical_compare
 	}
     }
 
+    # numerical compare of numbers
+
     foreach my $index (0 .. $#$numbers1)
     {
 	if ($numbers1->[$index] != $numbers2->[$index])
 	{
 	    my $diff = $numbers1->[$index] - $numbers2->[$index];
 
-	    if ($diff > $numbers1->[$index] / 10000)
+	    #t the 1000 is a bit arbitrary, quite large differences allowed ...
+
+	    if (abs($diff) > abs($numbers1->[$index] / 1000))
 	    {
 		return 'numerical_compare(): numbers differ above accuracy ($numbers1->[$index] != $numbers2->[$index]), aborting with error';
 	    }
