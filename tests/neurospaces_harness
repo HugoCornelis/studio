@@ -97,6 +97,8 @@ BEGIN
 }
 
 
+my $loaded_mail_sender = eval "require Mail::Sender";
+
 use Data::Comparator qw(data_comparator);
 use Data::Transformator;
 
@@ -122,29 +124,6 @@ print "core_directory is $core_directory\n";
 
 $config->{environment_settings}
     = {
-       # tell the model container where to find the model library
-
-       NEUROSPACES_MODELS => {
-			      description => "Your models will be searched for in the directory %value\n\n",
-			      initialization => {
-						 shell => [
-							   # copy the model library
-
-							   'rm -fr "%value"',
-							   'mkdir -p "%value"',
-
-							   "cp -R ${core_directory}library/* \"%value\"",
-
-							   # automake distcheck makes the model library readonly (as so its copy), make it writable again
-
-							   'chmod -R +w "%value"',
-							  ],
-						},
-			      value => "/tmp/neurospaces/test/models",
-			     },
-       NEUROSPACES_PROJECT_MODELS => '',
-       NEUROSPACES_SYSTEM_MODELS => '',
-       NEUROSPACES_USER_MODELS => '',
       };
 
 my $environment_settings = $config->{environment_settings};
@@ -950,7 +929,105 @@ sub report_exit
 
     # yaml out the test report
 
-    print "\n" . Dump($test_report);
+    print
+	("\n"
+	 . Dump(
+		{
+		 description => $test_report->{description},
+		 errors => $test_report->{errors},
+		 global => $test_report->{global},
+		},
+	       )
+	);
+
+    # ask use if sending an email is ok
+
+    my $default_answer_prompt = $error_count ? "Y/n" : "y/N";
+
+    print "\n--\n  These tests generated $error_count error(s)";
+    print ( $error_count ? "  Because errors were found, you should really consider sending an email to inform the developer of this software package\n" : "" );
+    print "\n  Ok to send an email to hugo.cornelis\@gmail.com for this test report,\n  this email will not reveal your identity to the recipient ?  [$default_answer_prompt]";
+
+    my $answer = readline(*STDIN);
+
+    # send an email if ok
+
+    if ($answer =~ /^y/)
+    {
+	#t perhaps should consider Mail::Builder, don't know
+
+	if ($loaded_mail_sender)
+	{
+	    my $sender
+		= Mail::Sender->new
+		    (
+		     {
+		      smtp => 'mta1.uthscsa.edu',
+# 		      smtp => 'googlemail.l.google.com',
+		      from => 'hugo.cornelis@gmail.com',
+		     },
+		    );
+
+		print
+		    "Sending ... should not take more than 30 seconds
+";
+
+	    my $message
+		= (
+		   "neurospaces_harness test report\n"
+		   . "Generated on " . `date` . "\n"
+		   . "\n========\n"
+		   . Dump($test_report)
+		   . "\n========\n"
+		  );
+
+	    $sender->MailMsg
+		(
+		 {
+		  to => 'cornelis@uthscsa.edu',
+		  subject => '[neurospaces_harness] test report',
+		  msg => $message,
+		 },
+		);
+
+# 	    $sender->Attach
+# 		(
+# 		 {
+# 		  description => 'test_report',
+# 		 },
+# 		);
+
+	    $sender->Close();
+
+	    if ($sender->{error})
+	    {
+		print
+		    "*** Error: $sender->{error}
+Email was not sent.
+";
+	    }
+	    else
+	    {
+		print
+		    "Email was sent.
+";
+	    }
+	}
+	else
+	{
+	    print
+		"*** Error: Cannot load the perl module Mail::Sender, contact your sysadmin to install this perl module.
+(use the shell command \"sudo perl -MCPAN -e 'install Mail::Sender'\")
+Email was not sent.
+";
+	}
+    }
+    else
+    {
+		print
+		    "Email was not sent.
+";
+    }
 
     # if there were errors
 
@@ -960,7 +1037,9 @@ sub report_exit
 
 	$exit_code ||= 1;
 
-	print "$0: exit_code $exit_code\n";
+	print "$0: $error_count error(s)\n";
+
+	print "$0: exit_code $exit_code\n\n";
 
 	exit $exit_code;
     }
@@ -970,6 +1049,8 @@ sub report_exit
     else
     {
 	# exit, possibly success
+
+	print "$0: $error_count error(s)\n\n";
 
 	exit $exit_code;
     }
