@@ -109,6 +109,7 @@ use Getopt::Long;
 use YAML;
 
 
+my $option_email = defined $ENV{NEUROSPACES_HARNESS_OPTION_EMAIL} ? $ENV{NEUROSPACES_HARNESS_OPTION_EMAIL} : 1 ;
 my $option_flattenout;
 my $option_help;
 my $option_numerical_compare = $config->{numerical_compare} || 0;
@@ -800,6 +801,7 @@ sub read_cmd_line
     my $result
 	= GetOptions
 	    (
+	     "email" => \$option_email,
 	     "flattenout" => \$option_flattenout,
 	     "help!" => \$option_help,
 	     "numerical-compare!" => \$option_numerical_compare,
@@ -817,6 +819,7 @@ sub read_cmd_line
 
     $test_report->{options}
 	= {
+	   email => $option_email,
 	   flattenout => $option_flattenout,
 	   help => $option_help,
 	   numerical_compare => $option_numerical_compare,
@@ -834,6 +837,7 @@ sub read_cmd_line
 $0: test definition executor
 
 options :
+    email              allow to send emails, the default is taken from \$ENV{NEUROSPACES_HARNESS_OPTION_EMAIL}.
     flattenout         flattenout the test definitions before testing,
                        this experimental feature might increase test performance,
                        by recycling test definitions.
@@ -940,92 +944,119 @@ sub report_exit
 	       )
 	);
 
-    # ask use if sending an email is ok
+    # if email enabled by the options
 
-    my $default_answer_prompt = $error_count ? "Y/n" : "y/N";
-
-    print "\n--\n  These tests generated $error_count error(s)";
-    print ( $error_count ? "  Because errors were found, you should really consider sending an email to inform the developer of this software package\n" : "" );
-    print "\n  Ok to send an email to hugo.cornelis\@gmail.com for this test report,\n  this email will not reveal your identity to the recipient ?  [$default_answer_prompt]";
-
-    my $answer = readline(*STDIN);
-
-    # send an email if ok
-
-    if ($answer =~ /^y/)
+    if ($option_email)
     {
-	#t perhaps should consider Mail::Builder, don't know
+	# check for a default route
 
-	if ($loaded_mail_sender)
+	#! from perl/basic.t
+
+	my $no_default_route = (`/sbin/route` =~ /default/ ? '' : 'no default route to the internet found');
+
+	if (!$no_default_route)
 	{
-	    my $sender
-		= Mail::Sender->new
-		    (
-		     {
-		      smtp => 'mta1.uthscsa.edu',
-# 		      smtp => 'googlemail.l.google.com',
-		      from => 'hugo.cornelis@gmail.com',
-		     },
-		    );
+	    # ask use if sending an email is ok
 
-		print
-		    "Sending ... should not take more than 30 seconds
+	    my $default_answer_prompt = $error_count ? "Y/n" : "y/N";
+
+	    print "\n--\n  These tests generated $error_count error(s)";
+	    print ( $error_count ? "  Because errors were found, you should really consider sending an email to inform the developer of this software package\n" : "" );
+	    print "\n  Ok to send an email to hugo.cornelis\@gmail.com for this test report,\n  this email will not reveal your identity to the recipient ?  [$default_answer_prompt]";
+
+	    my $answer = readline(*STDIN);
+
+	    # send an email if ok
+
+	    if ($answer =~ /^y/)
+	    {
+		#t perhaps should consider Mail::Builder, don't know
+
+		if ($loaded_mail_sender)
+		{
+		    my $sender
+			= Mail::Sender->new
+			    (
+			     {
+# 			      smtp => 'googlemail.l.google.com',
+			      smtp => 'mta1.uthscsa.edu',
+			      from => 'hugo.cornelis@gmail.com',
+			     },
+			    );
+
+		    print
+			"Sending ... should not take more than 30 seconds
 ";
 
-	    my $message
-		= (
-		   "neurospaces_harness test report\n"
-		   . "Generated on " . `date` . "\n"
-		   . "\n========\n"
-		   . Dump($test_report)
-		   . "\n========\n"
-		  );
+		    my $message
+			= (
+			   "neurospaces_harness test report\n"
+			   . "Generated on " . `date` . "\n"
+			   . "\n========\n"
+			   . Dump($test_report)
+			   . "\n========\n"
+			  );
 
-	    $sender->MailMsg
-		(
-		 {
-		  to => 'cornelis@uthscsa.edu',
-		  subject => '[neurospaces_harness] test report',
-		  msg => $message,
-		 },
-		);
+		    $sender->MailMsg
+			(
+			 {
+			  to => 'cornelis@uthscsa.edu',
+			  subject => '[neurospaces_harness] test report',
+			  msg => $message,
+			 },
+			);
 
-# 	    $sender->Attach
-# 		(
-# 		 {
-# 		  description => 'test_report',
-# 		 },
-# 		);
+		    # 	    $sender->Attach
+		    # 		(
+		    # 		 {
+		    # 		  description => 'test_report',
+		    # 		 },
+		    # 		);
 
-	    $sender->Close();
+		    $sender->Close();
 
-	    if ($sender->{error})
-	    {
-		print
-		    "*** Error: $sender->{error}
+		    if ($sender->{error})
+		    {
+			print
+			    "*** Error: $sender->{error}
 Email was not sent.
 ";
+		    }
+		    else
+		    {
+			print
+			    "Email was sent.
+";
+		    }
+		}
+		else
+		{
+		    print
+			"*** Error: Cannot load the perl module Mail::Sender, contact your sysadmin to install this perl module.
+(use the shell command \"sudo perl -MCPAN -e 'install Mail::Sender'\")
+Email was not sent.
+";
+		}
 	    }
 	    else
 	    {
 		print
-		    "Email was sent.
+		    "Email was not sent.
 ";
 	    }
 	}
 	else
 	{
 	    print
-		"*** Error: Cannot load the perl module Mail::Sender, contact your sysadmin to install this perl module.
-(use the shell command \"sudo perl -MCPAN -e 'install Mail::Sender'\")
+		"*** Warning: No default route to the internet found.
 Email was not sent.
 ";
 	}
     }
     else
     {
-		print
-		    "Email was not sent.
+	print
+	    "No email sent.
 ";
     }
 
