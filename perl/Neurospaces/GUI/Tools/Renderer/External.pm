@@ -45,7 +45,7 @@ sub load
 {
     my $filename = shift;
 
-    my $d3renderer = $Neurospaces::Studio::renderer;
+    my $d3renderer = $Neurospaces::Studio::d3renderer;
 
     if (!$d3renderer)
     {
