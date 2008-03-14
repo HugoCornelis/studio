@@ -116,7 +116,7 @@ sub action_quit
 {
     my $self = shift;
 
-#     print "Closing renderer\n";
+#     print "Closing d3renderer\n";
 
 #     $self->{done} = 1;
 }
@@ -1765,7 +1765,7 @@ sub view_window_init
 {
     my $self = shift;
 
-    if ($self->{gui}->{windows}->{renderer})
+    if ($self->{gui}->{windows}->{d3renderer})
     {
 	return;
     }
@@ -1776,9 +1776,9 @@ sub view_window_init
 	   method => 'Neurospaces::GUI::Tools::Renderer',
 	  };
 
-    my $window = Neurospaces::GUI::window_factory('renderer_view', $constructor);
+    my $window = Neurospaces::GUI::window_factory('d3renderer_view', $constructor);
 
-    $self->{gui}->{windows}->{renderer} = $window;
+    $self->{gui}->{windows}->{d3renderer} = $window;
 
     $window->set_title("Pilot View : Coordinates & Angles");
 

@@ -3,7 +3,7 @@ $files = {
                                     {
                                       'expr' => undef,
                                       'value' => '1',
-                                      'text' => '	    $renderer->symbol_add($symbol);
+                                      'text' => '	    $d3renderer->symbol_add($symbol);
 ',
                                       'fname' => 'bin/neurospaces',
                                       'type' => 'user',

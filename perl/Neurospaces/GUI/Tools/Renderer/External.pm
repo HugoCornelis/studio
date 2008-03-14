@@ -45,11 +45,11 @@ sub load
 {
     my $filename = shift;
 
-    my $renderer = $Neurospaces::Studio::renderer;
+    my $d3renderer = $Neurospaces::Studio::renderer;
 
-    if (!$renderer)
+    if (!$d3renderer)
     {
-	print STDERR "renderer is not initialized (value is $renderer)\n";
+	print STDERR "d3renderer is not initialized (value is $d3renderer)\n";
 
 	return undef;
     }
@@ -76,7 +76,7 @@ sub load
 
     if (defined $self)
     {
-	$renderer->external_add($self);
+	$d3renderer->external_add($self);
     }
     else
     {

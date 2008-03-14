@@ -34,7 +34,7 @@ use Glib qw/TRUE FALSE/;
 
 push @INC, './perl';
 
-my $loaded_neurospaces_gui_tools_renderer = eval "require Neurospaces::GUI::Tools::Renderer;";
+my $loaded_neurospaces_gui_tools_d3renderer = eval "require Neurospaces::GUI::Tools::Renderer;";
 
 if ($@)
 {
@@ -47,8 +47,8 @@ if ($@)
     }
 }
 
-our $renderer
-    = ($loaded_neurospaces_gui_tools_renderer
+our $d3renderer
+    = ($loaded_neurospaces_gui_tools_d3renderer
        ? (print STDERR "$0: initialized rendering engine\n" || 1) && Neurospaces::GUI::Tools::Renderer->new()
        : (print STDERR "$0: could not initialize rendering engine\n" || 1) && 0);
 
@@ -186,7 +186,7 @@ sub initialize
 	  {
 	      # reinstall a new timer, based on the frame rate
 
-	      my $delay = $renderer->frame_preferred_delay();
+	      my $delay = $d3renderer->frame_preferred_delay();
 
 	      my $timer = Glib::Timeout->add($delay, $timed_code, "got it\n", );
 	  };
@@ -194,7 +194,7 @@ sub initialize
     $timed_code
 	= sub
 	  {
-	      $renderer->main_loop();
+	      $d3renderer->main_loop();
 
 	      &$install_timer();
 

@@ -95,7 +95,7 @@ use Neurospaces::Biolevels;
 # {
 #     my $self = shift;
 
-#     my $renderer = shift;
+#     my $d3renderer = shift;
 
 #     my $options = shift;
 
@@ -106,8 +106,8 @@ use Neurospaces::Biolevels;
 # 	      arguments => { view => $root_view, },
 # 	      name => 'set_view_root',
 # 	      processor => 'view_set',
-# 	      self => $renderer,
-# 	      target => $renderer,
+# 	      self => $d3renderer,
+# 	      target => $d3renderer,
 # 	     },
 # 	    );
 
@@ -120,8 +120,8 @@ use Neurospaces::Biolevels;
 # 	      arguments => { movements => $movements, },
 # 	      name => 'set_movements_root',
 # 	      processor => 'movements_set',
-# 	      self => $renderer,
-# 	      target => $renderer,
+# 	      self => $d3renderer,
+# 	      target => $d3renderer,
 # 	     },
 # 	    );
 
@@ -281,19 +281,19 @@ sub get_buttons
 # 				    {
 # 					my $widget = shift;
 
-# 					my $renderer = $Neurospaces::Studio::renderer;
+# 					my $d3renderer = $Neurospaces::Studio::renderer;
 
-# 					if (!$renderer)
+# 					if (!$d3renderer)
 # 					{
-# 					    print STDERR "renderer is not initialized (value is $renderer)\n";
+# 					    print STDERR "d3renderer is not initialized (value is $d3renderer)\n";
 # 					}
 # 					else
 # 					{
-# 					    $renderer->symbols_clear();
+# 					    $d3renderer->symbols_clear();
 
-# 					    $renderer->symbol_add($self);
+# 					    $d3renderer->symbol_add($self);
 
-#  					    $renderer->start();
+#  					    $d3renderer->start();
 # 					}
 # 				    },
 # 				    arguments => [],

@@ -252,11 +252,11 @@ sub main
 
     if ($option_show)
     {
-	my $renderer = $Neurospaces::Studio::renderer;
+	my $d3renderer = $Neurospaces::Studio::d3renderer;
 
-	if (!$renderer)
+	if (!$d3renderer)
 	{
-	    print STDERR "renderer is not initialized (value is $renderer)\n";
+	    print STDERR "d3renderer is not initialized (value is $d3renderer)\n";
 	}
 	else
 	{
@@ -278,11 +278,11 @@ sub main
 	    require Neurospaces::GUI;
 	    my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => $serial, studio => $studio, }, );
 
-	    $renderer->symbols_clear();
+	    $d3renderer->symbols_clear();
 
-	    $renderer->symbol_add($symbol);
+	    $d3renderer->symbol_add($symbol);
 
-	    $renderer->start();
+	    $d3renderer->start();
 	}
 
 	# force to have a quit button
@@ -296,11 +296,11 @@ sub main
 	Neurospaces::GUI::gui($0);
     }
 
-#     my $renderer = $Neurospaces::Studio::renderer;
+#     my $d3renderer = $Neurospaces::Studio::d3renderer;
 
-#     if ($renderer)
+#     if ($d3renderer)
 #     {
-# 	$renderer->start();
+# 	$d3renderer->start();
 #     }
 
     # from here on, go through the options alphabetically

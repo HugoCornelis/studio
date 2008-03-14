@@ -80,17 +80,17 @@ sub commands_replay
 
     my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => $serial, }, );
 
-    my $renderer = $Neurospaces::Studio::renderer;
+    my $d3renderer = $Neurospaces::Studio::d3renderer;
 
-    if (!$renderer)
+    if (!$d3renderer)
     {
 	print "No rendering engine defined\n";
     }
     else
     {
-	$renderer->symbol_add($symbol);
+	$d3renderer->symbol_add($symbol);
 
-	$renderer->start();
+	$d3renderer->start();
 
 	foreach my $command (@$commands)
 	{
@@ -517,15 +517,15 @@ sub window_open
 
 	if ($constructor_method)
 	{
-	    #! hack : get this to work with the renderer
+	    #! hack : get this to work with the d3renderer
 
 	    if ($constructor_method =~ /::Renderer$/)
 	    {
 		my $symbol = 1;
 
-		my $renderer = $Neurospaces::Studio::renderer;
+		my $d3renderer = $Neurospaces::Studio::d3renderer;
 
-		$renderer->init();
+		$d3renderer->init();
 	    }
 	    else
 	    {

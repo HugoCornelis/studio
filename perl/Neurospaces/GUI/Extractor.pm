@@ -487,7 +487,7 @@ sub extract
 
     my $constructor = "Neurospaces::GUI::Extractor::" . $plugin . "->new()";
 
-    my $renderer = eval $constructor;
+    my $d3renderer = eval $constructor;
 
     # initialize : push the serial on the queue to investigate
 
@@ -643,7 +643,7 @@ sub extract
 
 		# extract info via plugin
 
-		$renderer->extract($symbol);
+		$d3renderer->extract($symbol);
 	    }
 
 	    # get children
@@ -677,7 +677,7 @@ sub extract
 
     # render extracted info
 
-    $renderer->conclude();
+    $d3renderer->conclude();
 }
 
 
