@@ -109,12 +109,13 @@ use Getopt::Long;
 use YAML;
 
 
-my $option_email = defined $ENV{NEUROSPACES_HARNESS_OPTION_EMAIL} ? $ENV{NEUROSPACES_HARNESS_OPTION_EMAIL} : 1 ;
+my $option_email = defined $ENV{NEUROSPACES_HARNESS_OPTION_EMAIL} ? $ENV{NEUROSPACES_HARNESS_OPTION_EMAIL} : 0 ;
 my $option_flattenout;
 my $option_help;
 my $option_numerical_compare = $config->{numerical_compare} || 0;
 my $option_random_order;
 my $option_regex_selector = ".*";
+my $option_report_disabled;
 my $option_timeout_multiplier = 1;
 my $option_timings;
 my $option_verbose;
@@ -122,10 +123,6 @@ my $option_verbose;
 
 print "Executable is $0,\n";
 print "core_directory is $core_directory\n";
-
-$config->{environment_settings}
-    = {
-      };
 
 my $environment_settings = $config->{environment_settings};
 
@@ -807,6 +804,7 @@ sub read_cmd_line
 	     "numerical-compare!" => \$option_numerical_compare,
 	     "randomize-order=s" => \$option_random_order,
 	     "regex-selector=s" => \$option_regex_selector,
+	     "report-disabled" => \$option_report_disabled,
 	     "timeout-multiplier=s" => \$option_timeout_multiplier,
 	     "timings!" => \$option_timings,
 	     "v|verbose+" => \$option_verbose,
@@ -825,6 +823,7 @@ sub read_cmd_line
 	   numerical_compare => $option_numerical_compare,
 	   random_order => $option_random_order,
 	   regex_selector => $option_regex_selector,
+	   report_disabled => $option_report_disabled,
 	   timeout_multiplier => $option_timeout_multiplier,
 	   timings => $option_timings,
 	   verbose => $option_verbose,
@@ -845,6 +844,7 @@ options :
     numerical-compare  attempt to compare numbers numerically when string differences are found (default enabled).
     randomize-order    randomize the order of the tests before executing them (require List::Util to be installed).
     regex-selector     defines a regex to run specific tests.
+    report-disabled    include information of disabled tests in the test report.
     timeout-multiplier multiply all timeout values with this constant.
     timings            add timing information about the tests to the report.
     verbose            set verbosity level.
@@ -933,16 +933,18 @@ sub report_exit
 
     # yaml out the test report
 
-    print
-	("\n"
-	 . Dump(
-		{
-		 description => $test_report->{description},
-		 errors => $test_report->{errors},
-		 global => $test_report->{global},
-		},
-	       )
-	);
+    my $report_text
+	= "\n"
+	    . Dump(
+		   {
+		    description => $test_report->{description},
+		    ($option_report_disabled ? (disabled => $test_report->{disabled}) : ()),
+		    errors => $test_report->{errors},
+		    global => $test_report->{global},
+		   },
+		  );
+
+    print($report_text);
 
     # if email enabled by the options
 
