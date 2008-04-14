@@ -11,6 +11,10 @@ BEGIN
 
     push @INC, '../perl';
 
+    #! make distcheck
+
+    push @INC, '../../perl';
+
     #! normal run
 
     push @INC, './perl';
