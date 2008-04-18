@@ -184,11 +184,11 @@ sub extract
 
 	my $parameters = [ SwiggableNeurospaces::swig_get_parameters($symbol->{this}), ];
 
-	my $reversal = [ grep { $_->{Name} eq 'Ek' } @$parameters, ];
+	my $reversal = [ grep { $_->{Name} eq 'Erev' } @$parameters, ];
 
 	$reversal = $reversal->[0]->{'Resolved Value'};
 
-	my $conductance = [ grep { $_->{Name} eq 'GMAX' } @$parameters, ];
+	my $conductance = [ grep { $_->{Name} eq 'G_MAX' } @$parameters, ];
 
 	$conductance = $conductance->[0]->{'Resolved Value'};
 

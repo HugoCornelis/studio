@@ -63,22 +63,22 @@ my $test
 					      '--condition',
 					      '$d->{context} =~ m(kdr)i',
 					      '--reporting-fields',
-					      'GMAX',
+					      'G_MAX',
 					     ],
 				command => 'bin/neurospaces',
 				command_tests => [
 						  {
 						   description => "Are delayed rectifier channels present ?",
-						   read => '/gp_pc1/segments/soma/kdr->GMAX = 6000
-/gp_pc1/segments/p0b1[0]/kdr->GMAX = 600
-/gp_pc1/segments/p0b1[1]/kdr->GMAX = 600
-/gp_pc1/segments/p0b1[2]/kdr->GMAX = 600
-/gp_pc1/segments/p0b1[3]/kdr->GMAX = 600
-/gp_pc1/segments/p0b1b2[0]/kdr->GMAX = 600
-/gp_pc1/segments/p0b1b2b2[0]/kdr->GMAX = 600
-/gp_pc1/segments/p0b1b2b2[1]/kdr->GMAX = 600
-/gp_pc1/segments/p0b1b2b2[2]/kdr->GMAX = 600
-/gp_pc1/segments/p0b1b2b2b2[0]/kdr->GMAX = 600
+						   read => '/gp_pc1/segments/soma/kdr->G_MAX = 6000
+/gp_pc1/segments/p0b1[0]/kdr->G_MAX = 600
+/gp_pc1/segments/p0b1[1]/kdr->G_MAX = 600
+/gp_pc1/segments/p0b1[2]/kdr->G_MAX = 600
+/gp_pc1/segments/p0b1[3]/kdr->G_MAX = 600
+/gp_pc1/segments/p0b1b2[0]/kdr->G_MAX = 600
+/gp_pc1/segments/p0b1b2b2[0]/kdr->G_MAX = 600
+/gp_pc1/segments/p0b1b2b2[1]/kdr->G_MAX = 600
+/gp_pc1/segments/p0b1b2b2[2]/kdr->G_MAX = 600
+/gp_pc1/segments/p0b1b2b2b2[0]/kdr->G_MAX = 600
 ',
 						   timeout => 100,
 						   write => undef,
