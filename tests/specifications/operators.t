@@ -6,7 +6,9 @@ use strict;
 
 use YAML 'LoadFile';
 
-my $neurospaces_config = LoadFile('/etc/neurospaces/project_browser/project_browser.yml');
+my $neurospaces_config_filename = '/etc/neurospaces/project_browser/project_browser.yml';
+
+my $neurospaces_config = -e $neurospaces_config_filename ? LoadFile($neurospaces_config_filename) : {};
 
 my $project_name = 'purkinje-comparison';
 
