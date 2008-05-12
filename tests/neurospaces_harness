@@ -224,9 +224,15 @@ my $test_report
 		 },
        target => {
 		  OS => $^O,
+		  system => {
+			     libc => (join '', `ls -l /lib/libc-* && ls -l /usr/lib/libc-*`),
+			     uname => (join '', `uname -a`),
+			    },
 		  packages => {
-			       gcc => (join '', `gcc 2>&1 -v`),
-			       perl => (join '', `perl 2>&1 -V`),
+			       bison => (join '', `bison --version`),
+			       flex => (join '', `flex --version`),
+			       gcc => (join '', `gcc 2>&1 --version && gcc 2>&1 -v`),
+			       perl => (join '', `perl 2>&1 -v && perl 2>&1 -V`),
 			       swig => (join '', `swig 2>&1 -version`),
 			      },
 		 },
@@ -365,6 +371,19 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 	}
 
 	report_message(2, 1, "Running tests of module $module_definition->{description}");
+
+	my $preparation = $module_definition->{preparation};
+
+	my $module_preparation_result;
+
+	if ($preparation)
+	  {
+	    print "*** Preparing Module $module_name ($preparation->{description})\n";
+
+	    my $preparer = $preparation->{preparer};
+
+	    $module_preparation_result = &$preparer();
+	  }
 
 	# loop over commands for this module
 
@@ -741,6 +760,36 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 	    $previous_side_effects ||= $command_definition->{side_effects} || 0;
 	}
 
+	my $reparation = $module_definition->{reparation};
+
+	if ($reparation)
+	  {
+	    print "*** Reparing Module $module_name ($reparation->{description})\n";
+
+	    my $reparer = $reparation->{reparer};
+
+	    my $reparation_error = &$reparer($module_preparation_result);
+
+	    # process errors
+
+	    if ($reparation_error)
+	      {
+		my $description = $reparation_error;
+
+		my $module_definition_description = $module_definition->{description};
+
+		report_error_add
+		  (
+		   {
+		    description => $description,
+		    error => $reparation_error,
+		    module_name => $module_name,
+		    subdescription => $module_definition_description,
+		   },
+		  );
+	      }
+	  }
+
 	# if library checksum mismatch
 
 	if (defined ($config->{model_library}))
@@ -941,6 +990,7 @@ sub report_exit
 		    ($option_report_disabled ? (disabled => $test_report->{disabled}) : ()),
 		    errors => $test_report->{errors},
 		    global => $test_report->{global},
+		    ($error_count ? (target => $test_report->{target}) : ()),
 		   },
 		  );
 
