@@ -179,8 +179,16 @@ sub draw
 
 				   if ($children->[$index1]->[1] eq 'contou')
 				   {
+				       # define thickness, depending on start of contour
+
+				       my $thickness = defined $contour_start_index ? 1e-6 : 5e-6;
+
+				       # if starting a new contour
+
 				       if (!defined $contour_start_index)
 				       {
+					   # remember start index
+
 					   $contour_start_index = $index1;
 				       }
 
@@ -193,7 +201,7 @@ sub draw
 				       (
 					# thickness
 
-					1e-6,
+					$thickness,
 
 					# a rectangle for the point
 
