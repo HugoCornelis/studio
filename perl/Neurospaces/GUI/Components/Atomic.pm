@@ -167,6 +167,7 @@ sub draw
     elsif ($active_level eq 'ATOMIC')
     {
 	my $contour_start_index;
+	my $this_contour_index = 0;
 
 	$result
 	    = {
@@ -181,7 +182,14 @@ sub draw
 				   {
 				       # define thickness, depending on start of contour
 
-				       my $thickness = defined $contour_start_index ? 1e-6 : 5e-6;
+				       my $thickness
+					   = (!defined $contour_start_index
+					      ? 5e-6
+					      : ($this_contour_index % 10
+						 ? 1e-6
+						 : 2e-6
+						)
+					     );
 
 				       # if starting a new contour
 
@@ -197,6 +205,8 @@ sub draw
 					      && $children->[$index1 + 1]->[1] eq 'contou')
 					       ? $index1 + 1
 						   : $contour_start_index;
+
+				       $this_contour_index++;
 
 				       (
 					# thickness
@@ -271,6 +281,8 @@ sub draw
 				   else
 				   {
 				       undef $contour_start_index;
+
+				       $this_contour_index = 0;
 
 				       (
 					# no coordinates indicator
