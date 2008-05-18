@@ -102,7 +102,7 @@ use strict;
 
 #     if (exists $self->{library})
 #     {
-# 	$ENV{NEUROSPACES_MODELS} = $self->{library};
+# 	$ENV{NEUROSPACES_NMC_MODELS} = $self->{library};
 #     }
 
 #     # create the low level object

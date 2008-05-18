@@ -180,29 +180,11 @@ foreach my $environment_setting_name (keys %$environment_settings)
     {
 	die "$0: illegal environment_settings, was processing $environment_setting";
     }
-
-#     # copy the model library
-
-#     `rm -fr "$config->{model_library}"`;
-#     `mkdir -p "$config->{model_library}"`;
-
-#     `cp -R ${core_directory}library/* "$config->{model_library}"`;
-
-#     # automake distcheck makes the model library readonly (as so its copy), make it writable again
-
-#     `chmod -R +w "$config->{model_library}"`;
-
-#     # tell neurospaces where to find the model library of test models
-
-#     $ENV{NEUROSPACES_MODELS} = $config->{model_library};
-#     $ENV{NEUROSPACES_USER_MODELS} = '';
-#     $ENV{NEUROSPACES_PROJECT_MODELS} = '';
-#     $ENV{NEUROSPACES_SYSTEM_MODELS} = '';
 }
 
 if (defined ($config->{environment}))
 {
-    print "Your models will be searched for in the directory $ENV{NEUROSPACES_MODELS}\n\n";
+    print "Your models will be searched for in the directory $ENV{NEUROSPACES_NMC_MODELS}\n\n";
 }
 
 
@@ -1512,7 +1494,7 @@ sub model_library_sha
 
     use File::Find::Rule;
 
-    my $files = [ File::Find::Rule->file()->in( $ENV{NEUROSPACES_MODELS} ), ];
+    my $files = [ File::Find::Rule->file()->in( $ENV{NEUROSPACES_NMC_MODELS} ), ];
 
     my $shas
 	= [

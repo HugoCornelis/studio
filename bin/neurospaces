@@ -211,7 +211,7 @@ sub main
 
     if ($option_models)
     {
-	$ENV{NEUROSPACES_MODELS} = $option_models;
+	$ENV{NEUROSPACES_NMC_MODELS} = $option_models;
     }
 
     if ($option_querymachine)
