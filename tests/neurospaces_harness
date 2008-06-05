@@ -610,6 +610,8 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 
 			$read = substitute_variables($read);
 
+			# if literal text expected
+
 			if (!ref $read)
 			{
 			    ($matched_pattern_position,
@@ -618,13 +620,11 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			     $before_match,
 			     $after_match)
 				= $exp->expect($timeout, $read, );
-
-			    $time_elapsed = tv_interval($time_start);
 			}
 
-			#! only array supported for now.
+			# if array, means regex match
 
-			else
+			elsif (ref $read eq 'ARRAY')
 			{
 			    ($matched_pattern_position,
 			     $error,
@@ -632,9 +632,42 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			     $before_match,
 			     $after_match)
 				= $exp->expect($timeout, @$read, );
-
-			    $time_elapsed = tv_interval($time_start);
 			}
+
+			# else, hash, one of several alternatives expected
+
+			else
+			{
+			    # compose the alternatives regex
+
+			    my $alternatives = $read->{alternatives};
+
+			    my $expected = '(' . (join '|', map { quotemeta } @$alternatives) . ')';
+
+			    # read from the application
+
+			    ($matched_pattern_position,
+			     $error,
+			     $successfully_matching_string,
+			     $before_match,
+			     $after_match)
+				= $exp->expect($timeout, "-re", $expected, );
+# 				= $exp->expect($timeout, "ThIs TeXt ShOuLd NeVeR oCcUr", );
+
+# 			    # loop over expected alternatives
+
+# 			    my $alternatives = $read->{alternatives};
+
+# 			    foreach my $alternative (@$alternatives)
+# 			    {
+# 				if ($before_match =~ /$alternative/)
+# 				{
+# 				    last;
+# 				}
+# 			    }
+			}
+
+			$time_elapsed = tv_interval($time_start);
 
 			# fill in the elapsed time in the report
 
@@ -649,8 +682,12 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			{
 			    # if allowed to compare numerically
 
-			    if (!$command_test->{string_only}
-			        && $option_numerical_compare)
+			    if ((!$command_test->{string_only}
+				 && $option_numerical_compare)
+
+				# or forced to compare numerically
+
+				|| $command_test->{numerical_compare})
 			    {
 				# compare numerically
 
