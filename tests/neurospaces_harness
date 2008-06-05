@@ -1200,7 +1200,7 @@ sub numerical_compare
 
     my $result = $current_diffs;
 
-    print "*** Comparing numerical differences ($command_test->{description})\n";
+    print "*** Checking numerical values ($command_test->{description})\n";
 
     push @{$test_report->{numerical_compare}}, $command_test->{description};
 
