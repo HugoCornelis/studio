@@ -62,9 +62,6 @@ BEGIN
     else
     {
 	$core_directory = "$ENV{srcdir}/$config->{core_directory}";
-
-# 	$core_directory = $config->{core_directory};
-
     }
 
     # remove parent and current directories
@@ -111,7 +108,7 @@ BEGIN
 }
 
 
-$ENV{NEUROSPACES_MODELS} = ${core_directory} . '/library';
+$ENV{NEUROSPACES_NMC_MODELS} = ${core_directory} . '/library';
 
 my $tests_dir = $config->{tests_directory};
 
@@ -591,16 +588,25 @@ options :
 			$entries++;
 		    }
 
-		    $source->{"$entries. Expected output "}
-			= (
-			   !ref $command_test->{read}
-			   ? $command_test->{read}
-			   : (
-			      @{$command_test->{read}} == 2
-			      ? $command_test->{read}->[1]
-			      : join '  ', @{$command_test->{read}}
-			     )
-			  );
+		    my $read = $command_test->{read};
+
+		    if (ref $read eq 'ARRAY')
+		    {
+			$read
+			    = (
+			       @$read == 2
+			       ? $read->[1]
+			       : join '  ', @$read
+			      );
+		    }
+		    elsif (ref $read eq 'HASH')
+		    {
+			my $alternatives = $read->{alternatives};
+
+			$read = "----- OR:\n" . join "\n----- OR:\n", @$alternatives;
+		    }
+
+		    $source->{"$entries. Expected output "} = $read;
 
 		    $entries++;
 
@@ -797,6 +803,19 @@ sub output_content
     # add external content
 
     $result .= $content;
+
+    # add analyzer data
+
+    $result
+	.=
+'
+      <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+      </script>
+      <script type="text/javascript">
+	_uacct = "UA-4642942-1";
+	urchinTracker();
+      </script>
+';
 
     # terminate html
 
