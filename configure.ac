@@ -6,7 +6,7 @@ dnl ##########################################################################
 dnl 
 dnl The neurospaces studio.
 dnl 
-dnl Copyright (C) 2007 Hugo Cornelis
+dnl Copyright (C) 2007-2008 Hugo Cornelis
 dnl 
 dnl Hugo Cornelis, hugo.cornelis@gmail.com
 dnl 

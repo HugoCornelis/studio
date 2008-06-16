@@ -6,7 +6,7 @@
 ##'
 ##' Neurospaces studio: a tool set for use with Neurospaces.
 ##'
-##' Copyright (C) 1999-2007 Hugo Cornelis, hugo.cornelis@gmail.com
+##' Copyright (C) 1999-2008 Hugo Cornelis, hugo.cornelis@gmail.com
 ##'
 ##############################################################################
 
