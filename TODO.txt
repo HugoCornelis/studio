@@ -1,5 +1,7 @@
 -*- outline -*-
 
+* Add appropriate copyright messages to all files.
+
 * link the annotations in neurospaces hierarchy/symbols
 with the parameters displayed for each component.
 
