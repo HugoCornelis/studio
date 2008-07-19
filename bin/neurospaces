@@ -67,8 +67,8 @@ my $global_operators
 	   my $length
 	       = SwiggableNeurospaces::symbol_parameter_resolve_value
 		   ($descendant->{_symbol},
-		    "LENGTH",
 		    $descendant->{_context},
+		    "LENGTH",
 		   );
 
 	   if ($value != $SwiggableNeurospaces::dFLT_MAX)
@@ -405,8 +405,8 @@ sub main
 				      = SwiggableNeurospaces::symbol_parameter_resolve_value
 					  (
 					   $descendant->{_symbol},
-					   $parameter,
 					   $descendant->{_context},
+					   $parameter,
 					  );
 			      }
 
