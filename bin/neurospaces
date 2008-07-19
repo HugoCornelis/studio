@@ -395,8 +395,8 @@ sub main
 				      = SwiggableNeurospaces::symbol_parameter_resolve_scaled_value
 					  (
 					   $descendant->{_symbol},
-					   $parameter,
 					   $descendant->{_context}
+					   $parameter,
 					  );
 			      }
 			      else
