@@ -359,13 +359,13 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 	my $module_preparation_result;
 
 	if ($preparation)
-	  {
+	{
 	    print "*** Preparing Module $module_name ($preparation->{description})\n";
 
 	    my $preparer = $preparation->{preparer};
 
 	    $module_preparation_result = &$preparer();
-	  }
+	}
 
 	# loop over commands for this module
 
@@ -782,7 +782,7 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 	my $reparation = $module_definition->{reparation};
 
 	if ($reparation)
-	  {
+	{
 	    print "*** Reparing Module $module_name ($reparation->{description})\n";
 
 	    my $reparer = $reparation->{reparer};
@@ -792,22 +792,22 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 	    # process errors
 
 	    if ($reparation_error)
-	      {
+	    {
 		my $description = $reparation_error;
 
 		my $module_definition_description = $module_definition->{description};
 
 		report_error_add
-		  (
-		   {
-		    description => $description,
-		    error => $reparation_error,
-		    module_name => $module_name,
-		    subdescription => $module_definition_description,
-		   },
-		  );
-	      }
-	  }
+		    (
+		     {
+		      description => $description,
+		      error => $reparation_error,
+		      module_name => $module_name,
+		      subdescription => $module_definition_description,
+		     },
+		    );
+	    }
+	}
 
 	# if library checksum mismatch
 
@@ -1240,34 +1240,61 @@ sub numerical_compare
 
     # line up the numbers expected
 
-    while (scalar @$numbers1 > scalar @$numbers2)
+    # but the number of numbers must not differ by more than say 5
+
+    my $max_number_shifts = 5;
+
+    while (scalar @$numbers1 > scalar @$numbers2
+	   and $max_number_shifts ne 0)
     {
 	shift @$numbers1;
+
+	$max_number_shifts--;
 
 # 	return 'numerical_compare(): different number count, aborting with error';
     }
 
-    while (scalar @$numbers1 < scalar @$numbers2)
+    while (scalar @$numbers1 < scalar @$numbers2
+	   and $max_number_shifts ne 0)
     {
 	shift @$numbers2;
+
+	$max_number_shifts--;
 
 # 	return 'numerical_compare(): different number count, aborting with error';
     }
 
     # we also line up the texts expected
 
+    my $max_text_shifts = 5;
+
     while (scalar @$texts1 > scalar @$texts2)
     {
 	shift @$texts1;
 
+	$max_text_shifts--;
+
 # 	return 'numerical_compare(): different text count, aborting with error';
     }
 
-    while (scalar @$texts1 < scalar @$texts2)
+    while (scalar @$texts1 < scalar @$texts2
+	   and $max_text_shifts ne 0)
     {
 	shift @$texts2;
 
+	$max_text_shifts--;
+
 # 	return 'numerical_compare(): different text count, aborting with error';
+    }
+
+    # when we had to do to many textual corrections
+
+    if ($max_number_shifts eq 0
+	or $max_text_shifts eq 0)
+    {
+	# flag this as an error
+
+	return 'numerical_compare(): amount of data expected is to different from amount of seen data, aborting with an error';
     }
 
     # compare the texts between the numbers
@@ -1276,7 +1303,7 @@ sub numerical_compare
     {
 	if ($texts1->[$index] ne $texts2->[$index])
 	{
-	    return 'numerical_compare(): texts differ ($texts1->[$index] ne $texts2->[$index]), aborting with error';
+	    return 'numerical_compare(): texts differ ($texts1->[$index] ne $texts2->[$index]), aborting with an error';
 	}
     }
 
@@ -1292,10 +1319,14 @@ sub numerical_compare
 
 	    if (abs($diff) > abs($numbers1->[$index] / 1000))
 	    {
-		return 'numerical_compare(): numbers differ above accuracy ($numbers1->[$index] != $numbers2->[$index]), aborting with error';
+		return 'numerical_compare(): numbers differ above accuracy ($numbers1->[$index] != $numbers2->[$index]), aborting with an error';
 	    }
 	}
     }
+
+    # return result
+
+    #! if we get here, it means no error
 
     return $result;
 }
