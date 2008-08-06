@@ -17,12 +17,14 @@ our @ISA = qw(Exporter);
 
 our @EXPORT_OK
     = qw(
-	 all_morphologies
-	 all_morphology_groups
+	 morphologies_read
+	 morphologies_write
+	 morphology_groups_read
+	 morphology_groups_write
 	);
 
 
-sub all_morphologies
+sub morphologies_read
 {
     my $project = shift;
 
@@ -38,7 +40,13 @@ sub all_morphologies
 }
 
 
-sub all_morphology_groups
+sub morphologies_write
+{
+    die "morphologies_write() is not implemented";
+}
+
+
+sub morphology_groups_read
 {
     my $project = shift;
 
@@ -53,6 +61,54 @@ sub all_morphology_groups
     eval
     {
 	$result = LoadFile("$project_root/$project_name/morphology_groups/descriptor.yml");
+    };
+
+    return $result;
+}
+
+
+sub morphology_groups_validate
+{
+    my $project = shift;
+
+    my $morphology_groups = shift;
+
+    my $result;
+
+    #t do validation
+
+    $result = 1;
+
+    return $result;
+}
+
+
+sub morphology_groups_write
+{
+    my $project = shift;
+
+    my $project_name = $project->{name};
+
+    my $project_root = $project->{root};
+
+    my $morphology_groups = shift;
+
+    use YAML 'DumpFile';
+
+    my $result;
+
+    $result = morphology_groups_validate($project, $morphology_groups);
+
+    if ($result)
+    {
+	return $result;
+    }
+
+    #t should use Sesa backup mechanism overhere
+
+    eval
+    {
+	DumpFile("$project_root/$project_name/morphology_groups/descriptor.yml", $morphology_groups);
     };
 
     return $result;
