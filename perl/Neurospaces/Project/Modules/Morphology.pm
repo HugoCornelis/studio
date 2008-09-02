@@ -77,7 +77,7 @@ sub morphology_groups_validate
 
     #t do validation
 
-    $result = 1;
+    $result = '';
 
     return $result;
 }
@@ -93,7 +93,7 @@ sub morphology_groups_write
 
     my $morphology_groups = shift;
 
-    use YAML 'DumpFile';
+#     use YAML 'DumpFile';
 
     my $result;
 
@@ -104,12 +104,16 @@ sub morphology_groups_write
 	return $result;
     }
 
-    #t should use Sesa backup mechanism overhere
+    use Sesa::Persistency;
 
-    eval
-    {
-	DumpFile("$project_root/$project_name/morphology_groups/descriptor.yml", $morphology_groups);
-    };
+    Sesa::Persistency::create_backup_and_write("$project_root/$project_name/morphology_groups/descriptor.yml", $morphology_groups);
+
+#     #t should use Sesa backup mechanism overhere
+
+#     eval
+#     {
+# 	DumpFile("$project_root/$project_name/morphology_groups/descriptor.yml", $morphology_groups);
+#     };
 
     return $result;
 }
