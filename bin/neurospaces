@@ -494,6 +494,7 @@ sub main
 sub read_cmd_line
 {
     my $option_help;
+    my $option_version;
 
     my $result
 	= GetOptions
@@ -520,7 +521,17 @@ sub read_cmd_line
 	     "traversal-symbol=s" => \$option_traversal_symbol,
 	     "type=s" => \$option_type,
 	     "v|verbose+" => \$option_verbose,
+	     "version" => \$option_version,
 	    );
+
+    if ($option_version)
+    {
+	my $version = version();
+
+	print $version . "\n";
+
+	exit 1;
+    }
 
     if ($option_help || @ARGV eq 0)
     {
@@ -556,10 +567,20 @@ options :
     traversal-symbol       symbol to traverse.
     type                   type to traverse
     verbose                set verbosity level.
+    version                give version information.
 ";
 
 	exit 1;
     }
+}
+
+
+sub version
+{
+    # $Format: "    my $version=\"${package}-${label}\";"$
+    my $version="studio-python-2";
+
+    return $version;
 }
 
 
