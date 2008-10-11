@@ -44,5 +44,6 @@ AC_CONFIG_FILES([Makefile
 		 perl/Makefile
 		 tests/Makefile
 		])
+
 AC_OUTPUT
 
