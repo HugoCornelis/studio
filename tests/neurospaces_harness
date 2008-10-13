@@ -687,7 +687,9 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 
 				# or forced to compare numerically
 
-				|| $command_test->{numerical_compare})
+				|| $command_test->{numerical_compare}
+				|| $command_definition->{numerical_compare}
+				|| $module_definition->{numerical_compare})
 			    {
 				# compare numerically
 
@@ -1242,59 +1244,56 @@ sub numerical_compare
 
     # but the number of numbers must not differ by more than say 5
 
-    my $max_number_shifts = 5;
+    my $number_shifts = 5;
 
-    while (scalar @$numbers1 > scalar @$numbers2
-	   and $max_number_shifts ne 0)
+    while (scalar @$numbers1 > scalar @$numbers2)
     {
 	shift @$numbers1;
 
-	$max_number_shifts--;
+	$number_shifts++;
 
 # 	return 'numerical_compare(): different number count, aborting with error';
     }
 
-    while (scalar @$numbers1 < scalar @$numbers2
-	   and $max_number_shifts ne 0)
+    while (scalar @$numbers1 < scalar @$numbers2)
     {
 	shift @$numbers2;
 
-	$max_number_shifts--;
+	$number_shifts++;
 
 # 	return 'numerical_compare(): different number count, aborting with error';
     }
 
     # we also line up the texts expected
 
-    my $max_text_shifts = 5;
+    my $text_shifts = 5;
 
     while (scalar @$texts1 > scalar @$texts2)
     {
 	shift @$texts1;
 
-	$max_text_shifts--;
+	$text_shifts++;
 
 # 	return 'numerical_compare(): different text count, aborting with error';
     }
 
-    while (scalar @$texts1 < scalar @$texts2
-	   and $max_text_shifts ne 0)
+    while (scalar @$texts1 < scalar @$texts2)
     {
 	shift @$texts2;
 
-	$max_text_shifts--;
+	$text_shifts++;
 
 # 	return 'numerical_compare(): different text count, aborting with error';
     }
 
     # when we had to do to many textual corrections
 
-    if ($max_number_shifts eq 0
-	or $max_text_shifts eq 0)
+    if ($number_shifts < 0
+	or $text_shifts < 0)
     {
 	# flag this as an error
 
-	return 'numerical_compare(): amount of data expected is to different from amount of seen data, aborting with an error';
+	return 'numerical_compare(): amount of data expected is to different from amount of seen data (number_shifts is $number_shifts, text_shifts is $text_shifts), aborting with an error';
     }
 
     # compare the texts between the numbers
