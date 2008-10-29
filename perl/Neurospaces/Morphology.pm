@@ -24,75 +24,65 @@ sub branchpoints
 
     my $component_name = shift;
 
-    my $result;
+    my $self_commands
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--command '$_'"
+		 }
+		 @{$self->{commands}},
+		);
 
-    my $in_memory = 0;
+    my $self_options
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--backend-option '$_'"
+		 }
+		 @{$self->{backend_options}},
+		);
 
-    if ($in_memory)
-    {
-	# get context
+    my $system_command = "neurospaces 2>&1 $self_options $self_commands --command 'segmentersetbase $component_name' --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'BRANCHPOINT' \"$self->{filename}\"";
 
-	my $context = SwiggableNeurospaces::PidinStackParse($component_name);
+    print STDERR "executing ($system_command)\n";
 
-	# get component
+    my $yaml_branchpoints_string = join '', `$system_command`;
 
-	my $component = $context->PidinStackLookupTopSymbol();
+    $yaml_branchpoints_string =~ s/.*---/---/gs;
 
-	$component->SymbolLinearize($context);
+    # 	$yaml_branchpoints_string =~ s/\n.*$/\n/;
 
-    }
+    # 	print "($yaml_branchpoints_string)";
 
-    else
-    {
-	my $self_commands
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--command '$_'"
-		     }
-		     @{$self->{commands}},
-		    );
+    use YAML;
 
-	my $self_options
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--backend-option '$_'"
-		     }
-		     @{$self->{backend_options}},
-		    );
+    my $branchpoints = Load($yaml_branchpoints_string);
 
-	my $system_command = "neurospaces 2>&1 $self_options $self_commands --command 'segmentersetbase $component_name' --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'BRANCHPOINT' \"$self->{filename}\"";
+    # cache results
 
-	print STDERR "executing ($system_command)\n";
+    $self->{branchpoint_parameters} = $branchpoints->{parameters};
 
-	my $yaml_branchpoints_string = join '', `$system_command`;
-
-	$yaml_branchpoints_string =~ s/.*---/---/gs;
-
-# 	$yaml_branchpoints_string =~ s/\n.*$/\n/;
-
-# 	print "($yaml_branchpoints_string)";
-
-	use YAML;
-
-	my $branchpoints = Load($yaml_branchpoints_string);
-
-	$result->{branchpoints} = $branchpoints;
-
-    }
-
-    # cache result
-
-    $self->{branchpoints} = $result;
+    $self->{branchpoints}
+	= {
+	   map
+	   {
+	       $_ => $branchpoints->{parameters}->{$_};
+	   }
+	   grep
+	   {
+	       $branchpoints->{parameters}->{$_} ne -1
+		   and $branchpoints->{parameters}->{$_} ne 0
+	   }
+	   keys %{$branchpoints->{parameters}},
+	  };
 
     # return result
 
-    return $result;
+    return $self->{branchpoints};
 }
 
 
@@ -117,92 +107,69 @@ sub dendritic_tips
 
     my $component_name = shift;
 
-    my $result;
+    my $self_commands
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--command '$_'"
+		 }
+		 @{$self->{commands}},
+		);
 
-    my $in_memory = 0;
+    my $self_options
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--backend-option '$_'"
+		 }
+		 @{$self->{backend_options}},
+		);
 
-    if ($in_memory)
-    {
-	# get context
+    my $system_command1 = "neurospaces $self_options $self_commands --command 'segmentertips $component_name' \"$self->{filename}\"";
 
-	my $context = SwiggableNeurospaces::PidinStackParse($component_name);
+    print STDERR "executing ($system_command1)\n";
 
-	# get component
+    my $yaml_tips_string = join '', `$system_command1`;
 
-	my $component = $context->PidinStackLookupTopSymbol();
+    $yaml_tips_string =~ s/.*---/---/gs;
 
-	$component->SymbolLinearize($context);
+    # 	$yaml_tips_string =~ s/\n.*$/\n/;
 
-    }
+    # 	print "($yaml_tips_string)";
 
-    else
-    {
-	my $self_commands
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--command '$_'"
-		     }
-		     @{$self->{commands}},
-		    );
+    use YAML;
 
-	my $self_options
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--backend-option '$_'"
-		     }
-		     @{$self->{backend_options}},
-		    );
+    my $dendritic_tips = Load($yaml_tips_string);
 
-	my $system_command1 = "neurospaces $self_options $self_commands --command 'segmentertips $component_name' \"$self->{filename}\"";
+    my $system_command2 = "neurospaces $self_options $self_commands --command 'segmenterlinearize $component_name' \"$self->{filename}\"";
 
-	print STDERR "executing ($system_command1)\n";
+    print STDERR "executing ($system_command2)\n";
 
-	my $yaml_tips_string = join '', `$system_command1`;
+    my $yaml_linearize_string = join '', `$system_command2`;
 
-	$yaml_tips_string =~ s/.*---/---/gs;
+    $yaml_linearize_string =~ s/.*---/---/gs;
 
-# 	$yaml_tips_string =~ s/\n.*$/\n/;
+    # 	$yaml_linearize_string =~ s/\n.*$/\n/;
 
-# 	print "($yaml_tips_string)";
+    # 	print "($yaml_linearize_string)";
 
-	use YAML;
+    use YAML;
 
-	my $tips = Load($yaml_tips_string);
+    my $linearize = Load($yaml_linearize_string);
 
-	$result->{tips} = $tips;
+    # cache results
 
-	my $system_command2 = "neurospaces $self_options $self_commands --command 'segmenterlinearize $component_name' \"$self->{filename}\"";
+    $self->{linearize} = $linearize;
 
-	print STDERR "executing ($system_command2)\n";
-
-	my $yaml_linearize_string = join '', `$system_command2`;
-
-	$yaml_linearize_string =~ s/.*---/---/gs;
-
-# 	$yaml_linearize_string =~ s/\n.*$/\n/;
-
-# 	print "($yaml_linearize_string)";
-
-	use YAML;
-
-	my $linearize = Load($yaml_linearize_string);
-
-	$result->{linearize} = $linearize;
-    }
-
-    # cache result
-
-    $self->{dendritic_tips} = $result;
+    $self->{dendritic_tips} = $dendritic_tips;
 
     # return result
 
-    return $result;
+    return $dendritic_tips;
 }
 
 
@@ -249,71 +216,51 @@ sub length_surface_volume
 
     my $component_name = shift;
 
-    my $in_memory = 0;
+    my $self_commands
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--command '$_'"
+		 }
+		 @{$self->{commands}},
+		);
 
-    if ($in_memory)
-    {
-# 	# get context
+    my $self_options
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--backend-option '$_'"
+		 }
+		 @{$self->{backend_options}},
+		);
 
-# 	my $context = SwiggableNeurospaces::PidinStackParse($component_name);
+    my $system_command = "neurospaces $self_options $self_commands --command 'printparameter $component_name TOTALLENGTH' --command 'printparameter $component_name TOTALSURFACE' --command 'printparameter $component_name TOTALVOLUME' \"$self->{filename}\"";
 
-# 	# get component
+    print STDERR "executing ($system_command)\n";
 
-# 	my $component = $context->PidinStackLookupTopSymbol();
+    my $output_command = join '', `$system_command`;
 
-# 	$component->SymbolLinearize($context);
+    $output_command =~ /TOTALLENGTH.*?= (\S+)/s;
 
-    }
+    my $total_length = $1;
 
-    else
-    {
-	my $self_commands
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--command '$_'"
-		     }
-		     @{$self->{commands}},
-		    );
+    $output_command =~ /TOTALSURFACE.*?= (\S+)/s;
 
-	my $self_options
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--backend-option '$_'"
-		     }
-		     @{$self->{backend_options}},
-		    );
+    my $total_surface = $1;
 
-	my $system_command = "neurospaces $self_options $self_commands --command 'printparameter $component_name TOTALLENGTH' --command 'printparameter $component_name TOTALSURFACE' --command 'printparameter $component_name TOTALVOLUME' \"$self->{filename}\"";
+    $output_command =~ /TOTALVOLUME.*?= (\S+)/s;
 
-	print STDERR "executing ($system_command)\n";
+    my $total_volume = $1;
 
-	my $output_command = join '', `$system_command`;
+    $self->{length_surface_volume}->{total_length} = $total_length;
 
-	$output_command =~ /TOTALLENGTH.*?= (\S+)/s;
+    $self->{length_surface_volume}->{total_surface} = $total_surface;
 
-	my $total_length = $1;
-
-	$output_command =~ /TOTALSURFACE.*?= (\S+)/s;
-
-	my $total_surface = $1;
-
-	$output_command =~ /TOTALVOLUME.*?= (\S+)/s;
-
-	my $total_volume = $1;
-
-	$self->{length_surface_volume}->{total_length} = $total_length;
-
-	$self->{length_surface_volume}->{total_surface} = $total_surface;
-
-	$self->{length_surface_volume}->{total_volume} = $total_volume;
-
-    }
+    $self->{length_surface_volume}->{total_volume} = $total_volume;
 
     # return result
 
@@ -372,81 +319,47 @@ sub somatopetaldistances
 {
     my $self = shift;
 
-    my $component_names = shift;
-
     my $result;
 
-    my $in_memory = 0;
+    my $self_commands
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--command '$_'"
+		 }
+		 @{$self->{commands}},
+		);
 
-    if ($in_memory)
-    {
-# 	# get context
+    my $self_options
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--backend-option '$_'"
+		 }
+		 @{$self->{backend_options}},
+		);
 
-# 	my $context = SwiggableNeurospaces::PidinStackParse($component_name);
+    my $system_command = "neurospaces 2>&1 $self_options $self_commands --traversal-symbol / --reporting-field SOMATOPETAL_DISTANCE --type segment \"$self->{filename}\"";
 
-# 	# get component
+    print STDERR "executing ($system_command)\n";
 
-# 	my $component = $context->PidinStackLookupTopSymbol();
+    my $yaml_distances_string = join '', `$system_command`;
 
-# 	$component->SymbolLinearize($context);
+    $yaml_distances_string =~ s/.*---/---/gs;
 
-    }
+    # 	$yaml_distances_string =~ s/\n.*$/\n/;
 
-    else
-    {
-	my $self_commands
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--command '$_'"
-		     }
-		     @{$self->{commands}},
-		    );
+    # 	print "($yaml_distances_string)";
 
-	my $self_options
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--backend-option '$_'"
-		     }
-		     @{$self->{backend_options}},
-		    );
+    use YAML;
 
-	my $self_component_names
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--command 'printparameter $_ SOMATOPETAL_DISTANCE'"
-		     }
-		     @$component_names,
-		    );
+    my $distances = Load($yaml_distances_string);
 
-
-	my $system_command1 = "neurospaces $self_options $self_commands $self_component_names \"$self->{filename}\"";
-
-	print STDERR "executing ($system_command1)\n";
-
-	my $yaml_distances_string = join '', `$system_command1`;
-
-	$yaml_distances_string =~ s/.*---/---/gs;
-
-# 	$yaml_distances_string =~ s/\n.*$/\n/;
-
-# 	print "($yaml_distances_string)";
-
-	use YAML;
-
-	my $distances = Load($yaml_distances_string);
-
-	$result->{somatopetaldistances} = $distances;
-
-    }
+    $result->{somatopetaldistances} = $distances;
 
     # cache result
 
@@ -468,56 +381,62 @@ sub spiny_length
 
     my $result;
 
-    my $in_memory = 0;
+    my $self_commands
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--command '$_'"
+		 }
+		 @{$self->{commands}},
+		);
 
-    if ($in_memory)
-    {
-# 	# get context
+    my $self_options
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--backend-option '$_'"
+		 }
+		 @{$self->{backend_options}},
+		);
 
-# 	my $context = SwiggableNeurospaces::PidinStackParse($component_name);
+    my $system_command = "neurospaces $self_options $self_commands  --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'LENGTH' --operator cumulate --condition 'SwiggableNeurospaces::symbol_parameter_resolve_value(\$d->{_symbol}, \$d->{_context}, \"DIA\") < $dia' \"$self->{filename}\"";
 
-# 	# get component
+    print STDERR "executing ($system_command)\n";
 
-# 	my $component = $context->PidinStackLookupTopSymbol();
+    my $output_command = join '', `$system_command`;
 
-# 	$component->SymbolLinearize($context);
+    $output_command =~ /final_value: (\S+)/;
 
-    }
+    $result = $1;
 
-    else
-    {
-	my $self_commands
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--command '$_'"
-		     }
-		     @{$self->{commands}},
-		    );
+    return $result;
+}
 
-	my $self_options
-	    = join
-		' ',
-		    (
-		     map
-		     {
-			 "--backend-option '$_'"
-		     }
-		     @{$self->{backend_options}},
-		    );
 
-	my $system_command = "neurospaces $self_options $self_commands  --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'LENGTH' --operator cumulate --condition 'SwiggableNeurospaces::symbol_parameter_resolve_value(\$d->{_symbol}, \$d->{_context}, \"DIA\") < $dia' \"$self->{filename}\"";
+sub tip_lengths
+{
+    my $self = shift;
 
-	print STDERR "executing ($system_command)\n";
+    my $component_name = shift;
 
-	my $output_command = join '', `$system_command`;
+    my $dendritic_tips = $self->dendritic_tips($component_name);
 
-	$output_command =~ /final_value: (\S+)/;
+    my $somatopetaldistances = $self->somatopetaldistances();
 
-	$result = $1;
-    }
+    my $result
+	= {
+	   map
+	   {
+	       $_ => $somatopetaldistances->{somatopetaldistances}->{parameters}->{"$_->SOMATOPETAL_DISTANCE"};
+	   }
+	   @{$dendritic_tips->{tips}->{names}},
+	  };
+
+    $self->{tip_lengths} = $result;
 
     return $result;
 }
