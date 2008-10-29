@@ -66,48 +66,29 @@ sub branchpoints
 		     @{$self->{backend_options}},
 		    );
 
-	my $system_command = "neurospaces --backend-option '-A' --command 'segmentersetbase $morphology_name_short' --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'BRANCHPOINT' '$project_root/$project_name/morphologies/$morphology_name'";
+	my $system_command = "neurospaces 2>&1 $self_options $self_commands --command 'segmentersetbase $component_name' --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'BRANCHPOINT' \"$self->{filename}\"";
 
-	my $system_command1 = "neurospaces $self_options $self_commands --command 'segmentertips $component_name' \"$self->{filename}\"";
+	print STDERR "executing ($system_command)\n";
 
-	print STDERR "executing ($system_command1)\n";
+	my $yaml_branchpoints_string = join '', `$system_command`;
 
-	my $yaml_tips_string = join '', `$system_command1`;
+	$yaml_branchpoints_string =~ s/.*---/---/gs;
 
-	$yaml_tips_string =~ s/.*---/---/gs;
+# 	$yaml_branchpoints_string =~ s/\n.*$/\n/;
 
-# 	$yaml_tips_string =~ s/\n.*$/\n/;
-
-# 	print "($yaml_tips_string)";
+# 	print "($yaml_branchpoints_string)";
 
 	use YAML;
 
-	my $tips = Load($yaml_tips_string);
+	my $branchpoints = Load($yaml_branchpoints_string);
 
-	$result->{tips} = $tips;
+	$result->{branchpoints} = $branchpoints;
 
-	my $system_command2 = "neurospaces $self_options $self_commands --command 'segmenterlinearize $component_name' \"$self->{filename}\"";
-
-	print STDERR "executing ($system_command2)\n";
-
-	my $yaml_linearize_string = join '', `$system_command2`;
-
-	$yaml_linearize_string =~ s/.*---/---/gs;
-
-# 	$yaml_linearize_string =~ s/\n.*$/\n/;
-
-# 	print "($yaml_linearize_string)";
-
-	use YAML;
-
-	my $linearize = Load($yaml_linearize_string);
-
-	$result->{linearize} = $linearize;
     }
 
     # cache result
 
-    $self->{dendritic_tips} = $result;
+    $self->{branchpoints} = $result;
 
     # return result
 

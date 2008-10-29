@@ -455,7 +455,7 @@ sub main
 			      {
 				  if ($value != $SwiggableNeurospaces::dFLT_MAX)
 				  {
-				      print "  " . $descendant->{context} . "->" . $parameter . ": " . $value . "\n";
+				      print "  '" . $descendant->{context} . "->" . $parameter . "': " . $value . "\n";
 				  }
 			      }
 			  }
@@ -475,7 +475,7 @@ sub main
 
 	if (!$success)
 	{
-	    print "Traversal failed\n";
+	    print STDERR "Traversal failed\n";
 	}
 	else
 	{
@@ -491,8 +491,6 @@ sub main
   final_value: $final_value\n";
 		}
 	    }
-
-	    print STDERR "Traversal ok\n";
 	}
     }
 
