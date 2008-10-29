@@ -18,7 +18,7 @@ our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(all_morphologies);
 
 
-sub branch_order
+sub branchpoints
 {
     my $self = shift;
 
@@ -65,6 +65,8 @@ sub branch_order
 		     }
 		     @{$self->{backend_options}},
 		    );
+
+	my $system_command = "neurospaces --backend-option '-A' --command 'segmentersetbase $morphology_name_short' --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'BRANCHPOINT' '$project_root/$project_name/morphologies/$morphology_name'";
 
 	my $system_command1 = "neurospaces $self_options $self_commands --command 'segmentertips $component_name' \"$self->{filename}\"";
 

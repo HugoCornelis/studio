@@ -40,11 +40,12 @@ my $test
 						  {
 						   comment => 'the condition forces to report only a few of the spines present.',
 						   description => "Are spines present ?",
-						   read => '/gp_pc1/segments/p0b1b1[0]/Purk_spine_0/head/par/exp2
-/gp_pc1/segments/p0b1b1[1]/Purk_spine_0/head/par/exp2
-/gp_pc1/segments/p0b1b1[2]/Purk_spine_0/head/par/exp2
-/gp_pc1/segments/p0b1b1[3]/Purk_spine_0/head/par/exp2
-/gp_pc1/segments/p0b1b1[4]/Purk_spine_0/head/par/exp2
+						   read => 'paths:
+  - /gp_pc1/segments/p0b1b1[0]/Purk_spine_0/head/par/exp2
+  - /gp_pc1/segments/p0b1b1[1]/Purk_spine_0/head/par/exp2
+  - /gp_pc1/segments/p0b1b1[2]/Purk_spine_0/head/par/exp2
+  - /gp_pc1/segments/p0b1b1[3]/Purk_spine_0/head/par/exp2
+  - /gp_pc1/segments/p0b1b1[4]/Purk_spine_0/head/par/exp2
 ',
 						   timeout => 100,
 						   write => undef,
@@ -71,16 +72,17 @@ my $test
 				command_tests => [
 						  {
 						   description => "Are delayed rectifier channels present ?",
-						   read => '/gp_pc1/segments/soma/kdr->G_MAX = 6000
-/gp_pc1/segments/p0b1[0]/kdr->G_MAX = 600
-/gp_pc1/segments/p0b1[1]/kdr->G_MAX = 600
-/gp_pc1/segments/p0b1[2]/kdr->G_MAX = 600
-/gp_pc1/segments/p0b1[3]/kdr->G_MAX = 600
-/gp_pc1/segments/p0b1b2[0]/kdr->G_MAX = 600
-/gp_pc1/segments/p0b1b2b2[0]/kdr->G_MAX = 600
-/gp_pc1/segments/p0b1b2b2[1]/kdr->G_MAX = 600
-/gp_pc1/segments/p0b1b2b2[2]/kdr->G_MAX = 600
-/gp_pc1/segments/p0b1b2b2b2[0]/kdr->G_MAX = 600
+						   read => 'parameters:
+  /gp_pc1/segments/soma/kdr->G_MAX: 6000
+  /gp_pc1/segments/p0b1[0]/kdr->G_MAX: 600
+  /gp_pc1/segments/p0b1[1]/kdr->G_MAX: 600
+  /gp_pc1/segments/p0b1[2]/kdr->G_MAX: 600
+  /gp_pc1/segments/p0b1[3]/kdr->G_MAX: 600
+  /gp_pc1/segments/p0b1b2[0]/kdr->G_MAX: 600
+  /gp_pc1/segments/p0b1b2b2[0]/kdr->G_MAX: 600
+  /gp_pc1/segments/p0b1b2b2[1]/kdr->G_MAX: 600
+  /gp_pc1/segments/p0b1b2b2[2]/kdr->G_MAX: 600
+  /gp_pc1/segments/p0b1b2b2b2[0]/kdr->G_MAX: 600
 ',
 						   timeout => 100,
 						   write => undef,

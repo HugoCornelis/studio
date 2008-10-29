@@ -205,9 +205,9 @@ sub main
 
     my $neurospaces = Neurospaces->new();
 
-    # my $args = [ "$0", "-P", "-q", "cells/golgi.ndf" ];
+    # my $args = [ "$0", "-q", "cells/golgi.ndf" ];
 
-    my $args = [ "$0", "-P", ];
+    my $args = [ "$0", ];
 
     if ($option_models)
     {
@@ -343,6 +343,15 @@ sub main
 	    $operator_names = $option_operators;
 	}
 
+	if (!@$parameters)
+	{
+	    print "---\npaths:\n";
+	}
+	elsif (!@$option_operators)
+	{
+	    print "---\nparameters:\n";
+	}
+
 	my $traversal
 	    = Neurospaces::Traversal->new
 		(
@@ -446,14 +455,14 @@ sub main
 			      {
 				  if ($value != $SwiggableNeurospaces::dFLT_MAX)
 				  {
-				      print $descendant->{context} . "->" . $parameter . " = " . $value . "\n";
+				      print "  " . $descendant->{context} . "->" . $parameter . ": " . $value . "\n";
 				  }
 			      }
 			  }
 		      }
 		      else
 		      {
-			  print "$descendant->{context}\n";
+			  print "  - $descendant->{context}\n";
 		      }
 
 		      return 1;
