@@ -121,6 +121,38 @@ my $test
 				description => "maximum operator",
 				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
 			       },
+			       {
+				arguments => [
+					      "$morphologies/$morphology_name1",
+					      '--no-use-library',
+					      '--shrinkage',
+					      '1.114',
+					      '--traversal-symbol',
+					      '/',
+					      '--type',
+					      '^T_sym_segment$',
+					      '--reporting-fields',
+					      'DIA',
+					      '--condition',
+					      '$d->{context} !~ /Purk_spine/i',
+					      '--operator',
+					      'average',
+					     ],
+				command => 'bin/neurospaces',
+				command_tests => [
+						  {
+						   description => "Is the average operator applied correctly ?",
+						   read => 'average:
+  description: average of 2066 value(s)
+  final_value: 1.57461689254598e-06
+',
+						   timeout => 10,
+						   write => undef,
+						  },
+						 ],
+				description => "average operator",
+				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
+			       },
 			      ],
        description => "application of operators to reported fields",
        name => 'operators.t',
