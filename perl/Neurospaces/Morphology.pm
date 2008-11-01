@@ -579,6 +579,28 @@ sub spiny_length
 }
 
 
+sub structure_summary
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    my $result
+	= {
+	   average_branchpoints_per_tip => $self->average_branchpoints_per_tip($component_name),
+	   average_diameter => $self->average_diameter($component_name),
+	   average_tip_lengths => $self->average_tip_lengths($component_name),
+	   branchpoints => scalar keys %{$self->branchpoints($component_name)},
+# 	   tips => $self->dendritic_tips($component_name),
+	   total_length => $self->total_length($component_name),
+	   total_surface_area => $self->total_surface_area($component_name),
+	   total_volume => $self->total_volume($component_name),
+	  };
+
+    return $result;
+}
+
+
 sub tip_lengths
 {
     my $self = shift;
