@@ -18,6 +18,83 @@ our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(all_morphologies);
 
 
+sub average_diameter
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    my $self_commands
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--command '$_'"
+		 }
+		 @{$self->{commands}},
+		);
+
+    my $self_options
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--backend-option '$_'"
+		 }
+		 @{$self->{backend_options}},
+		);
+
+    my $system_command = "neurospaces 2>&1 $self_options $self_commands --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'DIA' --operator average \"$self->{filename}\"";
+
+    print STDERR "executing ($system_command)\n";
+
+    my $yaml_average_diameter_string = join '', `$system_command`;
+
+    $self->set_ndf_filename($yaml_average_diameter_string);
+
+    $yaml_average_diameter_string =~ s/.*---/---/gs;
+
+    # 	$yaml_average_diameter_string =~ s/\n.*$/\n/;
+
+    # 	print "($yaml_average_diameter_string)";
+
+    use YAML;
+
+    my $average_diameter = Load($yaml_average_diameter_string);
+
+    # cache results
+
+    $self->{average_diameter} = $average_diameter;
+
+    # return result
+
+    return $self->{average_diameter};
+}
+
+
+sub average_tip_lengths
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    my $tip_lengths = $self->tip_lengths($component_name);
+
+    my $result = 0;
+
+    foreach my $tip (keys %$tip_lengths)
+    {
+	my $length = $tip_lengths->{$tip};
+
+	$result += $length;
+    }
+
+    return $result / scalar keys %$tip_lengths;
+}
+
+
 sub branchpoints
 {
     my $self = shift;
@@ -52,6 +129,8 @@ sub branchpoints
 
     my $yaml_branchpoints_string = join '', `$system_command`;
 
+    $self->set_ndf_filename($yaml_branchpoints_string);
+
     $yaml_branchpoints_string =~ s/.*---/---/gs;
 
     # 	$yaml_branchpoints_string =~ s/\n.*$/\n/;
@@ -83,21 +162,6 @@ sub branchpoints
     # return result
 
     return $self->{branchpoints};
-}
-
-
-sub cumulated_length
-{
-    my $self = shift;
-
-    my $component_name = shift;
-
-    if (!$self->{length_surface_volume})
-    {
-	$self->length_surface_volume($component_name);
-    }
-
-    return $self->{length_surface_volume}->{total_length};
 }
 
 
@@ -135,6 +199,8 @@ sub dendritic_tips
 
     my $yaml_tips_string = join '', `$system_command1`;
 
+    $self->set_ndf_filename($yaml_tips_string);
+
     $yaml_tips_string =~ s/.*---/---/gs;
 
     # 	$yaml_tips_string =~ s/\n.*$/\n/;
@@ -150,6 +216,8 @@ sub dendritic_tips
     print STDERR "executing ($system_command2)\n";
 
     my $yaml_linearize_string = join '', `$system_command2`;
+
+    $self->set_ndf_filename($yaml_linearize_string);
 
     $yaml_linearize_string =~ s/.*---/---/gs;
 
@@ -195,21 +263,6 @@ sub instantiate_backend
 }
 
 
-sub membrane_area
-{
-    my $self = shift;
-
-    my $component_name = shift;
-
-    if (!$self->{length_surface_volume})
-    {
-	$self->length_surface_volume($component_name);
-    }
-
-    return $self->{length_surface_volume}->{total_surface};
-}
-
-
 sub length_surface_volume
 {
     my $self = shift;
@@ -244,13 +297,15 @@ sub length_surface_volume
 
     my $output_command = join '', `$system_command`;
 
+    $self->set_ndf_filename($output_command);
+
     $output_command =~ /TOTALLENGTH.*?= (\S+)/s;
 
     my $total_length = $1;
 
     $output_command =~ /TOTALSURFACE.*?= (\S+)/s;
 
-    my $total_surface = $1;
+    my $total_surface_area = $1;
 
     $output_command =~ /TOTALVOLUME.*?= (\S+)/s;
 
@@ -258,7 +313,7 @@ sub length_surface_volume
 
     $self->{length_surface_volume}->{total_length} = $total_length;
 
-    $self->{length_surface_volume}->{total_surface} = $total_surface;
+    $self->{length_surface_volume}->{total_surface_area} = $total_surface_area;
 
     $self->{length_surface_volume}->{total_volume} = $total_volume;
 
@@ -315,6 +370,23 @@ sub new
 }
 
 
+sub set_ndf_filename
+{
+    my $self = shift;
+
+    my $text = shift;
+
+    if ($text =~ m((/tmp/morphology.*\.ndf)))
+    {
+	$self->{ndf_filename} = $1;
+
+	$self->{original_filename} = $self->{filename};
+
+	$self->{filename} = $self->{ndf_filename};
+    }
+}
+
+
 sub somatopetaldistances
 {
     my $self = shift;
@@ -348,6 +420,8 @@ sub somatopetaldistances
     print STDERR "executing ($system_command)\n";
 
     my $yaml_distances_string = join '', `$system_command`;
+
+    $self->set_ndf_filename($yaml_distances_string);
 
     $yaml_distances_string =~ s/.*---/---/gs;
 
@@ -409,6 +483,8 @@ sub spiny_length
 
     my $output_command = join '', `$system_command`;
 
+    $self->set_ndf_filename($output_command);
+
     $output_command =~ /final_value: (\S+)/;
 
     $result = $1;
@@ -442,7 +518,37 @@ sub tip_lengths
 }
 
 
-sub volume
+sub total_length
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    if (!$self->{length_surface_volume})
+    {
+	$self->length_surface_volume($component_name);
+    }
+
+    return $self->{length_surface_volume}->{total_length};
+}
+
+
+sub total_surface_area
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    if (!$self->{length_surface_volume})
+    {
+	$self->length_surface_volume($component_name);
+    }
+
+    return $self->{length_surface_volume}->{total_surface_area};
+}
+
+
+sub total_volume
 {
     my $self = shift;
 

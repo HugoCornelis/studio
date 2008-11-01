@@ -35,6 +35,8 @@ my $global_operators
        average =>
        sub
        {
+	   #t need to add stddev.
+
 	   my ($description, $final_value, $descendant, $parameter, $value) = @_;
 
 	   my $count = 0;
