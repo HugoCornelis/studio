@@ -18,6 +18,25 @@ our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(all_morphologies);
 
 
+sub average_branchpoints_per_tip
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    $self->branchpoints_per_tip($component_name);
+
+    my $result = 0;
+
+    foreach my $tip (keys %{$self->{branchpoints_per_tip}})
+    {
+	$result += $self->{branchpoints_per_tip}->{$tip};
+    }
+
+    return $result / scalar keys %{$self->{branchpoints_per_tip}};
+}
+
+
 sub average_diameter
 {
     my $self = shift;
@@ -162,6 +181,73 @@ sub branchpoints
     # return result
 
     return $self->{branchpoints};
+}
+
+
+sub branchpoints_per_tip
+{
+    my $self = shift;
+
+    my $component_name = shift;
+
+    $self->dendritic_tips($component_name);
+
+    my $self_commands
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--command '$_'"
+		 }
+		 @{$self->{commands}},
+		);
+
+    my $self_options
+	= join
+	    ' ',
+		(
+		 map
+		 {
+		     "--backend-option '$_'"
+		 }
+		 @{$self->{backend_options}},
+		);
+
+    my $system_command = "neurospaces 2>&1 $self_options $self_commands --command 'segmentersetbase $component_name' --traversal-symbol / '--type' '^T_sym_segment\$' '--reporting-fields' 'SOMATOPETAL_BRANCHPOINTS' \"$self->{filename}\"";
+
+    print STDERR "executing ($system_command)\n";
+
+    my $yaml_branchpoints_per_tip_string = join '', `$system_command`;
+
+    $self->set_ndf_filename($yaml_branchpoints_per_tip_string);
+
+    $yaml_branchpoints_per_tip_string =~ s/.*---/---/gs;
+
+    # 	$yaml_branchpoints_per_tip_string =~ s/\n.*$/\n/;
+
+    # 	print "($yaml_branchpoints_per_tip_string)";
+
+    use YAML;
+
+    my $branchpoints_per_tip = Load($yaml_branchpoints_per_tip_string);
+
+    # cache results
+
+    $self->{branchpoints_per_tip_parameters} = $branchpoints_per_tip->{parameters};
+
+    $self->{branchpoints_per_tip}
+	= {
+	   map
+	   {
+	       $_ => $self->{branchpoints_per_tip_parameters}->{$_ . "->SOMATOPETAL_BRANCHPOINTS"};
+	   }
+	   @{$self->{dendritic_tips}->{tips}->{names}},
+	  };
+
+    # return result
+
+    return $self->{branchpoints_per_tip};
 }
 
 
