@@ -939,7 +939,9 @@ sub output_source
 
 	# define an output text location
 
-	$result->{result_text_file} = "$outputs_dir/$source_text_file.source.html";
+	#! at most five levels deep
+
+	$result->{result_text_file} = "$outputs_dir/sources/a/b/c/d/e/$source_text_file.source.html";
 
 	#! this does not look good to me, it is a reversed parent
 	#! directory removal, there must be something wrong with the data
