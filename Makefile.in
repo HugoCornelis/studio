@@ -626,6 +626,8 @@ html-upload: html-upload-prepare
 #perldir = $(prefix)/glue/swig/perl
 
 #nobase_perl_DATA = @PERL_EMBED_DATA@
+
+docs: html-upload-prepare
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

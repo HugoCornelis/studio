@@ -76,3 +76,5 @@ html-upload: html-upload-prepare
 
 #nobase_perl_DATA = @PERL_EMBED_DATA@
 
+docs: html-upload-prepare
+
