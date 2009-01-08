@@ -589,7 +589,7 @@ options :
 sub version
 {
     # $Format: "    my $version=\"${package}-${label}\";"$
-    my $version="studio-python-3";
+    my $version="studio-python-5";
 
     return $version;
 }
