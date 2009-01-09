@@ -377,7 +377,7 @@ sub length_surface_volume
 		 @{$self->{backend_options}},
 		);
 
-    my $system_command = "neurospaces $self_options $self_commands --command 'printparameter $component_name TOTALLENGTH' --command 'printparameter $component_name TOTALSURFACE' --command 'printparameter $component_name TOTALVOLUME' \"$self->{filename}\"";
+    my $system_command = "neurospaces $self_options $self_commands --command 'delete $component_name/segments/soma' --command 'printparameter $component_name TOTALLENGTH' --command 'printparameter $component_name TOTALSURFACE' --command 'printparameter $component_name TOTALVOLUME' \"$self->{filename}\"";
 
     print STDERR "executing ($system_command)\n";
 
@@ -591,11 +591,13 @@ sub structure_summary
 	   average_diameter => $self->average_diameter($component_name),
 	   average_tip_lengths => $self->average_tip_lengths($component_name),
 	   branchpoints => scalar keys %{$self->branchpoints($component_name)},
-# 	   tips => $self->dendritic_tips($component_name),
+ 	   tips => $self->dendritic_tips($component_name),
 	   total_length => $self->total_length($component_name),
 	   total_surface_area => $self->total_surface_area($component_name),
 	   total_volume => $self->total_volume($component_name),
 	  };
+
+    $result->{tips}->{tip_count} = scalar @{$result->{tips}->{tips}->{names}};
 
     return $result;
 }
