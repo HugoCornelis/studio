@@ -146,7 +146,7 @@ my $test
   description: average of 2066 value(s)
   final_value: 1.57461689254598e-06
 ',
-						   timeout => 10,
+						   timeout => 15,
 						   write => undef,
 						  },
 						 ],
