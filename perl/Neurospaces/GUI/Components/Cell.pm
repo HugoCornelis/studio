@@ -526,12 +526,14 @@ sub draw
 
 	    if (ref $value ne 'ARRAY')
 	    {
-		$value -= $min;
+		$value = abs($value);
+
+		$value -= abs($min);
 
 		#! I can get a too high value when I use scalar @$colormap,
 		#! due to rounding or so, so I use $#$colormap.
 
-		$value *= $#$colormap / ($max - $min);
+		$value *= $#$colormap / abs($max - $min);
 
 		if ($value > $#$colormap)
 		{
