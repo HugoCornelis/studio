@@ -563,7 +563,7 @@ options :
     --interactive            enter interactive mode.
     --models                 directory where to find the neurospaces library (default is $option_models).
     --no-use-library         do not use the library with specific settings for each morphology.
-    operator--s              apply these operators to each reported field.
+    --operators              apply these operators to each reported field.
     --protocol               protocol used to do color coding of morphologies.
     --query                  enter the query machine after parsing.
     --render                 render a file, using a renderer plugin.
