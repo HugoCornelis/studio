@@ -545,6 +545,8 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 		    $before_match,
 		    $after_match);
 
+		my $expected;
+
 		my $time_elapsed;
 
 		if (ref $command eq 'CODE')
@@ -620,6 +622,8 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			     $before_match,
 			     $after_match)
 				= $exp->expect($timeout, $read, );
+
+			    $expected = $read;
 			}
 
 			# if array, means regex match
@@ -632,6 +636,10 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			     $before_match,
 			     $after_match)
 				= $exp->expect($timeout, @$read, );
+
+			    #! skip the expect '-re' flag
+
+			    $expected = $read->[1];
 			}
 
 			# else, hash, one of several alternatives expected
@@ -640,31 +648,95 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			{
 			    # compose the alternatives regex
 
-			    my $alternatives = $read->{alternatives};
+			    if ($read->{alternatives})
+			    {
+				my $alternatives = $read->{alternatives};
 
-			    my $expected = '(' . (join '|', map { quotemeta } @$alternatives) . ')';
+				$expected = '(' . (join '|', map { quotemeta } @$alternatives) . ')';
 
-			    # read from the application
+				# read from the application
 
-			    ($matched_pattern_position,
-			     $error,
-			     $successfully_matching_string,
-			     $before_match,
-			     $after_match)
-				= $exp->expect($timeout, "-re", $expected, );
-# 				= $exp->expect($timeout, "ThIs TeXt ShOuLd NeVeR oCcUr", );
+				($matched_pattern_position,
+				 $error,
+				 $successfully_matching_string,
+				 $before_match,
+				 $after_match)
+				    = $exp->expect($timeout, "-re", $expected, );
+			    }
+			    elsif ($read->{application_output_file})
+			    {
+				my $application_output_file
+				    = $read->{application_output_file};
 
-# 			    # loop over expected alternatives
+ 				print "*** Application output file: $application_output_file\n";
 
-# 			    my $alternatives = $read->{alternatives};
+				my $expected_output_file
+				    = $read->{expected_output_file};
 
-# 			    foreach my $alternative (@$alternatives)
-# 			    {
-# 				if ($before_match =~ /$alternative/)
-# 				{
-# 				    last;
-# 				}
-# 			    }
+				local $/;
+
+				my $application_output = `cat "$application_output_file"`;
+
+				my $expected_output;
+
+				if ($expected_output_file)
+				{
+				    print "*** Expected output file: $expected_output_file\n";
+
+				    $expected_output = `cat "$expected_output_file"`;
+				}
+				elsif (defined $read->{expected_output})
+				{
+				    $expected_output = $read->{expected_output};
+				}
+
+				$expected = $expected_output;
+
+				if ($expected_output eq $application_output)
+				{
+				    $before_match = $application_output;
+				}
+				else
+				{
+				    $before_match = $application_output;
+
+				    $read = $expected_output;
+
+				    $error = 'expected_output does not match application_output';
+				}
+
+				#t mando, why is this needed?? if the
+				#t application generates a file that we
+				#t use for testing, we remove it here,
+				#t but may be that the application still
+				#t needs it.
+
+				#
+				# clean up the generated files
+				#
+
+# 				print `pwd`;
+
+				`rm -f $application_output_file`;
+			    }
+			    elsif ($read->{shell})
+			    {
+				my $shell = $read->{shell};
+
+				my $expected = `$shell`;
+
+				($matched_pattern_position,
+				 $error,
+				 $successfully_matching_string,
+				 $before_match,
+				 $after_match)
+				    = $exp->expect($timeout, $expected, );
+
+			    }
+			    else
+			    {
+				die "test not understood by $0, aborting";
+			    }
 			}
 
 			$time_elapsed = tv_interval($time_start);
@@ -719,7 +791,7 @@ Total of $test_report->{global}->{test_count} tests (encountered $error_count er
 			 {
 			  description => $description,
 			  error => $error,
-			  expected => (ref $command_test->{read} eq 'ARRAY' ? $command_test->{read}->[1] : $command_test->{read}),
+			  expected => $expected,
 			  message => $message,
 			  module_name => $module_name,
 			  seen => $before_match,
@@ -905,19 +977,19 @@ sub read_cmd_line
 	    "
 $0: test definition executor
 
-options :
-    email              allow to send emails, the default is taken from \$ENV{NEUROSPACES_HARNESS_OPTION_EMAIL}.
-    flattenout         flattenout the test definitions before testing,
-                       this experimental feature might increase test performance,
-                       by recycling test definitions.
-    help               print usage information.
-    numerical-compare  attempt to compare numbers numerically when string differences are found (default enabled).
-    randomize-order    randomize the order of the tests before executing them (require List::Util to be installed).
-    regex-selector     defines a regex to run specific tests.
-    report-disabled    include information of disabled tests in the test report.
-    timeout-multiplier multiply all timeout values with this constant.
-    timings            add timing information about the tests to the report.
-    verbose            set verbosity level.
+options:
+    --email              allow to send emails, the default is taken from \$ENV{NEUROSPACES_HARNESS_OPTION_EMAIL}.
+    --flattenout         flattenout the test definitions before testing,
+                         this experimental feature might increase test performance,
+                         by recycling test definitions.
+    --help               print usage information.
+    --numerical-compare  attempt to compare numbers numerically when string differences are found (default enabled).
+    --randomize-order    randomize the order of the tests before executing them (require List::Util to be installed).
+    --regex-selector     defines a regex to run specific tests.
+    --report-disabled    include information of disabled tests in the test report.
+    --timeout-multiplier multiply all timeout values with this constant.
+    --timings            add timing information about the tests to the report.
+    --verbose            set verbosity level.
 ";
 
 	exit 1;
@@ -982,6 +1054,23 @@ sub report_error_add
 
 	print STDERR $processed_seen;
 
+	use IO::File;
+
+	my $expected_filename = "/tmp/text_$config->{package}_$error_count.expected";
+
+	my $expected_file = new IO::File ">$expected_filename";
+
+	print $expected_file $expected;
+
+	$expected_file->close();
+
+	my $seen_filename = "/tmp/text_$config->{package}_$error_count.seen";
+
+	my $seen_file = new IO::File ">$seen_filename";
+
+	print $seen_file $seen;
+
+	$seen_file->close();
     }
 
 }
