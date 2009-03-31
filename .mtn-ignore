@@ -1,4 +1,7 @@
 Makefile$
+.*Makefile\.in$
+^aclocal.m4$
+^configure$
 ^_Inline
 ^config.log$
 ^config.status$
