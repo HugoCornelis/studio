@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 #!/usr/bin/perl -d:ptkdb
 #
-#
+# $Id: run 1.80 Wed, 26 Dec 2007 21:42:57 -0600 hugo $
 #
 
 use strict;
@@ -1056,7 +1056,7 @@ sub report_error_add
 
 	use IO::File;
 
-	my $expected_filename = "/tmp/text_$config->{package}_$error_count.expected";
+	my $expected_filename = "/tmp/text_$config->{package}->{name}_$error_count.expected";
 
 	my $expected_file = new IO::File ">$expected_filename";
 
@@ -1064,7 +1064,7 @@ sub report_error_add
 
 	$expected_file->close();
 
-	my $seen_filename = "/tmp/text_$config->{package}_$error_count.seen";
+	my $seen_filename = "/tmp/text_$config->{package}->{name}_$error_count.seen";
 
 	my $seen_file = new IO::File ">$seen_filename";
 
