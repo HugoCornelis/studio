@@ -1,4 +1,5 @@
 Makefile$
+^configure$
 ^_Inline
 ^config.log$
 ^config.status$
