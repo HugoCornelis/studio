@@ -58,10 +58,11 @@ html-upload-prepare:
 	rm -fr html/htdocs/neurospaces_project/studio/
 	mkdir --parents html/htdocs/neurospaces_project/studio
 	mkdir --parents html/htdocs/neurospaces_project/studio/html_source
+	( cd tests && chmod -R u+w . && ./tests_2_html --introduction introduction.html )
 	tar cfh - tests/html | ( cd html/htdocs/neurospaces_project/studio && tar vxf - )
 # copy the bin/neurospaces script too
 	mkdir --parents html/htdocs/neurospaces_project/studio/tests/bin
-	cp -a tests/bin/* html/htdocs/neurospaces_project/studio/tests/bin
+#	cp -a tests/bin/* html/htdocs/neurospaces_project/studio/tests/bin
 
 html-upload: html-upload-prepare
 	scp -pr html/htdocs/* hcornelis,neurospaces@web.sourceforge.net:/home/groups/n/ne/neurospaces/htdocs/
