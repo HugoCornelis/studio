@@ -866,7 +866,9 @@ sub fps_draw
     glColor(1, 1, 1);
     glRasterPos(10, 10, 0);
     glListBase($base);
-    glCallListsString($fps);
+#     glCallListsString($fps);
+
+    glCallLists($self->{stats}->{fps}->{cur_fps});
 }
 
 
