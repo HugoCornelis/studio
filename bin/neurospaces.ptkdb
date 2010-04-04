@@ -3,24 +3,22 @@ $files = {
                                     {
                                       'expr' => undef,
                                       'value' => '1',
-                                      'text' => '	    $d3renderer->symbol_add($symbol);
+                                      'text' => '	Neurospaces::GUI::gui($0);
 ',
                                       'fname' => 'bin/neurospaces',
                                       'type' => 'user',
-                                      'line' => 252
-                                    }
-                                  ],
-           '_<perl/Neurospaces/GUI/Components/Cell.pm' => [
-                                                            {
-                                                              'expr' => undef,
-                                                              'value' => '1',
-                                                              'text' => '    $morphology_name =~ s/\\./_/g;
+                                      'line' => '304'
+                                    },
+                                    {
+                                      'expr' => undef,
+                                      'value' => '1',
+                                      'text' => '    if (@$option_render)
 ',
-                                                              'fname' => 'perl/Neurospaces/GUI/Components/Cell.pm',
-                                                              'type' => 'user',
-                                                              'line' => '256'
-                                                            }
-                                                          ]
+                                      'fname' => 'bin/neurospaces',
+                                      'type' => 'user',
+                                      'line' => '251'
+                                    }
+                                  ]
          };
 $expr_list = [];
 $eval_saved_text = undef;

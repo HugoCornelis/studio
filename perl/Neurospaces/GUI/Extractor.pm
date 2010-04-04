@@ -79,7 +79,7 @@ sub extract
 
     $symbol_type =~ s/^T_sym_//;
 
-    $symbol_type = "HIERARCHY_TYPE_$symbol_type";
+    $symbol_type = "HIERARCHY_TYPE_symbols_$symbol_type";
 
     $graph->add_node
 	(
@@ -96,7 +96,7 @@ sub extract
 
     $parent_type =~ s/^T_sym_//;
 
-    $parent_type = "HIERARCHY_TYPE_$parent_type";
+    $parent_type = "HIERARCHY_TYPE_symbols_$parent_type";
 
     $graph->add_node
 	(
@@ -128,13 +128,13 @@ sub new
     my $shapes
 	= {
 	   default => 'egg',
-	   HIERARCHY_TYPE_network => 'octagon',
-	   HIERARCHY_TYPE_projection => 'ellipse',
-	   HIERARCHY_TYPE_population => 'hexagon',
-	   HIERARCHY_TYPE_cell => 'house',
-	   HIERARCHY_TYPE_segment => 'box',
-	   HIERARCHY_TYPE_channel => 'triangle',
-	   HIERARCHY_TYPE_pool => 'triangle',
+	   HIERARCHY_TYPE_symbols_network => 'octagon',
+	   HIERARCHY_TYPE_symbols_projection => 'ellipse',
+	   HIERARCHY_TYPE_symbols_population => 'hexagon',
+	   HIERARCHY_TYPE_symbols_cell => 'house',
+	   HIERARCHY_TYPE_symbols_segment => 'box',
+	   HIERARCHY_TYPE_symbols_channel => 'triangle',
+	   HIERARCHY_TYPE_symbols_pool => 'triangle',
 	  };
 
     my $graph = GraphViz->new();
@@ -176,7 +176,7 @@ sub extract
 
     my $symbol = shift;
 
-    if ($symbol->{type} eq 'HIERARCHY_TYPE_channel')
+    if ($symbol->{type} eq 'HIERARCHY_TYPE_symbols_channel')
     {
 	my $name = $symbol->{context};
 
@@ -531,7 +531,7 @@ sub extract
 
 	$symbol_type =~ s/^T_sym_//;
 
-	$symbol_type = "HIERARCHY_TYPE_$symbol_type";
+	$symbol_type = "HIERARCHY_TYPE_symbols_$symbol_type";
 
 	my $symboltype = $Neurospaces::Biolevels::symboltype2internal->{$symbol_type};
 
@@ -539,7 +539,7 @@ sub extract
 
 # 	print "in extract(), type is : ($symbol->{type}, $symbol_type, $symboltype)\n";
 
-# 	print Dumper($Neurospaces::Biolevels::internal2biolevel, $Neurospaces::Biolevels::symboltype2biolevel);
+# 	print Dumper($Neurospaces::Biolevels::internal2biolevel, $Neurospaces::Biolevels::symboltype2biolevel, $Neurospaces::Biolevels::symboltype2internal);
 
 	my $biolevel_name = $Neurospaces::Biolevels::internal2biolevel->{$biolevel};
 
@@ -552,7 +552,7 @@ sub extract
 	if (!defined $biolevel_name)
 	{
 	    #! this can happen for types on an axis that is orthogonal to the application axis
-	    #! includes general purpose types, e.g. HIERARCHY_TYPE_group
+	    #! includes general purpose types, e.g. HIERARCHY_TYPE_symbols_group
 
 	    #t check if the symbol has a BIOGROUP parameter, and try that.
 
@@ -571,9 +571,16 @@ sub extract
 
 	    $parent_type =~ s/^T_sym_//;
 
-	    $parent_type = "HIERARCHY_TYPE_$parent_type";
+	    $parent_type = "HIERARCHY_TYPE_symbols_$parent_type";
 
 	    my $biolevel = $Neurospaces::Biolevels::symboltype2biolevel->{$parent_type};
+
+	    if (!defined $biolevel)
+	    {
+		print "Unable to define biolevel_name for symbol type $symbol->{type}, does not exist\n  (normally this means that this type is not defined on the 'physical' axis in the model-container)\n";
+
+		next;
+	    }
 
 # 	    print Data::Dumper::Dumper($Neurospaces::Biolevels::symboltype2biolevel);
 
