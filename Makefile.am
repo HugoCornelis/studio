@@ -89,6 +89,7 @@ pkg-src: dist
 
 
 pkg-deb: pkg-src
-	nspkg-deb $(TMP_DIR) $(PACKAGE) $(VERSION)
+	nspkg-deb $(TMP_DIR) $(PACKAGE) 0
+#	nspkg-deb $(TMP_DIR) $(PACKAGE) $(VERSION)
 
 #--- end packaging --------------------------------------
