@@ -52,6 +52,12 @@ dist-hook: dist-keywords
 
 #TESTS = studio_test.pm
 
+clean-local:
+	$(RM) -rf $(top_srcdir)/*.deb
+	$(RM) -rf $(top_srcdir)/*.dsc
+	$(RM) -rf $(top_srcdir)/*.changes
+	$(RM) -f $(top_srcdir)/build_debian.log
+
 test: check
 
 html-upload-prepare:
