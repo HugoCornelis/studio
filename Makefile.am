@@ -79,3 +79,16 @@ html-upload: html-upload-prepare
 
 docs: html-upload-prepare
 
+
+#-------------------------------------------------------
+# Packaging
+# the pkg-src target must create pkg/$(APP_NAME)-$(VERSION).tar.gz
+pkg-src: dist
+	mkdir -p pkg
+	cp $(PACKAGE)-$(VERSION).tar.gz pkg/$(PACKAGE)-$(VERSION).tar.gz
+
+
+pkg-deb: pkg-src
+	nspkg-deb $(TMP_DIR) $(PACKAGE) $(VERSION)
+
+#--- end packaging --------------------------------------

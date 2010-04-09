@@ -1,0 +1,19 @@
+Source: studio
+Section: Science 
+Priority: optional
+Maintainer: Hugo Cornelis [hugo.cornelis@gmail.com]
+Build-Depends: python2.5(>=2.5),libc6(>=2.3.6),libgcc1 (>=4.1.1)
+Homepage: http://www.neurospaces.org
+
+Package: studio
+Architecture: any
+Depends: python2.5(>=2.5),libc6(>=2.3.6),libgcc1 (>=4.1.1)
+Suggests: gnuplot
+Description: The Neurospaces studio has a GUI front-end to the 
+Neurospaces model container and allows browsing and visualization 
+of the model. Note that the Neurospaces studio is not a graphical 
+editor or construction kit. I prefer to rely on external applications 
+for this type of functionality, a good example is neuroConstruct.
+Additionally, the Neurospaces studio comes with a shell command that 
+uses the Neurospaces model container Swig bindings to get access to 
+the model stored by the model container. 
