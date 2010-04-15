@@ -75,7 +75,7 @@ my $global_operators
 		    "LENGTH",
 		   );
 
-	   if ($value != $SwiggableNeurospaces::dFLT_MAX)
+	   if ($value != $SwiggableNeurospaces::dDBL_MAX)
 	   {
 	       my $count = 0;
 
@@ -457,7 +457,7 @@ sub main
 			      }
 			      else
 			      {
-				  if ($value != $SwiggableNeurospaces::dFLT_MAX)
+				  if ($value != $SwiggableNeurospaces::dDBL_MAX)
 				  {
 				      print "  '" . $descendant->{context} . "->" . $parameter . "': " . $value . "\n";
 				  }
