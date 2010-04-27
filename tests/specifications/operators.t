@@ -48,8 +48,7 @@ my $test
 						   read => 'cumulate:
   description: cumulated value
   final_value: 0.012075620569123',
-						   timeout => 1000000,
-						   write => undef,
+						   timeout => 20,
 						  },
 						 ],
 				description => "surface accumulation",
@@ -82,8 +81,7 @@ my $test
   description: /gp_pc1/segments/p0b1b2b2b2b1b2b2b2b1b2[1]->LENGTH
   final_value: 5.56999999999999e-07
 ',
-						   timeout => 10,
-						   write => undef,
+						   timeout => 20,
 						  },
 						 ],
 				description => "minimum operator",
@@ -114,8 +112,7 @@ my $test
   description: /gp_pc1/segments/p0b1b2b2b2b2b2b2b2b2b2b2b2b2b2b2b1b2b2b2b2b2[0]->LENGTH
   final_value: 2.64677585375113e-05
 ',
-						   timeout => 10,
-						   write => undef,
+						   timeout => 20,
 						  },
 						 ],
 				description => "maximum operator",
@@ -146,8 +143,7 @@ my $test
   description: average of 2066 value(s)
   final_value: 1.57461689254598e-06
 ',
-						   timeout => 15,
-						   write => undef,
+						   timeout => 20,
 						  },
 						 ],
 				description => "average operator",
