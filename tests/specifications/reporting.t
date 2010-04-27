@@ -48,8 +48,7 @@ my $test
   - /gp_pc1/segments/p0b1b1[4]/Purk_spine_0/head/par/exp2
 ',
 						   timeout => 100,
-\						  },
-
+						  },
 						 ],
 				description => "spine reporting for a passive morphology that was populated with active channels and spines",
 				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
@@ -84,7 +83,7 @@ my $test
   '/gp_pc1/segments/p0b1b2b2b2[0]/kdr->G_MAX': 600
 ",
 						   timeout => 100,
-\						  },
+						  },
 						 ],
 				description => "delayed rectifier reporting for a passive morphology that was populated with active channels",
 				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
@@ -119,7 +118,7 @@ report:
 ',
 							   ],
 						   timeout => 100,
-\						  },
+						  },
 						 ],
 				description => "spines algorithm reporting for a passive morphology that was populated with active channels",
 				disabled => (-e "$morphologies/$morphology_name2" ? '' : "$morphologies/$morphology_name2 not found"),
@@ -149,7 +148,7 @@ report:
   description: cumulated value
   final_value: 0.012075620569123',
 						   timeout => 100,
-\						  },
+						  },
 						 ],
 				description => "cumulated spiny dendrite length",
 				disabled => (-e "$morphologies/$morphology_name1" ? '' : "$morphologies/$morphology_name1 not found"),
