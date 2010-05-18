@@ -24,3 +24,5 @@ gz$
 \.changes$
 \.dsc$
 \.log$
+^RPM_BUILD$
+^studio*.tar.gz$

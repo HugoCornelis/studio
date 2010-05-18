@@ -48,10 +48,12 @@ dist-hook: dist-keywords
 #TESTS = studio_test.pm
 
 clean-local:
-	$(RM) -rf $(top_srcdir)/*.deb
-	$(RM) -rf $(top_srcdir)/*.dsc
-	$(RM) -rf $(top_srcdir)/*.changes
-	$(RM) -f $(top_srcdir)/build_debian.log
+	$(RM) -f $(top_builddir)/*.dsc
+	$(RM) -f $(top_builddir)/*.changes
+	$(RM) -f $(top_builddir)/*.deb
+	$(RM) -rf $(top_builddir)/RPM_BUILD
+	$(RM) -f $(top_builddir)/build_debian.log
+	$(RM) -f $(top_builddir)build_rpm.log
 
 test: check
 
@@ -93,5 +95,8 @@ pkg-src: dist
 
 pkg-deb: pkg-src
 	nspkg-deb $(TMP_DIR) $(PACKAGE) $(VERSION)
+
+pkg-rpm: dist
+	nspkg-rpm $(PACKAGE) $(VERSION)
 
 #--- end packaging --------------------------------------
