@@ -19,10 +19,10 @@ RELEASE_MINOR=`release-extract --minor`
 RELEASE_MICRO=`release-extract --micro`
 
 show-release-labels:
-	echo "Release information (major-minor-micro): $(RELEASE_MAJOR)-$(RELEASE_MINOR)-$(RELEASE_MICRO)"
+	echo "Release information (major-minor-micro): $(RELEASE_MAJOR).$(RELEASE_MINOR)-$(RELEASE_MICRO)"
 
 dist-keywords:
-	release-expand studio $(RELEASE_MAJOR) $(RELEASE_MINOR) $(RELEASE_MICRO) $(RELEASE_MAJOR)-$(RELEASE_MINOR) hugo.cornelis@gmail.com --verbose
+	release-expand studio $(RELEASE_MAJOR) $(RELEASE_MINOR) $(RELEASE_MICRO) $(RELEASE_MAJOR).$(RELEASE_MINOR) hugo.cornelis@gmail.com --verbose
 #	release-expand studio des 10 0 des-10 hugo.cornelis@gmail.com --verbose
 
 dist-hook: dist-keywords
