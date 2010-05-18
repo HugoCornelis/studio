@@ -9,8 +9,10 @@
 
 
 # $Format: "%define version 	${label}"$
-%define version 	9ce66a2b378d5005f4bdd8a7d784a56fb2806eaf.0
+%define version 	5af3549e2d428e8153197a1e2e6e77d619c0c288.0
 %define buildroot 	%{_topdir}/%{name}-%{version}-root
+
+BuildArch:		noarch
 
 BuildRoot:		%{buildroot}
 Summary: 		Neurospaces Studio
@@ -60,7 +62,7 @@ make install prefix=$RPM_BUILD_ROOT/usr/local
 #/usr/share/
 
 
-%doc %attr(0444,root,root) docs
+#%doc %attr(0444,root,root) docs
 #%doc %attr(0444,root,root) /usr/local/share/man/man1/wget.1
 # need to put whatever docs to link to here.
 
