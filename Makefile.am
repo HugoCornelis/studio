@@ -53,7 +53,8 @@ clean-local:
 	$(RM) -f $(top_builddir)/*.deb
 	$(RM) -rf $(top_builddir)/RPM_BUILD
 	$(RM) -f $(top_builddir)/build_debian.log
-	$(RM) -f $(top_builddir)build_rpm.log
+	$(RM) -f $(top_builddir)/build_rpm.log
+	$(RM) studio*.tar.tz
 
 test: check
 
