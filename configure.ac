@@ -16,12 +16,12 @@ dnl ##########################################################################
 
 AC_PREREQ(2.59)
 
-# $Format: "AC_INIT(${package}, ${label}, ${email})"$
+# $Format: "AC_INIT(${package}, ${major}.${minor}.${micro}-${label}, ${email})"$
 AC_INIT(studio, userdocs-6, hugo.cornelis@gmail.com)
 
 AC_CONFIG_SRCDIR([bin/neurospaces])
 
-# $Format: "AM_INIT_AUTOMAKE(${package}, ${label})"$
+# $Format: "AM_INIT_AUTOMAKE(${package}, ${major}.${minor}.${micro}-${label})"$
 AM_INIT_AUTOMAKE(studio, userdocs-6)
 
 PERL_MODULES=`(cd perl && find . -name "*.pm" | perl -pe 's/\n/ /g')`
