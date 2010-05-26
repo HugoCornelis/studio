@@ -589,7 +589,7 @@ options :
 sub version
 {
     # $Format: "    my $version=\"${package}-${label}\";"$
-    my $version="studio-userdocs-6";
+    my $version="studio-alpha";
 
     return $version;
 }
