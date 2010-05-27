@@ -30,6 +30,8 @@ Group: 			Science
 Vendor: 		Hugo Cornelis <hugo.cornelis@gmail.com>
 Packager: 		Mando Rodriguez <mandorodriguez@gmail.com>
 URL:			http://www.neurospaces.org
+AutoReqProv:		no
+
 
 %description
 The Neurospaces studio has a GUI front-end to the Neurospaces model container and allows browsing and visualization of the model. Note that the Neurospaces studio is not a graphical editor or construction kit. I prefer to rely on external applications for this type of functionality, a good example is neuroConstruct.Additionally, the Neurospaces studio comes with a shell command that uses the Neurospaces model container Swig bindings to get access to the model stored by the model container. 
