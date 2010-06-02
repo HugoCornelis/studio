@@ -55,6 +55,7 @@ clean-local:
 	$(RM) -f $(top_builddir)/build_debian.log
 	$(RM) -f $(top_builddir)/build_rpm.log
 	$(RM) $(top_builddir)/studio-*.tar.gz
+	$(RM) -rf $(top_srcdir)/pkg
 
 test: check
 
@@ -94,7 +95,7 @@ pkg-src: dist
 	cp $(PACKAGE)-$(VERSION).tar.gz pkg/$(PACKAGE)-$(VERSION).tar.gz
 
 
-pkg-deb: pkg-src
+pkg-deb: dist
 	nspkg-deb $(TMP_DIR) $(PACKAGE) $(VERSION)
 
 pkg-rpm: dist
