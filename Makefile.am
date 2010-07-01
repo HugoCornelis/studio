@@ -51,9 +51,8 @@ clean-local:
 	$(RM) -f $(top_builddir)/*.dsc
 	$(RM) -f $(top_builddir)/*.changes
 	$(RM) -f $(top_builddir)/*.deb
-	$(RM) -rf $(top_builddir)/RPM_BUILD
-	$(RM) -f $(top_builddir)/build_debian.log
-	$(RM) -f $(top_builddir)/build_rpm.log
+	$(RM) -rf $(top_builddir)/*_BUILD
+	$(RM) -f $(top_builddir)/build_*.log
 	$(RM) $(top_builddir)/studio-*.tar.gz
 	$(RM) -rf $(top_srcdir)/pkg
 
