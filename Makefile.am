@@ -28,8 +28,6 @@ dist-keywords:
 dist-hook: 
 	if test -n "$$NEUROSPACES_RELEASE" ; then cd $(srcdir) && if test -n "`mtn ls changed `" ; then false ; else true ; fi ; else true ; fi
 #	release-expand studio $(RELEASE_MAJOR) $(RELEASE_MINOR) $(RELEASE_MICRO) $(RELEASE_MAJOR)-$(RELEASE_MINOR) hugo.cornelis@gmail.com --verbose
-	find $(distdir) -name _Inline -exec chmod u+w -R \{\} \;
-	$(RM) -fr `find $(distdir) -name _Inline`
 	cp $(srcdir)/license.txt $(distdir)
 #	cp -R $(srcdir)/docs $(distdir)
 #	cp -a $(srcdir)/perl $(distdir)
