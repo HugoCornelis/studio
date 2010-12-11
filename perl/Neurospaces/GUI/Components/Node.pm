@@ -424,7 +424,11 @@ sub signal_cursor_changed
 
 	print "Parameters for symbol $current\n";
 
-	my $specific_parameters = $self->get_specific_parameters($current);
+	my $current_symbol = Neurospaces::GUI::Components::Node::factory( { serial => $current, studio => $self->{studio}, }, );
+
+	print YAML::Dump( { current_symbol => $current_symbol, }, );
+
+	my $specific_parameters = $current_symbol->get_specific_parameters($current);
 
 	my $textbuffer_specific_parameters = $self->{gtk2_textbuffer_specific_parameters};
 

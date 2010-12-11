@@ -736,8 +736,10 @@ sub get_specific_parameters
 
     my $specific_parameters
 	= [
-	   'SURFACE',
+# 	   'SURFACE',
 	   'TOTALSURFACE',
+# 	   'VOLUME',
+	   'TOTALVOLUME',
 	  ];
 
     my $result = $self->parameters_2_array_ref($current, $specific_parameters);
