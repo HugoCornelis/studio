@@ -37,6 +37,7 @@ use Neurospaces::GUI::Components::Link;
 use Neurospaces::GUI::Components::Mechanism;
 use Neurospaces::GUI::Components::Network;
 use Neurospaces::GUI::Components::Root;
+use Neurospaces::GUI::Components::Segment;
 
 
 sub explore
@@ -309,7 +310,7 @@ sub factory
 	   T_sym_population => 'Neurospaces::GUI::Components::Network',
 	   T_sym_projection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_root_symbol => 'Neurospaces::GUI::Components::Root',
-	   T_sym_segment => 'Neurospaces::GUI::Components::Mechanism',
+	   T_sym_segment => 'Neurospaces::GUI::Components::Segment',
 	   T_sym_v_connection => 'Neurospaces::GUI::Components::Link',
 	   T_sym_v_contour => 'Neurospaces::GUI::Components::Atomic',
 	   T_sym_v_segment => 'Neurospaces::GUI::Components::Cell',

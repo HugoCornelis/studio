@@ -772,6 +772,11 @@ sub initialize_state
 
     $self->SUPER::initialize_state(@_);
 
+    if ($self->{type} eq 'T_sym_cell')
+    {
+	SwiggableNeurospaces::swig_pq_set("segmenterlinearize $self->{context}");
+    }
+
     $self->{state}->{cell_active_level} = 'SEGMENT';
 }
 
