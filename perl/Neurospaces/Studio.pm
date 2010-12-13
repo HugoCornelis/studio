@@ -194,13 +194,16 @@ sub initialize
     $timed_code
 	= sub
 	  {
-	      $d3renderer->main_loop();
+	      if ($d3renderer)
+	      {
+		  $d3renderer->main_loop();
 
-	      &$install_timer();
+		  &$install_timer();
 
-	      # return false to and remove this timer
+		  # return false to and remove this timer
 
-	      return 0;
+		  return 0;
+	      }
 	  };
 
     my $timer = Glib::Timeout->add(110, $timed_code, "got it\n", );
