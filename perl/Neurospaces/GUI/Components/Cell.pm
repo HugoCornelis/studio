@@ -774,7 +774,9 @@ sub initialize_state
 
     if ($self->{type} eq 'T_sym_cell')
     {
-	SwiggableNeurospaces::swig_pq_set("segmenterlinearize $self->{context}");
+	print "setting segmenterbase to $self->{context}\n";
+
+	SwiggableNeurospaces::swig_pq_set("segmentersetbase $self->{context}");
     }
 
     $self->{state}->{cell_active_level} = 'SEGMENT';
