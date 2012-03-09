@@ -69,13 +69,11 @@ html-upload-prepare:
 html-upload: html-upload-prepare
 	scp -pr html/htdocs/* hcornelis,neurospaces@web.sourceforge.net:/home/groups/n/ne/neurospaces/htdocs/
 
-#perldir = $(prefix)/glue/swig/perl
+#perldir = @PMDIR@
 
 #nobase_perl_DATA = \
 #	studio_test.pm \
 #	@PERL_EMBED_DATA@
-
-#perldir = $(prefix)/glue/swig/perl
 
 #nobase_perl_DATA = @PERL_EMBED_DATA@
 
