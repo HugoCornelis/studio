@@ -78,6 +78,9 @@ sub explore
 
     my $serial = shift;
 
+    # \todo because of the dependency on serials, it is impossible to
+    # explore models in a namespace, should be solved.
+
     my $symbol = Neurospaces::GUI::Components::Node::factory( { serial => $serial, studio => $self, }, );
 
 #     use Data::Dumper;
