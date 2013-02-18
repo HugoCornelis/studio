@@ -33,13 +33,12 @@ dist-hook:
 #	cp -a $(srcdir)/perl $(distdir)
 	test -d $(distdir)/tests || mkdir $(distdir)/tests
 	test -d $(distdir)/tests/specifications || mkdir $(distdir)/tests/specifications
-	cp -R $(srcdir)/tests/tests_2_html $(distdir)/tests/tests_2_html
 	cp -R $(srcdir)/tests/specifications $(distdir)/tests
 #	cp -R $(srcdir)/tests/code/tests.config $(distdir)/tests/code/tests.config
 	cp -R $(srcdir)/tests/tests.config $(distdir)/tests/tests.config
 	cp -R $(srcdir)/tests.config $(distdir)
 #	cp -R $(srcdir)/tests/perl $(distdir)/tests
-	( cd $(distdir)/tests && chmod -R u+w . && ./tests_2_html --introduction introduction.html )
+	( cd $(distdir)/tests && chmod -R u+w . && neurospaces_harness_2_html --introduction introduction.html )
 
 #perl_HEADERS = studio_test.pm
 
@@ -60,7 +59,7 @@ html-upload-prepare:
 	rm -fr html/htdocs/neurospaces_project/studio/
 	mkdir --parents html/htdocs/neurospaces_project/studio
 	mkdir --parents html/htdocs/neurospaces_project/studio/html_source
-	( cd tests && chmod -R u+w . && ./tests_2_html --introduction introduction.html )
+	( cd tests && chmod -R u+w . && neurospaces_harness_2_html --introduction introduction.html )
 	tar cfh - tests/html | ( cd html/htdocs/neurospaces_project/studio && tar vxf - )
 # copy the bin/neurospaces script too
 	mkdir --parents html/htdocs/neurospaces_project/studio/tests/bin
